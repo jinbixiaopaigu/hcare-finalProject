@@ -1,0 +1,15 @@
+owl:
+  name: 'ruoyi-vue-flask'
+  version: '1.0.0'
+  author: 'shaw'
+  host: 'localhost'
+  port: 9000
+  api:
+    version: '/'
+  env: 'local'
+  profile: D:/owl/uploadPath
+
+token:
+    header: 'Authorization'
+    secret: 'abcdefghijklmnopqrstuvwxyz'
+    expireTime: 30
