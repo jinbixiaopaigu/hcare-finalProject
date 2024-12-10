@@ -60,14 +60,14 @@ node版本：v20.17.0
 1. sql/ry_20230706.sql
 2. sql/ruoyi2owl.sql
 ```
-### 后端快速启动（开发环境）
+### 后端快速启动（开发环境:windows）
 
 ```cmd
 # 创建虚拟环境
 python3 -m venv venv
 
 # 激活虚拟环境
-source ./venv/bin/activate
+.\.venv\Scripts\activate
 
 # 安装依赖
 pip3 install -r ./bin/requirements.txt 
@@ -95,7 +95,7 @@ pip3 install -r ./bin/requirements.txt
 python owl_admin/app.py
 ```
 
-### 前端快速启动（开发环境）
+### 前端快速启动（开发环境:windows）
 
 ```cmd
 # 安装依赖
