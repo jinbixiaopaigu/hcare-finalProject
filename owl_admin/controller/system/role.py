@@ -20,7 +20,7 @@ from ... import reg
 
 
 @reg.api.route("/system/role/list", methods=["GET"])
-@QueryValidator()
+@QueryValidator(is_page=True)
 @PreAuthorize(HasPerm("system:role:list"))
 @ViewSerializer()
 def system_role_list(dto:SysRole):

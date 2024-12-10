@@ -274,17 +274,17 @@ class SysDictType(AuditEntity):
     
     dict_name: Annotated[
         str,
-        Field(default=None,ge=0,vo=VoAccess(query=True))
+        Field(default=None,vo=VoAccess(query=True))
     ]
     
     dict_type: Annotated[
         str,
-        Field(default=None,ge=0,vo=VoAccess(query=True))
+        Field(default=None,vo=VoAccess(query=True))
     ]
     
     status: Annotated[
         str,
-        Field(default=None,ge=0,vo=VoAccess(query=True))
+        Field(default=None,vo=VoAccess(query=True))
     ]
 
     

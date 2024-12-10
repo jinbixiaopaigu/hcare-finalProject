@@ -297,7 +297,7 @@ class VoModel(BaseModel):
             validation_alias=to_camel,
             serialization_alias=to_pascal,
         ),  
-        frozen = True,
+        frozen = False,
         extra = "forbid",
         strict = True,
         populate_by_name = False,
@@ -412,29 +412,35 @@ class VoModel(BaseModel):
 
 class PageModel(VoModel):
     
-    page_num: Annotated[int, BeforeValidator(int), Field(1, ge=1)] 
+    model_config = ConfigDict(
+        from_attributes = False,
+        alias_generator = AliasGenerator(
+            alias=to_camel,
+            validation_alias=to_camel,
+            serialization_alias=to_pascal,
+        ),  
+        frozen = False,
+        extra = "forbid",
+        strict = True,
+        populate_by_name = False,
+    )
     
-    page_size: Annotated[int, BeforeValidator(int), Field(10, ge=1, le=100)] 
+    page_num: Annotated[
+        int, 
+        BeforeValidator(int), 
+        Field(1, ge=1,frozen=True)
+    ] 
     
-    _total: Annotated[int, Field(default=None,frozen=False)]
+    page_size: Annotated[
+        int, 
+        BeforeValidator(int), 
+        Field(10, ge=1, le=100, frozen=True)
+    ] 
     
-    _stmt: Annotated[Any, Field(default=None,fronze=False)]
+    total: Annotated[int, Field(default=None)]
     
-    @property
-    def total(self) -> int:
-        return self._total
+    stmt: Annotated[Any, Field(default=None)]
     
-    @total.setter
-    def total(self, value:int):
-        self._total = value
-        
-    @property
-    def stmt(self) -> Any:
-        return self._stmt
-    
-    @stmt.setter
-    def stmt(self, value:Any):
-        self._stmt = value
         
     def criterians(self,po:Model)-> List[Any]:
         """

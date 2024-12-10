@@ -19,7 +19,7 @@ from ... import reg
 
 
 @reg.api.route("/system/notice/list", methods=["GET"])
-@QueryValidator()
+@QueryValidator(is_page=True)
 @PreAuthorize(HasPerm("system:notice:list"))
 @ViewSerializer()
 def system_notice_list(dto:SysNotice):

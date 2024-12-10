@@ -16,7 +16,8 @@ class SysJob(AuditEntity):
     
     job_id: Annotated[
         Optional[int],
-        BeforeValidator(str_to_int)
+        BeforeValidator(str_to_int),
+        Field(default=None)
     ]
     
     job_name: Annotated[

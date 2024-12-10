@@ -98,6 +98,7 @@ class QueryReqParser(BaseReqParser):
     
     def cast_model(self, bo_model:BaseEntity) -> BaseModel:
         data = self.data()
+        print("data:",data)
         bo = bo_model.model_validate(data)
         return bo
     

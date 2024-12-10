@@ -7,7 +7,7 @@ from typing_extensions import Annotated
 from owl_apscheduler.domain.entity import SysJobLog
 from owl_apscheduler.service.job_log import SysJobLogService
 from owl_common.base.entity import AjaxResponse, TableResponse
-from owl_common.base.transformer import ids_convertor, ids_to_list
+from owl_common.base.transformer import ids_to_list
 from owl_common.descriptor.serializer import ViewSerializer
 from owl_common.descriptor.validate import QueryValidator
 from owl_framework.descriptor.permission import HasPerm, PreAuthorize
@@ -15,7 +15,7 @@ from .. import reg
 
 
 @reg.api.route("/monitor/jobLog/list", methods=["GET"])
-@QueryValidator()
+@QueryValidator(is_page=True)
 @PreAuthorize(HasPerm('monitor:job:list'))
 @ViewSerializer()
 def common_joblog_list(dto: SysJobLog):

@@ -21,7 +21,7 @@ from .. import reg
 
 
 @reg.api.route("/monitor/job/list", methods=["GET"])
-@QueryValidator()
+@QueryValidator(is_page=True)
 @PreAuthorize(HasPerm("monitor:job:list"))
 @ViewSerializer()
 def common_job_list(dto:SysJob) -> TableResponse:

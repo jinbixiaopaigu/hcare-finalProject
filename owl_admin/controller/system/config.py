@@ -21,7 +21,7 @@ from ... import reg
 
 
 @reg.api.route("/system/config/list", methods=["GET"])
-@QueryValidator()
+@QueryValidator(is_page=True)
 @PreAuthorize(HasPerm('system:config:list'))
 @ViewSerializer()
 def system_config_list(dto:SysConfig):

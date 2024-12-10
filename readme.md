@@ -4,7 +4,7 @@
 <h1 align="center" style="margin: 30px 0 30px; font-weight: bold;">RuoYi-Vue-Flask</h1>
 <h4 align="center">基于Flask+Vue前后端分离的快速开发框架</h4>
 <p align="center">
-	<a href="https://gitee.com/y_project/RuoYi-Vue/blob/master/LICENSE"><img src="https://img.shields.io/github/license/mashape/apistatus.svg"></a>
+	<a href="https://gitee.com/shaw-lee/ruoyi-vue-flask/blob/5139e50de7a5d97e0a512019e87a0961768ec9aa/LICENSE"><img src="https://img.shields.io/github/license/mashape/apistatus.svg"></a>
 </p>
 
 ## 平台简介

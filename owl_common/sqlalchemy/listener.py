@@ -44,6 +44,9 @@ def before_execute_listening(engine, clauseelement, multiparams,params) -> Tuple
             return raw_input
         
         page:PageModel = g.criterian_meta.page
+        if page.stmt != clauseelement:
+            return raw_input
+        
         pagination = Pagination(
             page_num=page.page_num,
             page_size=page.page_size

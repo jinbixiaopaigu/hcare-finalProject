@@ -18,7 +18,7 @@ from ... import reg
 
 
 @reg.api.route('/monitor/logininfor/list',methods=['GET'])
-@QueryValidator()
+@QueryValidator(is_page=True)
 @PreAuthorize(HasPerm("monitor:logininfor:list"))
 @ViewSerializer()
 def monitor_logininfo_list(dto:SysLogininfor):

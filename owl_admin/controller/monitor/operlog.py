@@ -18,7 +18,7 @@ from ... import reg
 
 
 @reg.api.route('/monitor/operlog/list',methods=['GET'])
-@QueryValidator()
+@QueryValidator(is_page=True)
 @PreAuthorize(HasPerm("monitor:operlog:list"))
 @ViewSerializer()
 def monitor_operlog_list(dto:SysOperLog):

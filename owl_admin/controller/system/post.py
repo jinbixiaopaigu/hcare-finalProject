@@ -19,7 +19,7 @@ from ... import reg
 
 
 @reg.api.route("/system/post/list", methods=["GET"])
-@QueryValidator()
+@QueryValidator(is_page=True)
 @PreAuthorize(HasPerm("system:post:list"))
 @ViewSerializer()
 def system_post_list(dto:SysPost):

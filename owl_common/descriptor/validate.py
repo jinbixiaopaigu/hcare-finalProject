@@ -221,8 +221,11 @@ class PathValidator(BaseValidator):
 class QueryValidator(BaseValidator):
     
     is_page: bool = False
+    
     include:Optional[Set[str]] = field(default=None)
+    
     exclude:Optional[Set[str]] = field(default=None)
+    
     extra_fields:Optional[Dict[str, FieldInfo]] = field(default=None)
     
     def __post_init__(self):
