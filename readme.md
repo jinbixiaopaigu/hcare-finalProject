@@ -54,7 +54,7 @@ node版本：v20.17.0
 
 ### mysql数据库
 ```text
-数据名： ruoyi-vue-py
+数据名： ry-vue-py
 
 执行sql语句
 1. sql/ry_20230706.sql
@@ -73,7 +73,7 @@ source ./venv/bin/activate
 pip3 install -r ./bin/requirements.txt 
 ```
 
-```cmd
+```text
 # 后端配置
 ./owl_admin/config/app.yml
   ......
