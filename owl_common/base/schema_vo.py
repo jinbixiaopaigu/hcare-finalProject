@@ -39,7 +39,7 @@ query_valid_config = ConfigDict(
 
 
 def VoField(
-    body="allow",
+    body=True,
     query=False,
     sort=False, 
     *args, 

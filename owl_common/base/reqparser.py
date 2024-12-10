@@ -9,7 +9,7 @@ from werkzeug.exceptions import BadRequest,UnsupportedMediaType
 
 from owl_common.base.entity import BaseEntity, CriterianMeta, ExtraModel, \
     BaseEntity, MultiFile, OrderModel, PageModel, VoValidatorContext
-from owl_common.base.voschema import BaseSchemaFactory, FileSchemaFactory, QuerySchemaFactory
+from owl_common.base.schema_vo import BaseSchemaFactory, FileSchemaFactory, QuerySchemaFactory
 
 
 class AbsReqParser(ABC):

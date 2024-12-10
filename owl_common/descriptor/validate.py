@@ -12,7 +12,7 @@ from pydantic.fields import FieldInfo
 
 from owl_common.base.reqparser import BaseReqParser, BodyReqParser, \
     FileFormReqParser, PathReqParser, QueryReqParser, VoValidatorContext
-from owl_common.base.voschema import BaseSchemaFactory, BodySchemaFactory, FileSchemaFactory, \
+from owl_common.base.schema_vo import BaseSchemaFactory, BodySchemaFactory, FileSchemaFactory, \
     PathSchemaFactory, QuerySchemaFactory
 
 

@@ -8,7 +8,7 @@ from typing_extensions import Annotated
 
 from owl_common.base.entity import BaseEntity, AuditEntity
 from owl_common.base.transformer import str_to_int, to_datetime
-from owl_common.base.voschema import VoAccess
+from owl_common.base.schema_vo import VoAccess
 from owl_apscheduler.constant import DATETIME_FORMAT
 
 

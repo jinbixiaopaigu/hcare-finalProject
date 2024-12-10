@@ -11,6 +11,8 @@ from typing import List, Optional
 from pydantic.types import UUID4
 
 from owl_common.base.entity import AuditEntity, VoAccess, strict_base_config
+from owl_common.base.schema_excel import ExcelAccess, ExcelField, ExcelFields
+from owl_common.base.schema_vo import VoField
 from owl_common.base.transformer import int_to_str, to_datetime, str_to_int
 
 
@@ -69,32 +71,52 @@ class SysUser(AuditEntity):
     user_id: Annotated[
         int,
         BeforeValidator(str_to_int),
-        Field(gt=0,default=None,vo=VoAccess(query=True))
+        Field(gt=0,default=None),
+        VoField(query=True),
+        ExcelField(name="用户序号",cell_type="numeric",prompt="用户编号")
     ]
     
     dept_id: Annotated[
         int,
         BeforeValidator(str_to_int),
-        Field(gt=0,default=None,vo=VoAccess(query=True))
+        Field(gt=0,default=None),
+        VoField(query=True),
+        ExcelField(name="部门编号",action="import")
     ]
     
     user_name: Annotated[
         Optional[str],
-        Field(default=None,vo=VoAccess(query=True))
+        Field(default=None),
+        VoField(query=True),
+        ExcelField(name="登录名称")
     ]
     
-    nick_name: Optional[str] = None
+    nick_name: Annotated[
+        Optional[str],
+        Field(default=None),
+        ExcelField(name="用户名称")
+    ]
     
     user_type: Optional[str] = None
     
-    email: Optional[str] = None
+    email: Annotated[
+        Optional[str],
+        Field(default=None),
+        ExcelField(name="用户邮箱")
+    ]
     
     phonenumber: Annotated[
         Optional[str],
-        Field(default=None,vo=VoAccess(query=True))
+        Field(default=None),
+        VoField(query=True),
+        ExcelField(name="手机号码")
     ]
     
-    sex: Optional[str] = None
+    sex: Annotated[
+        Optional[str],
+        Field(default=None),
+        ExcelField(name="用户性别",converter="0=男,1=女,2=未知")
+    ]
     
     avatar: Optional[str] = None
     
@@ -105,30 +127,50 @@ class SysUser(AuditEntity):
     
     salt: Annotated[
         Optional[UUID4],
-        Field(default=None,vo=VoAccess(body=False))]
+        Field(default=None),
+        VoField(body=False)
+    ]
     
     status: Annotated[
         Optional[str],
-        Field(default=None,vo=VoAccess(query=True))
+        Field(default=None),
+        VoField(query=True),
+        ExcelField(name="帐号状态",converter="0=正常,1=停用")
     ]
     
     del_flag: Optional[str] = None
     
-    login_ip: Optional[str] = None
+    login_ip: Annotated[
+        Optional[str],
+        Field(default=None),
+        ExcelField(name="最后登录IP",action="export")
+    ]
     
     login_date: Annotated[
         Optional[datetime], 
-        BeforeValidator(to_datetime())
+        BeforeValidator(to_datetime()),
+        ExcelField(
+            name="最后登录IP",
+            width=30,
+            date_format="yyyy-MM-dd HH:mm:ss",
+            action="export"
+        )
     ] = None
     
     dept: Annotated[
         "SysDept",
-        Field(default=None,vo=VoAccess(body=False))
+        Field(default=None),
+        VoField(body=False),
+        ExcelFields(
+            ExcelAccess(name="部门名称",width=20,attr="dept_name"),
+            ExcelAccess(name="部门负责人",width=20,attr="leader")
+        )
     ]
     
     roles: Annotated[
         List["SysRole"],
-        Field(default=[],vo=VoAccess(body=False))
+        Field(default_factory=list),
+        VoField(body=False)
     ]
     
     role_ids: Optional[List[int]] = []
@@ -137,7 +179,8 @@ class SysUser(AuditEntity):
     
     role_id: Annotated[
         Optional[int],
-        Field(default=None,vo=VoAccess(body=False))
+        Field(default=None),
+        VoField(body=False)
     ]
     
     @property
