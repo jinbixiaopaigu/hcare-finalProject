@@ -25,5 +25,8 @@ update sys_menu set status = '1', visible = '1' where menu_id = '111';
 -- 隐藏 ruoyi 代码生成 菜单（待定）
 update sys_menu set status = '1', visible = '1' where menu_id = '112';
 
+-- 隐藏 ruoyi 系统接口 菜单（待定）
+update sys_menu set status = '1', visible = '1' where menu_id = '117';
+
 
 

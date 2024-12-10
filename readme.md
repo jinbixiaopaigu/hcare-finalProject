@@ -16,7 +16,7 @@ Ruoyi-Vue-Flask是一套全部开源的快速开发平台，给个人及企业�
 * 权限认证使用Jwt，支持多终端认证系统。
 * 支持加载动态权限菜单，多方式轻松权限控制。
 * 高效率开发，使用代码生成器可以一键生成前后端代码（计划中）。
-* 特别鸣谢： [Ruoyi-Vue (V3.8.1)](https://gitee.com/y_project/RuoYi-Vue) 
+* 特别鸣谢： [Ruoyi-Vue (V3.8.1)](https://gitee.com/y_project/RuoYi-Vue)
 
 ## 内置功能
 
@@ -72,21 +72,22 @@ source ./venv/bin/activate
 # 安装依赖
 pip3 install -r ./bin/requirements.txt 
 ```
+
 ```cmd
 # 后端配置
 ./owl_admin/config/app.yml
-...
+  ......
   env: 'dev'
   profile: D:/owl/uploadPath
-...
+  ......
 
 
 ./owl_admin/config/app-dev.yml
-...
+  ......
   SQLALCHEMY_DATABASE_URI: 'mysql+pymysql://root:123456@127.0.0.1/ry-vue-py'
-...
+  ......
   REDIS_URL: "redis://127.0.0.1?db=1"
-...
+  ......
 ```
 
 ```cmd
