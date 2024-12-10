@@ -27,5 +27,5 @@ class ScheduleConstant:
     
     FORBIDDEN_CONCURRENT = "1"
     
-    JOB_WHITELIST_STR = { "module_apscheduler" }
+    JOB_WHITELIST_STR = { "owl_apscheduler" }
     
