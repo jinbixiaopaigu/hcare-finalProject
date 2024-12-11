@@ -1,7 +1,7 @@
 
 
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import List, Literal
 
 from pydantic import Field
@@ -16,6 +16,7 @@ def ExcelField(
     converter:str='',
     prompt:str='',
     combo:List=[],
+    date_format:str='',
     is_export:bool=True,
     is_statistics:bool=False,
     header_background_color:str='#F2F2F2',
@@ -35,6 +36,7 @@ def ExcelField(
         default=default,
         converter=converter,     
         prompt=prompt,
+        date_format=date_format,
         combo=combo,
         is_export=is_export,
         is_statistics=is_statistics,
@@ -53,7 +55,7 @@ def ExcelFields(*access:"ExcelAccess"):
     Field(excel_access=access)    
 
 
-@dataclass
+@dataclass(frozen=True)
 class ExcelAccess:
     
     sort: int = 0
@@ -82,7 +84,7 @@ class ExcelAccess:
     
     prompt: str = ''
     
-    combo: List = []
+    combo: List = field(default_factory=list)
     
     attr: str = ''
     
@@ -102,10 +104,9 @@ class ExcelAccess:
     
     align: str = 'left'
     
-    def handler(self, value):
-        pass
+    handler: str = ''
     
-    args: List = []
+    args: List = field(default_factory=list)
     
     action: Literal['import', 'export', 'both'] = 'both'
     

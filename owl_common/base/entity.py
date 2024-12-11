@@ -68,7 +68,7 @@ class BetOpt(ExtraOpt):
         return replace(self, **kwargs)
 
 
-@dataclass
+@dataclass(frozen=True)
 class VoAccess:
     
     body: bool = True

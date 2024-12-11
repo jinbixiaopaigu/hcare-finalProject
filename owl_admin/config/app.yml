@@ -6,7 +6,7 @@ owl:
   port: 9000
   api:
     version: '/'
-  env: 'local'
+  env: 'dev'
   profile: D:/owl/uploadPath
 
 token:
