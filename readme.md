@@ -144,6 +144,3 @@ npm run dev
     </tr>
 </table>
 
-
-## ruoyi-vue-flask前后端分离交流群
-QQ群: 855846171
