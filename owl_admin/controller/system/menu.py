@@ -2,11 +2,11 @@
 # @Author  : shaw-lee
 
 from owl_common.constant import UserConstants
-from owl_common.base.entity import AjaxResponse
+from owl_common.base.model import AjaxResponse
 from owl_common.domain.entity import SysMenu
 from owl_common.domain.enum import BusinessType
 from owl_common.descriptor.serializer import ViewSerializer
-from owl_common.descriptor.validate import BodyValidator, QueryValidator,PathValidator
+from owl_common.descriptor.validator import BodyValidator, QueryValidator,PathValidator
 from owl_common.utils import security_util as SecurityUtil
 from owl_system.service.sys_menu import SysMenuService
 from owl_framework.descriptor.log import Log

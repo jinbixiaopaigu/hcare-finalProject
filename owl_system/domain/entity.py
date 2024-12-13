@@ -10,7 +10,7 @@ from typing_extensions import Annotated
 
 from owl_common.base.transformer import to_datetime, str_to_int
 from owl_common.domain.entity import LoginUser
-from owl_common.base.entity import AuditEntity, BaseEntity, VoAccess
+from owl_common.base.model import AuditEntity, BaseEntity, VoAccess
 
 
 class SysUserRole(BaseEntity):

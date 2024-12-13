@@ -5,7 +5,7 @@ from typing_extensions import Annotated
 from pydantic import BeforeValidator, Field, SecretStr
 
 from owl_common.base.transformer import str_to_int
-from owl_common.base.entity import VoModel
+from owl_common.base.model import VoModel
 
 
 class LoginBody(VoModel):

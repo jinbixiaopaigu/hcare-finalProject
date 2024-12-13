@@ -7,11 +7,11 @@ from pydantic import Field, SecretStr
 
 from owl_common.config import OWLConfig
 from owl_common.constant import UserConstants
-from owl_common.base.entity import AjaxResponse, MultiFile
+from owl_common.base.model import AjaxResponse, MultiFile
 from owl_common.domain.entity import LoginUser, SysUser
 from owl_common.domain.enum import BusinessType
 from owl_common.descriptor.serializer import ViewSerializer
-from owl_common.descriptor.validate import BodyValidator, FileValidator
+from owl_common.descriptor.validator import BodyValidator, FileValidator
 from owl_common.utils.base import FileUploadUtil
 from owl_common.utils import security_util as SecurityUtil
 from owl_system.service import SysUserService

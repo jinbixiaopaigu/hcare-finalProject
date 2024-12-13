@@ -12,8 +12,8 @@ from werkzeug.exceptions import NotFound
 from owl_common.config import OWLConfig
 from owl_common.constant import Constants
 from owl_common.descriptor.serializer import ViewSerializer
-from owl_common.descriptor.validate import FileValidator, QueryValidator
-from owl_common.base.entity import AjaxResponse, MultiFile
+from owl_common.descriptor.validator import FileValidator, QueryValidator
+from owl_common.base.model import AjaxResponse, MultiFile
 from owl_common.utils import FileUploadUtil, FileUtil, StringUtil
 from ... import reg
 

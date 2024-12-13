@@ -10,7 +10,7 @@ from pydantic import BaseModel, BeforeValidator, Field, Strict
 from typing import List, Optional
 from pydantic.types import UUID4
 
-from owl_common.base.entity import AuditEntity, VoAccess, strict_base_config
+from owl_common.base.model import AuditEntity, VoAccess, strict_base_config
 from owl_common.base.schema_excel import ExcelAccess, ExcelField, ExcelFields
 from owl_common.base.schema_vo import VoField
 from owl_common.base.transformer import int_to_str, to_datetime, str_to_int

@@ -13,7 +13,7 @@ from typing import Dict, List
 from typing_extensions import Annotated
 from pydantic import BaseModel, Field
 
-from owl_common.base.entity import strict_base_config
+from owl_common.base.model import strict_base_config
 from owl_common.utils import IpUtil
 
 

@@ -8,11 +8,11 @@ from pydantic import BeforeValidator
 from owl_apscheduler.domain.entity import SysJob
 from owl_apscheduler.service.job import SysJobService
 from owl_apscheduler.util import ScheduleUtil
-from owl_common.base.entity import AjaxResponse, TableResponse
+from owl_common.base.model import AjaxResponse, TableResponse
 from owl_common.base.transformer import ids_to_list
 from owl_common.constant import Constants
 from owl_common.descriptor.serializer import ViewSerializer
-from owl_common.descriptor.validate import BodyValidator, QueryValidator, PathValidator
+from owl_common.descriptor.validator import BodyValidator, QueryValidator, PathValidator
 from owl_common.domain.enum import BusinessType
 from owl_common.utils import security_util as SecurityUtil
 from owl_framework.descriptor.log import Log

@@ -4,7 +4,7 @@ from flask import Flask, g, has_app_context
 import sqlalchemy as sa
 import sqlalchemy.event as sa_event
 
-from owl_common.base.entity import PageModel
+from owl_common.base.model import PageModel
 from owl_common.sqlalchemy.query import Pagination
 
 

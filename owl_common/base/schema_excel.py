@@ -51,8 +51,8 @@ def ExcelField(
     )
     Field(excel_access=excel_access)
 
-def ExcelFields(*access:"ExcelAccess"):
-    Field(excel_access=access)    
+def ExcelFields(accesses:List["ExcelAccess"]):
+    Field(excel_access=accesses)    
 
 
 @dataclass(frozen=True)

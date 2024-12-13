@@ -7,7 +7,7 @@ import string, uuid
 from captcha.image import ImageCaptcha
 from io import BytesIO
 
-from owl_common.base.entity import AjaxResponse
+from owl_common.base.model import AjaxResponse
 from owl_common.constant import Constants
 from owl_common.descriptor.serializer import ViewSerializer
 from owl_admin.ext import redis_cache

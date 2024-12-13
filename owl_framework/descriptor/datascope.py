@@ -11,8 +11,8 @@ from sqlalchemy.orm.util import AliasedClass
 from sqlalchemy.sql.expression import or_
 from sqlalchemy import func
 
-from owl_common.base.entity import CriterianMeta
-from owl_common.descriptor.validate import ValidatorScopeFunction
+from owl_common.base.model import CriterianMeta
+from owl_common.descriptor.validator import ValidatorScopeFunction
 from owl_common.base.schema_vo import BaseEntity
 from owl_common.domain.entity import LoginUser, SysUser
 from owl_common.utils import security_util as SecurityUtil

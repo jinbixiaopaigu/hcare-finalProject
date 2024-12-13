@@ -5,7 +5,7 @@ from typing import List, Optional
 from flask import g
 from sqlalchemy import and_, or_, func, insert, select, update
 
-from owl_common.base.entity import ExtraModel
+from owl_common.base.model import ExtraModel
 from owl_common.domain.entity import SysDept, SysRole, SysUser
 from owl_common.sqlalchemy.model import ColumnEntityList
 from owl_common.sqlalchemy.transaction import Transactional

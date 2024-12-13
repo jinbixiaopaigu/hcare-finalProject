@@ -5,7 +5,7 @@ from typing import List
 from flask import g
 from sqlalchemy import insert,delete,select
 
-from owl_common.base.entity import ExtraModel
+from owl_common.base.model import ExtraModel
 from owl_common.sqlalchemy.model import ColumnEntityList
 from owl_apscheduler.domain.po import SysJobLogPo
 from owl_apscheduler.domain.entity import SysJobLog

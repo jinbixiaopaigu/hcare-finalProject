@@ -9,7 +9,7 @@ from flask_sqlalchemy.pagination import Pagination as _Pagination
 from sqlalchemy import Column, ScalarSelect
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 
-from owl_common.base.entity import BaseEntity, DbValidatorContext
+from owl_common.base.model import BaseEntity, DbValidatorContext
 
 
 T = TypeVar('T', bound=BaseEntity)

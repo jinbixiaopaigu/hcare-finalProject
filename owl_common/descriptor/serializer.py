@@ -6,7 +6,7 @@ from typing import Any, Callable
 from flask import Response, make_response
 from werkzeug.exceptions import HTTPException, InternalServerError
 
-from owl_common.base.entity import BaseEntity
+from owl_common.base.model import BaseEntity,VoSerializerContext
 from owl_common.base.signal import log_signal
 from owl_common.utils.base import DescriptUtil
 
@@ -18,19 +18,23 @@ class ViewSerializer:
         include_fields: list|None=None, 
         exclude_none: bool=False, 
         exclude_unset: bool=False, 
-        exclude_default: bool=False, 
+        exclude_default: bool=False,
         success_code: int=200, 
         mimetype: str='application/json', 
         headers: dict={},
         ):
-        self.exclude_fields = exclude_fields
-        self.include_fields = include_fields
-        self._exclude_none = exclude_none
-        self._exclude_unset = exclude_unset
-        self._exclude_default = exclude_default
+
         self.mimetype = mimetype
         self.headers = headers
         self.success_code = success_code
+        self.context = VoSerializerContext(
+            by_alias=True,
+            exclude_fields=exclude_fields,
+            include_fields=include_fields,
+            exclude_none=exclude_none,
+            exclude_unset=exclude_unset,
+            exclude_default=exclude_default
+        )
 
     def __call__(self, func) -> Callable:
         
@@ -107,12 +111,8 @@ class ViewSerializer:
         """
         try:
             res = res.model_dump_json(
-                by_alias=True,
-                exclude_none=self._exclude_none,
-                exclude_unset=self._exclude_unset,
-                exclude_defaults=self._exclude_default,
-                exclude=self.exclude_fields,
-                include=self.include_fields
+                context=self.context
+                **self.context.as_kwargs(),
             )
         except HTTPException as e:
             http_exc = InternalServerError(description="序列化实体对象异常")

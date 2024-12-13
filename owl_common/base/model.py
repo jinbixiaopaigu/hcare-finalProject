@@ -99,7 +99,33 @@ class DbValidatorContext:
     
     col_entity_list: List[Any]
 
-  
+
+@dataclass
+class VoSerializerContext:
+        
+    exclude_fields: Set = field(default_factory=set)
+
+    include_fields: Set = field(default_factory=set)
+
+    by_alais: bool = True
+
+    exclude_none: bool = True
+
+    exclude_unset: bool = True
+
+    exclude_default: bool = False
+    
+    def as_kwargs(self):
+        return {
+            "by_alias": self.by_alais,
+            "exclude": self.exclude_fields,
+            "include": self.include_fields,
+            "exclude_none": self.exclude_none,
+            "exclude_unset": self.exclude_unset,
+            "exclude_defaults": self.exclude_default
+        }
+    
+
 @dataclass
 class CriterianMeta:
     
@@ -171,6 +197,8 @@ class BaseEntity(BaseModel):
             if isinstance(data, Row):
                 new_values = data._mapping
         return new_values if new_values else data
+    
+    
     
     def create_by_user(self, user_id: str | int) -> None:
         self.create_by = user_id

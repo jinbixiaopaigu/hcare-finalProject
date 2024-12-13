@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 # @Author  : shaw-lee
 
-from owl_common.base.entity import  AjaxResponse
+from owl_common.base.model import  AjaxResponse
 from owl_common.domain.entity import SysUser
 from owl_common.domain.vo import LoginBody
 from owl_common.descriptor.serializer import ViewSerializer
-from owl_common.descriptor.validate import BodyValidator
+from owl_common.descriptor.validator import BodyValidator
 from owl_common.utils import security_util as SecurityUtil
 from owl_common.constant import Constants
 from owl_system.service import SysMenuService

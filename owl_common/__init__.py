@@ -6,7 +6,7 @@ import sys
 from types import ModuleType
 from werkzeug.exceptions import HTTPException
 
-from owl_common.base.serialize import JsonProvider,handle_http_exception
+from owl_common.base.serializer import JsonProvider,handle_http_exception
 from owl_common.descriptor.listener import ModuleSignalListener
 from owl_common.base.signal import module_initailize
 from owl_common.owl.registry import OwlModuleRegistry

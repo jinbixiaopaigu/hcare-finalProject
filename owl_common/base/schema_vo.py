@@ -10,7 +10,7 @@ from pydantic.fields import FieldInfo
 from pydantic_core import PydanticUndefined
 from pydantic import BaseModel
 
-from owl_common.base.entity import AllowedExtraModel, BaseEntity, BetOpt, ExtraModel, ExtraOpt, MultiFile, VoAccess, VoValidatorContext
+from owl_common.base.model import AllowedExtraModel, BaseEntity, BetOpt, ExtraModel, ExtraOpt, MultiFile, VoAccess, VoValidatorContext
 from owl_common.utils.base import DateUtil, get_final_model
 
 

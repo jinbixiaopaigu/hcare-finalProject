@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 # @Author  : shaw-lee
 
-from owl_common.base.entity import AjaxResponse, TableResponse
+from owl_common.base.model import AjaxResponse, TableResponse
 from owl_common.domain.enum import BusinessType
 from owl_common.descriptor.serializer import ViewSerializer
-from owl_common.descriptor.validate import QueryValidator, PathValidator
+from owl_common.descriptor.validator import QueryValidator, PathValidator
 from owl_system.service.sys_user_online import SysUserOnlineService
 from owl_system.domain.entity import SysUserOnline
 from owl_framework.descriptor.log import Log

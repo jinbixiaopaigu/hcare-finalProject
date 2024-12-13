@@ -7,7 +7,7 @@ from pydantic import BaseModel
 from werkzeug.datastructures import ImmutableMultiDict
 from werkzeug.exceptions import BadRequest,UnsupportedMediaType
 
-from owl_common.base.entity import BaseEntity, CriterianMeta, ExtraModel, \
+from owl_common.base.model import BaseEntity, CriterianMeta, ExtraModel, \
     BaseEntity, MultiFile, OrderModel, PageModel, VoValidatorContext
 from owl_common.base.schema_vo import BaseSchemaFactory, FileSchemaFactory, QuerySchemaFactory
 

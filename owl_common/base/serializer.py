@@ -11,7 +11,7 @@ from flask.json.provider import DefaultJSONProvider
 from werkzeug.exceptions import HTTPException, default_exceptions
 from werkzeug.http import http_date
 
-from owl_common.base.entity import AjaxResponse
+from owl_common.base.model import AjaxResponse
 
 WSGIEnvironment: t.TypeAlias = dict[str, t.Any]
 

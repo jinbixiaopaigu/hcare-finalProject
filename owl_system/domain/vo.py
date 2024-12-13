@@ -4,7 +4,7 @@
 from typing import List, Optional
 from pydantic import BaseModel
 
-from owl_common.base.entity import general_response_serial_config
+from owl_common.base.model import general_response_serial_config
 
 
 class RouterMetaVo(BaseModel):

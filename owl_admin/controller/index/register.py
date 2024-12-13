@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # @Author  : shaw-lee
 
-from owl_common.base.entity import AjaxResponse
+from owl_common.base.model import AjaxResponse
 from owl_common.descriptor.serializer import ViewSerializer
 from owl_common.domain.vo import RegisterBody
 from owl_system.service import SysConfigService
