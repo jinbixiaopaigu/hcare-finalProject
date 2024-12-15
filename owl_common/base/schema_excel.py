@@ -55,7 +55,6 @@ def ExcelFields(accesses:List["ExcelAccess"]):
     Field(excel_access=accesses)    
 
 
-@dataclass(frozen=True)
 class ExcelAccess:
     
     sort: int = 0
@@ -110,5 +109,4 @@ class ExcelAccess:
     
     action: Literal['import', 'export', 'both'] = 'both'
     
-    
-    
+    val: str = field(default=None, init=False)
