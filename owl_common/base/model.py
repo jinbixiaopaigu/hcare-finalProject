@@ -2,6 +2,7 @@
 # @Author  : shaw-lee
 
 from datetime import datetime
+from io import BytesIO
 from threading import Lock
 from types import NoneType
 from typing import Any, Dict, Iterator, List, Literal, Optional, Set, Union
@@ -224,6 +225,13 @@ class BaseEntity(BaseModel):
                         continue
                 return new_data
         return data
+    
+    def model_dump_excel(self,sheet_name:str) -> BytesIO:
+        context = VoSerializerContext(is_excel=True)
+        data = self.model_dump(context=context)
+        # TODO: 优化excel导出
+        
+        
     
     def create_by_user(self, user_id: str | int) -> None:
         self.create_by = user_id
