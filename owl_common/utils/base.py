@@ -7,6 +7,7 @@ import typing_extensions
 from typing import Any, Callable, Dict, List, Literal, Optional, Tuple, Type, get_args, get_origin
 from datetime import datetime
 from openpyxl import Workbook
+from openpyxl.worksheet.worksheet import Worksheet
 from pydantic import BaseModel
 from pydantic._internal import _typing_extra
 from werkzeug.exceptions import NotFound
@@ -1058,6 +1059,7 @@ class ExcelUtil:
         data_one = data[0]
         if not isinstance(data_one,dict):
             raise Exception("data格式错误")
+
     
         data_keys = data_one.keys()
         
@@ -1076,6 +1078,54 @@ class ExcelUtil:
         
         return output
     
+    @classmethod
+    def render_header(cls, sheet:Worksheet,row:BaseModel):
+        """
+        渲染Excel表头
+
+        Args:
+            sheet (Worksheet): 工作表
+            row (BaseModel): 行数据模型
+        """
+        for col_index,key,access in enumerate(row.dump_excel_access(),start=1):
+            cell = sheet.cell(row=1,column=col_index,value=access.name)
+    
+    @classmethod
+    def render_row(cls, sheet:Worksheet,row:BaseModel,row_index:int):
+        """
+        渲染Excel行数据
+                
+        Args:
+            sheet (Worksheet): 工作表
+            row (BaseModel): 行数据模型
+            row_index(int): 行索引
+        """
+        for col_index,key,access in enumerate(row.dump_excel_access(),start=1):
+            cell = sheet.cell(row=row_index,column=col_index,value=access.val)
+
+    @classmethod
+    def render_footer(cls, sheet:Worksheet):
+        """
+        渲染Excel表尾
+
+        Args:
+            sheet (Worksheet): 工作表
+        """
+        pass
+    
+    @classmethod
+    def render_data(cls, sheet:Worksheet, data:List[BaseModel]):
+        """
+        渲染Excel数据
+        
+        Args:
+            sheet (Worksheet): 工作表
+            data(List[BaseModel]): 数据模型列表
+        """
+        cls.render_header(sheet,data[0])
+        for row_index,row in enumerate(data,start=2):
+            cls.render_row(sheet,row,row_index)
+        
     @classmethod
     def response(cls, data:List[BaseModel], sheetname:str, filename:str=None) -> Response:
         """

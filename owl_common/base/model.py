@@ -5,7 +5,7 @@ from datetime import datetime
 from io import BytesIO
 from threading import Lock
 from types import NoneType
-from typing import Any, Dict, Iterator, List, Literal, Optional, Set, Union
+from typing import Any, Dict, Generator, Iterator, List, Literal, Optional, Set, Tuple, Union
 from typing_extensions import Annotated
 from dataclasses import dataclass, field, replace
 from werkzeug.datastructures import FileStorage, ImmutableMultiDict
@@ -15,8 +15,7 @@ from pydantic.alias_generators import to_camel,to_pascal
 from pydantic.aliases import AliasGenerator
 from pydantic.fields import FieldInfo
 from pydantic import AliasChoices, AliasPath, BaseModel, BeforeValidator, \
-    ConfigDict, Field, PrivateAttr, ValidationInfo, field_validator, \
-    model_validator,model_serializer,SerializationInfo
+    ConfigDict, Field, ValidationInfo, field_validator, model_validator
     
 from owl_common.base.schema_excel import ExcelAccess
 from owl_common.base.transformer import to_datetime
@@ -202,36 +201,24 @@ class BaseEntity(BaseModel):
                 new_values = data._mapping
         return new_values if new_values else data
     
-    @model_serializer(mode="wrap")
-    def excel_model_serializer(self,serialize,info:SerializationInfo):
-        data = serialize(self)
-        if info.context and isinstance(info.context,VoSerializerContext):
-            if info.context.is_excel:
-                new_data = {}
-                for k,info in self.model_fields.items():
-                    excel_access = info.json_schema_extra.get("excel_access",False)
-                    if excel_access:
-                        value = data.get(k,None)
-                        if value and isinstance(excel_access,list):
-                            new_data[k] = {}
-                            for access in excel_access:
-                                subvalue = value.get(access.attr,None)
-                                access.val = subvalue
-                                new_data[k][access.attr] = access
-                        elif value:
-                            excel_access.val = value
-                            new_data[k] = excel_access
-                    else:
-                        continue
-                return new_data
-        return data
-    
-    def model_dump_excel(self,sheet_name:str) -> BytesIO:
-        context = VoSerializerContext(is_excel=True)
-        data = self.model_dump(context=context)
-        # TODO: 优化excel导出
-        
-        
+    def dump_excel_access(self) -> Generator[Tuple[str,ExcelAccess],None,None]:
+        data = self.model_dump()
+        new_data = {}
+        for k,info in self.model_fields.items():
+            excel_access = info.json_schema_extra.get("excel_access",False)
+            if excel_access:
+                value = data.get(k,None)
+                if value and isinstance(excel_access,list):
+                    new_data[k] = {}
+                    for access in excel_access:
+                        subvalue = value.get(access.attr,None)
+                        access.val = subvalue
+                        yield "{}.{}".format(k,access.attr),access
+                elif value:
+                    excel_access.val = value
+                    yield k,excel_access
+            else:
+                continue
     
     def create_by_user(self, user_id: str | int) -> None:
         self.create_by = user_id
