@@ -5,7 +5,7 @@ from owl_common.constant import UserConstants
 from owl_common.base.model import AjaxResponse
 from owl_common.domain.entity import SysDept
 from owl_common.domain.enum import BusinessType
-from owl_common.descriptor.serializer import ViewSerializer
+from owl_common.descriptor.serializer import JsonSerializer
 from owl_common.descriptor.validator import BodyValidator, QueryValidator,PathValidator
 from owl_common.utils import security_util as SecurityUtil
 from owl_system.service.sys_dept import SysDeptService
@@ -17,7 +17,7 @@ from ... import reg
 @reg.api.route("/system/dept/list", methods=["GET"])
 @QueryValidator()
 @PreAuthorize(HasPerm("system:dept:list"))
-@ViewSerializer()
+@JsonSerializer()
 def system_dept_list(dto:SysDept):
     '''
         获取部门列表
@@ -30,7 +30,7 @@ def system_dept_list(dto:SysDept):
 @reg.api.route("/system/dept/list/exclude/<int:id>", methods=["GET"])
 @PathValidator()
 @PreAuthorize(HasPerm("system:dept:list"))
-@ViewSerializer()
+@JsonSerializer()
 def system_dept_list_exclude(id:int):
     '''
         获取部门列表（排除节点）
@@ -46,7 +46,7 @@ def system_dept_list_exclude(id:int):
 
 @reg.api.route("/system/dept/treeselect", methods=["GET"])
 @QueryValidator()
-@ViewSerializer()
+@JsonSerializer()
 def system_dept_treeselect(dto:SysDept):
     '''
         获取部门下拉树
@@ -60,7 +60,7 @@ def system_dept_treeselect(dto:SysDept):
 
 @reg.api.route("/system/dept/roleDeptTreeselect/<int:role_id>", methods=["GET"])
 @PathValidator()
-@ViewSerializer()
+@JsonSerializer()
 def system_dept_roletreeselect(role_id:int):
     '''
         获取角色的部门下拉树
@@ -75,7 +75,7 @@ def system_dept_roletreeselect(role_id:int):
 @reg.api.route("/system/dept/<int:id>", methods=["GET"])
 @PathValidator()
 @PreAuthorize(HasPerm("system:dept:query"))
-@ViewSerializer()
+@JsonSerializer()
 def system_dept(id:int):
     '''
         获取部门详情
@@ -90,7 +90,7 @@ def system_dept(id:int):
 @BodyValidator()
 @PreAuthorize(HasPerm("system:dept:add"))
 @Log(title="部门管理",business_type=BusinessType.INSERT)
-@ViewSerializer()
+@JsonSerializer()
 def system_dept_create(dto:SysDept):
     '''
         新增部门
@@ -108,7 +108,7 @@ def system_dept_create(dto:SysDept):
 @BodyValidator()
 @PreAuthorize(HasPerm("system:dept:edit"))
 @Log(title="部门管理",business_type=BusinessType.UPDATE)
-@ViewSerializer()
+@JsonSerializer()
 def system_dept_update(dto:SysDept):
     '''
         修改部门
@@ -130,7 +130,7 @@ def system_dept_update(dto:SysDept):
 @PathValidator()
 @PreAuthorize(HasPerm("system:dept:remove"))
 @Log(title="部门管理",business_type=BusinessType.DELETE)
-@ViewSerializer()
+@JsonSerializer()
 def system_dept_delete(id:int):
     '''
         删除部门

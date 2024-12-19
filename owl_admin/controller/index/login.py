@@ -4,7 +4,7 @@
 from owl_common.base.model import  AjaxResponse
 from owl_common.domain.entity import SysUser
 from owl_common.domain.vo import LoginBody
-from owl_common.descriptor.serializer import ViewSerializer
+from owl_common.descriptor.serializer import JsonSerializer
 from owl_common.descriptor.validator import BodyValidator
 from owl_common.utils import security_util as SecurityUtil
 from owl_common.constant import Constants
@@ -15,7 +15,7 @@ from ... import reg
 
 @reg.api.route("/login", methods=["POST"])
 @BodyValidator()
-@ViewSerializer()
+@JsonSerializer()
 def index_login(dto:LoginBody):
     '''
         登录接口
@@ -27,7 +27,7 @@ def index_login(dto:LoginBody):
 
 
 @reg.api.route("/getInfo", methods=["GET"])
-@ViewSerializer()
+@JsonSerializer()
 def index_get_info():
     '''
         获取用户信息接口
@@ -43,7 +43,7 @@ def index_get_info():
 
 
 @reg.api.route("/getRouters", methods=["GET"])
-@ViewSerializer()
+@JsonSerializer()
 def index_get_routers():
     '''
         获取路由信息接口
@@ -57,7 +57,7 @@ def index_get_routers():
 
 
 @reg.api.route("/logout", methods=["POST"])
-@ViewSerializer()
+@JsonSerializer()
 def index_logout():
     '''
         登出接口

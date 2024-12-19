@@ -7,7 +7,7 @@ from typing_extensions import Annotated
 
 from owl_common.base.transformer import ids_to_list
 from owl_common.base.model import AjaxResponse, TableResponse
-from owl_common.descriptor.serializer import ViewSerializer
+from owl_common.descriptor.serializer import JsonSerializer
 from owl_common.descriptor.validator import BodyValidator, QueryValidator, PathValidator
 from owl_common.domain.enum import BusinessType
 from owl_common.utils import security_util as SecurityUtil
@@ -21,7 +21,7 @@ from ... import reg
 @reg.api.route("/system/notice/list", methods=["GET"])
 @QueryValidator(is_page=True)
 @PreAuthorize(HasPerm("system:notice:list"))
-@ViewSerializer()
+@JsonSerializer()
 def system_notice_list(dto:SysNotice):
     '''
         获取公告信息列表
@@ -34,7 +34,7 @@ def system_notice_list(dto:SysNotice):
 @reg.api.route("/system/notice/<int:id>", methods=["GET"])
 @PathValidator()
 @PreAuthorize(HasPerm("system:notice:query"))
-@ViewSerializer()
+@JsonSerializer()
 def system_notice_get(id:int):
     '''
         根据id，获取公告信息
@@ -48,7 +48,7 @@ def system_notice_get(id:int):
 @BodyValidator()
 @PreAuthorize(HasPerm("system:notice:add"))
 @Log(title="通知公告",business_type=BusinessType.INSERT)
-@ViewSerializer()
+@JsonSerializer()
 def system_notice_add(dto:SysNotice):
     '''
         添加公告信息
@@ -62,7 +62,7 @@ def system_notice_add(dto:SysNotice):
 @BodyValidator()
 @PreAuthorize(HasPerm("system:notice:edit"))
 @Log(title="通知公告",business_type=BusinessType.UPDATE)
-@ViewSerializer()
+@JsonSerializer()
 def system_notice_update(dto:SysNotice):
     '''
         修改公告信息
@@ -76,7 +76,7 @@ def system_notice_update(dto:SysNotice):
 @PathValidator()
 @PreAuthorize(HasPerm("system:notice:remove"))
 @Log(title="通知公告",business_type=BusinessType.DELETE)
-@ViewSerializer()
+@JsonSerializer()
 def system_notice_delete(
     ids: Annotated[List[int],BeforeValidator(ids_to_list)]
 ):

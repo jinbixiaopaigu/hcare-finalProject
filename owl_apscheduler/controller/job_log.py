@@ -8,7 +8,7 @@ from owl_apscheduler.domain.entity import SysJobLog
 from owl_apscheduler.service.job_log import SysJobLogService
 from owl_common.base.model import AjaxResponse, TableResponse
 from owl_common.base.transformer import ids_to_list
-from owl_common.descriptor.serializer import ViewSerializer
+from owl_common.descriptor.serializer import JsonSerializer
 from owl_common.descriptor.validator import QueryValidator
 from owl_framework.descriptor.permission import HasPerm, PreAuthorize
 from .. import reg
@@ -17,7 +17,7 @@ from .. import reg
 @reg.api.route("/monitor/jobLog/list", methods=["GET"])
 @QueryValidator(is_page=True)
 @PreAuthorize(HasPerm('monitor:job:list'))
-@ViewSerializer()
+@JsonSerializer()
 def common_joblog_list(dto: SysJobLog):
     """
     获取定时任务日志列表
@@ -35,7 +35,7 @@ def common_joblog_list(dto: SysJobLog):
 
 @reg.api.route("/monitor/jobLog/export", methods=["POST"])
 @PreAuthorize(HasPerm('monitor:job:export'))
-@ViewSerializer()
+@JsonSerializer()
 def common_joblog_export():
     """
     导出定时任务日志
@@ -48,7 +48,7 @@ def common_joblog_export():
 
 @reg.api.route("/monitor/jobLog/<int:id>", methods=["GET"])
 @PreAuthorize(HasPerm('monitor:job:query'))
-@ViewSerializer()
+@JsonSerializer()
 def common_joblog_detail(id:int):
     """
     获取定时任务日志详情
@@ -66,7 +66,7 @@ def common_joblog_detail(id:int):
 
 @reg.api.route("/monitor/jobLog/<ids>", methods=["DELETE"])
 @PreAuthorize(HasPerm('monitor:job:remove'))
-@ViewSerializer()
+@JsonSerializer()
 def common_joblog_remove(
     ids: Annotated[List[int],BeforeValidator(ids_to_list)]
 ) -> AjaxResponse:
@@ -86,7 +86,7 @@ def common_joblog_remove(
 
 @reg.api.route("/monitor/jobLog/clean", methods=["DELETE"])
 @PreAuthorize(HasPerm('monitor:job:remove'))
-@ViewSerializer()
+@JsonSerializer()
 def common_joblog_clean():
     """
     清空定时任务日志

@@ -9,7 +9,7 @@ from flask_login import login_required
 from owl_common.base.transformer import ids_to_list
 from owl_common.constant import UserConstants
 from owl_common.base.model import AjaxResponse, TableResponse
-from owl_common.descriptor.serializer import ViewSerializer
+from owl_common.descriptor.serializer import JsonSerializer
 from owl_common.descriptor.validator import BodyValidator, QueryValidator, PathValidator
 from owl_common.domain.enum import BusinessType
 from owl_common.utils import security_util as SecurityUtil
@@ -23,7 +23,7 @@ from ... import reg
 @reg.api.route("/system/config/list", methods=["GET"])
 @QueryValidator(is_page=True)
 @PreAuthorize(HasPerm('system:config:list'))
-@ViewSerializer()
+@JsonSerializer()
 def system_config_list(dto:SysConfig):
     '''
         获取配置项列表
@@ -37,7 +37,7 @@ def system_config_list(dto:SysConfig):
 @BodyValidator()
 @PreAuthorize(HasPerm('system:config:export'))
 @Log(title="参数管理",business_type=BusinessType.EXPORT)
-@ViewSerializer()
+@JsonSerializer()
 def system_config_export(dto:SysConfig):
     '''
         # todo
@@ -51,7 +51,7 @@ def system_config_export(dto:SysConfig):
 @reg.api.route("/system/config/<int:id>", methods=["GET"])
 @PathValidator()
 @PreAuthorize(HasPerm('system:config:query'))
-@ViewSerializer()
+@JsonSerializer()
 def system_config_get(id:int):
     '''
         根据id，获取配置项
@@ -64,7 +64,7 @@ def system_config_get(id:int):
 @reg.api.route("/system/config/configKey/<key>", methods=["GET"])
 @PathValidator()
 @login_required
-@ViewSerializer()
+@JsonSerializer()
 def system_config_get_by_key(key:str):
     '''
         根据key，获取配置项
@@ -78,7 +78,7 @@ def system_config_get_by_key(key:str):
 @BodyValidator()
 @PreAuthorize(HasPerm('system:config:add'))
 @Log(title = "参数管理", business_type = BusinessType.INSERT)
-@ViewSerializer()
+@JsonSerializer()
 def system_config_add(dto:SysConfig):
     '''
         添加配置项
@@ -95,7 +95,7 @@ def system_config_add(dto:SysConfig):
 @BodyValidator()
 @PreAuthorize(HasPerm('system:config:edit'))
 @Log(title = "参数管理", business_type = BusinessType.UPDATE)
-@ViewSerializer()
+@JsonSerializer()
 def system_config_update(dto:SysConfig):
     '''
         修改配置项
@@ -112,7 +112,7 @@ def system_config_update(dto:SysConfig):
 @PathValidator()
 @PreAuthorize(HasPerm('system:config:remove'))
 @Log(title = "参数管理", business_type = BusinessType.DELETE)
-@ViewSerializer()
+@JsonSerializer()
 def system_config_delete(
     ids: Annotated[List[int],BeforeValidator(ids_to_list)]
 ):
@@ -126,7 +126,7 @@ def system_config_delete(
 @reg.api.route("/system/config/refreshCache", methods=["DELETE"])
 @PreAuthorize(HasPerm('system:config:remove'))
 @Log(title = "参数管理", business_type = BusinessType.CLEAN)
-@ViewSerializer()
+@JsonSerializer()
 def system_config_refresh():
     '''
         刷新配置项缓存

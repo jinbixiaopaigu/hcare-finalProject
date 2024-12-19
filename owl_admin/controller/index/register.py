@@ -2,7 +2,7 @@
 # @Author  : shaw-lee
 
 from owl_common.base.model import AjaxResponse
-from owl_common.descriptor.serializer import ViewSerializer
+from owl_common.descriptor.serializer import JsonSerializer
 from owl_common.domain.vo import RegisterBody
 from owl_system.service import SysConfigService
 from owl_framework.service.sys_register import RegisterService
@@ -10,7 +10,7 @@ from ... import reg
 
 
 @reg.api.route("/register", methods=["POST"])
-@ViewSerializer()
+@JsonSerializer()
 def index_register(dto:RegisterBody):
     '''
     注册接口

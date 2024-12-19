@@ -3,7 +3,7 @@
 
 from owl_common.base.model import AjaxResponse, TableResponse
 from owl_common.domain.enum import BusinessType
-from owl_common.descriptor.serializer import ViewSerializer
+from owl_common.descriptor.serializer import JsonSerializer
 from owl_common.descriptor.validator import QueryValidator, PathValidator
 from owl_system.service.sys_user_online import SysUserOnlineService
 from owl_system.domain.entity import SysUserOnline
@@ -15,7 +15,7 @@ from ... import reg
 @reg.api.route('/monitor/online/list',methods=['GET'])
 @QueryValidator()
 @PreAuthorize(HasPerm("monitor:online:list"))
-@ViewSerializer()
+@JsonSerializer()
 def monitor_online_list(dto:SysUserOnline):
     '''
         获取在线用户列表
@@ -28,7 +28,7 @@ def monitor_online_list(dto:SysUserOnline):
 @PathValidator()
 @PreAuthorize(HasPerm("monitor:online:forceLogout"))
 @Log(title = "在线用户", business_type = BusinessType.FORCE)
-@ViewSerializer()
+@JsonSerializer()
 def monitor_online_logout(id:str):
     '''
         强制退出登录

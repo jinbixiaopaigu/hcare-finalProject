@@ -11,7 +11,7 @@ from owl_common.constant import UserConstants
 from owl_common.base.model import AjaxResponse, TableResponse
 from owl_common.domain.entity import SysDictType
 from owl_common.domain.enum import BusinessType
-from owl_common.descriptor.serializer import ViewSerializer
+from owl_common.descriptor.serializer import JsonSerializer
 from owl_common.descriptor.validator import BodyValidator, QueryValidator, PathValidator
 from owl_common.utils import security_util as SecurityUtil
 from owl_system.service import SysDictTypeService
@@ -23,7 +23,7 @@ from ... import reg
 @reg.api.route("/system/dict/type/list", methods=["GET"])
 @QueryValidator(is_page=True)
 @PreAuthorize(HasPerm("system:dict:list"))
-@ViewSerializer()
+@JsonSerializer()
 def system_dict_type_list(dto:SysDictType):
     '''
         获取字典类型列表
@@ -37,7 +37,7 @@ def system_dict_type_list(dto:SysDictType):
 @BodyValidator()
 @PreAuthorize(HasPerm("system:dict:export"))
 @Log(title = "字典类型", business_type = BusinessType.EXPORT)
-@ViewSerializer()
+@JsonSerializer()
 def system_dict_type_export(dto:SysDictType):
     '''
         # todo
@@ -51,7 +51,7 @@ def system_dict_type_export(dto:SysDictType):
 @reg.api.route("/system/dict/type/<int:id>", methods=["GET"])
 @PathValidator()
 @PreAuthorize(HasPerm("system:dict:query"))
-@ViewSerializer()
+@JsonSerializer()
 def system_dict_type_get(id:int):
     '''
         根据id，获取字典类型
@@ -65,7 +65,7 @@ def system_dict_type_get(id:int):
 @BodyValidator()
 @PreAuthorize(HasPerm("system:dict:add"))
 @Log(title = "字典类型", business_type = BusinessType.INSERT)
-@ViewSerializer()
+@JsonSerializer()
 def system_dict_type_add(dto:SysDictType):
     '''
         添加字典类型
@@ -81,7 +81,7 @@ def system_dict_type_add(dto:SysDictType):
 @BodyValidator()
 @PreAuthorize(HasPerm("system:dict:edit"))
 @Log(title = "字典类型", business_type = BusinessType.UPDATE)
-@ViewSerializer()
+@JsonSerializer()
 def system_dict_type_update(dto:SysDictType):
     '''
         修改字典类型
@@ -99,7 +99,7 @@ def system_dict_type_update(dto:SysDictType):
 @PathValidator()
 @PreAuthorize(HasPerm("system:dict:remove"))
 @Log(title = "字典类型", business_type = BusinessType.DELETE)
-@ViewSerializer()
+@JsonSerializer()
 def system_dict_type_delete(
     ids: Annotated[List[int],BeforeValidator(ids_to_list)]
 ):
@@ -113,7 +113,7 @@ def system_dict_type_delete(
 @reg.api.route("/system/dict/type/refreshCache", methods=["DELETE"])
 @PreAuthorize(HasPerm("system:dict:remove"))
 @Log(title = "字典类型", business_type = BusinessType.CLEAN)
-@ViewSerializer()
+@JsonSerializer()
 def system_dict_type_refresh():
     '''
         刷新字典类型缓存
@@ -124,7 +124,7 @@ def system_dict_type_refresh():
 
 @reg.api.route("/system/dict/type/optionselect", methods=["GET"])
 @login_required
-@ViewSerializer()
+@JsonSerializer()
 def system_dict_type_optionselect():
     '''
         获取字典选择框列表

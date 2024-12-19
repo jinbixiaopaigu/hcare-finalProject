@@ -8,7 +8,7 @@ from typing_extensions import Annotated
 from owl_common.base.transformer import ids_to_list
 from owl_common.base.model import AjaxResponse, TableResponse
 from owl_common.domain.enum import BusinessType
-from owl_common.descriptor.serializer import ViewSerializer
+from owl_common.descriptor.serializer import BaseSerializer, JsonSerializer
 from owl_common.descriptor.validator import BodyValidator, QueryValidator, PathValidator
 from owl_common.utils import security_util as SecurityUtil
 from owl_framework.descriptor.log import Log
@@ -21,7 +21,7 @@ from ... import reg
 @reg.api.route("/system/post/list", methods=["GET"])
 @QueryValidator(is_page=True)
 @PreAuthorize(HasPerm("system:post:list"))
-@ViewSerializer()
+@JsonSerializer()
 def system_post_list(dto:SysPost):
     '''
         获取岗位信息列表
@@ -35,7 +35,7 @@ def system_post_list(dto:SysPost):
 @BodyValidator()
 @PreAuthorize(HasPerm("system:post:export"))
 @Log(title = "岗位管理", business_type = BusinessType.EXPORT)
-@ViewSerializer()
+@BaseSerializer()
 def system_post_export(dto:SysPost):
     '''
         # todo
@@ -49,7 +49,7 @@ def system_post_export(dto:SysPost):
 @reg.api.route("/system/post/<int:id>", methods=["GET"])
 @PathValidator()
 @PreAuthorize(HasPerm("system:post:query"))
-@ViewSerializer()
+@JsonSerializer()
 def system_post_get(id:int):
     '''
         根据id，获取岗位信息
@@ -63,7 +63,7 @@ def system_post_get(id:int):
 @BodyValidator()
 @PreAuthorize(HasPerm("system:post:add"))
 @Log(title = "岗位管理", business_type = BusinessType.INSERT)
-@ViewSerializer()
+@JsonSerializer()
 def system_post_add(dto:SysPost):
     '''
         添加岗位信息
@@ -78,7 +78,7 @@ def system_post_add(dto:SysPost):
 @BodyValidator()
 @PreAuthorize(HasPerm("system:post:edit"))
 @Log(title = "岗位管理", business_type = BusinessType.UPDATE)
-@ViewSerializer()
+@JsonSerializer()
 def system_post_update(dto:SysPost):
     '''
         修改岗位信息
@@ -92,7 +92,7 @@ def system_post_update(dto:SysPost):
 @PathValidator()
 @PreAuthorize(HasPerm("system:post:remove"))
 @Log(title = "岗位管理", business_type = BusinessType.DELETE)
-@ViewSerializer()
+@JsonSerializer()
 def system_post_delete(
     ids: Annotated[List[int],BeforeValidator(ids_to_list)]
 ):

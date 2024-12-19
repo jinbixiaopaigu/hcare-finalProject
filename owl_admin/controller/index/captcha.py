@@ -9,13 +9,13 @@ from io import BytesIO
 
 from owl_common.base.model import AjaxResponse
 from owl_common.constant import Constants
-from owl_common.descriptor.serializer import ViewSerializer
+from owl_common.descriptor.serializer import JsonSerializer
 from owl_admin.ext import redis_cache
 from ... import reg
 
 
 @reg.api.route("/captchaImage")
-@ViewSerializer()
+@JsonSerializer()
 def index_captcha_image():
     """
     生成验证码图片

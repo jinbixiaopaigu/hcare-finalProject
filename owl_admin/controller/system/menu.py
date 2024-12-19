@@ -5,7 +5,7 @@ from owl_common.constant import UserConstants
 from owl_common.base.model import AjaxResponse
 from owl_common.domain.entity import SysMenu
 from owl_common.domain.enum import BusinessType
-from owl_common.descriptor.serializer import ViewSerializer
+from owl_common.descriptor.serializer import JsonSerializer
 from owl_common.descriptor.validator import BodyValidator, QueryValidator,PathValidator
 from owl_common.utils import security_util as SecurityUtil
 from owl_system.service.sys_menu import SysMenuService
@@ -17,7 +17,7 @@ from ... import reg
 @reg.api.route("/system/menu/list", methods=["GET"])
 @QueryValidator()
 @PreAuthorize(HasPerm("system:menu:list"))
-@ViewSerializer()
+@JsonSerializer()
 def system_menu_list(dto:SysMenu):
     '''
         获取菜单列表
@@ -30,7 +30,7 @@ def system_menu_list(dto:SysMenu):
 @reg.api.route("/system/menu/<int:id>", methods=["GET"])
 @PathValidator()
 @PreAuthorize(HasPerm("system:menu:query"))
-@ViewSerializer()
+@JsonSerializer()
 def system_menu(id:int):
     '''
         获取菜单详情
@@ -42,7 +42,7 @@ def system_menu(id:int):
 
 @reg.api.route("/system/menu/treeselect", methods=["GET"])
 @QueryValidator()
-@ViewSerializer()
+@JsonSerializer()
 def system_menu_treeselect(dto:SysMenu):
     '''
         获取菜单下拉树
@@ -56,7 +56,7 @@ def system_menu_treeselect(dto:SysMenu):
 
 @reg.api.route("/system/menu/roleMenuTreeselect/<int:id>", methods=["GET"])
 @PathValidator()
-@ViewSerializer()
+@JsonSerializer()
 def system_menu_roletreeselect(id:int):
     '''
         获取角色的菜单下拉树
@@ -78,7 +78,7 @@ def system_menu_roletreeselect(id:int):
 @BodyValidator()
 @PreAuthorize(HasPerm("system:menu:add"))
 @Log(title="菜单管理",business_type=BusinessType.INSERT)
-@ViewSerializer()
+@JsonSerializer()
 def system_menu_create(dto:SysMenu):
     '''
         新增菜单
@@ -99,7 +99,7 @@ def system_menu_create(dto:SysMenu):
 @BodyValidator()
 @PreAuthorize(HasPerm("system:menu:edit"))
 @Log(title="菜单管理",business_type=BusinessType.UPDATE)
-@ViewSerializer()
+@JsonSerializer()
 def system_menu_update(dto:SysMenu):
     '''
         修改菜单
@@ -121,7 +121,7 @@ def system_menu_update(dto:SysMenu):
 @PathValidator()
 @PreAuthorize(HasPerm("system:menu:remove"))
 @Log(title="菜单管理",business_type=BusinessType.DELETE)
-@ViewSerializer()
+@JsonSerializer()
 def system_menu_delete(id:int):
     '''
         删除菜单

@@ -2,7 +2,7 @@
 # @Author  : shaw-lee
 
 from owl_common.base.model import AjaxResponse
-from owl_common.descriptor.serializer import ViewSerializer
+from owl_common.descriptor.serializer import JsonSerializer
 from owl_framework.domain.entity import Server
 from owl_framework.descriptor.permission import HasPerm, PreAuthorize
 from ... import reg
@@ -10,7 +10,7 @@ from ... import reg
 
 @reg.api.route('/monitor/server',methods=['GET'])
 @PreAuthorize(HasPerm("monitor:server:list"))
-@ViewSerializer()
+@JsonSerializer()
 def monitor_server_get():
     '''
         获取服务器信息

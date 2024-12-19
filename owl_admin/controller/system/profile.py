@@ -10,7 +10,7 @@ from owl_common.constant import UserConstants
 from owl_common.base.model import AjaxResponse, MultiFile
 from owl_common.domain.entity import LoginUser, SysUser
 from owl_common.domain.enum import BusinessType
-from owl_common.descriptor.serializer import ViewSerializer
+from owl_common.descriptor.serializer import JsonSerializer
 from owl_common.descriptor.validator import BodyValidator, FileValidator
 from owl_common.utils.base import FileUploadUtil
 from owl_common.utils import security_util as SecurityUtil
@@ -22,7 +22,7 @@ from ... import reg
 
 @reg.api.route("/system/user/profile", methods=["GET"])
 @login_required
-@ViewSerializer()
+@JsonSerializer()
 def system_user_profile():
     '''
         获取个人信息
@@ -37,7 +37,7 @@ def system_user_profile():
 @BodyValidator()
 @login_required
 @Log(title = "个人信息", business_type = BusinessType.UPDATE)
-@ViewSerializer()
+@JsonSerializer()
 def system_user_profile_update(dto:SysUser):
     '''
         修改个人信息
@@ -67,7 +67,7 @@ def system_user_profile_update(dto:SysUser):
 @BodyValidator()
 @login_required
 @Log(title = "个人信息", business_type = BusinessType.UPDATE)
-@ViewSerializer()
+@JsonSerializer()
 def system_user_profile_update_pwd(
     old_password:Annotated[SecretStr, Field(..., example='admin')],
     new_password:Annotated[SecretStr, Field(..., example='admin123')]
@@ -101,7 +101,7 @@ def system_user_profile_update_pwd(
 @FileValidator(include={"avatarfile"})
 @login_required
 @Log(title = "用户头像", business_type = BusinessType.UPDATE)
-@ViewSerializer()
+@JsonSerializer()
 def system_user_profile_avatar(file:MultiFile):
     '''
         头像上传

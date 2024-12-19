@@ -9,7 +9,7 @@ from owl_common.base.transformer import ids_to_list
 from owl_common.base.model import AjaxResponse, TableResponse
 from owl_common.domain.entity import SysRole
 from owl_common.domain.enum import BusinessType
-from owl_common.descriptor.serializer import ViewSerializer
+from owl_common.descriptor.serializer import BaseSerializer, JsonSerializer
 from owl_common.descriptor.validator import BodyValidator, QueryValidator,PathValidator
 from owl_common.utils import security_util as SecurityUtil
 from owl_system.domain.entity import SysUserRole
@@ -22,7 +22,7 @@ from ... import reg
 @reg.api.route("/system/role/list", methods=["GET"])
 @QueryValidator(is_page=True)
 @PreAuthorize(HasPerm("system:role:list"))
-@ViewSerializer()
+@JsonSerializer()
 def system_role_list(dto:SysRole):
     '''
         获取角色列表
@@ -34,7 +34,7 @@ def system_role_list(dto:SysRole):
 @reg.api.route("/system/role/<int:id>", methods=["GET"])
 @PathValidator()
 @PreAuthorize(HasPerm("system:role:query"))
-@ViewSerializer()
+@JsonSerializer()
 def system_role_detail(id:int):
     '''
         获取角色详情
@@ -49,7 +49,7 @@ def system_role_detail(id:int):
 @BodyValidator()
 @PreAuthorize(HasPerm("system:role:export"))
 @Log(title="角色管理",business_type=BusinessType.EXPORT)
-@ViewSerializer()
+@BaseSerializer()
 def system_role_export(dto:SysRole):
     '''
         导出角色
@@ -64,7 +64,7 @@ def system_role_export(dto:SysRole):
 @BodyValidator()
 @PreAuthorize(HasPerm("system:role:add"))
 @Log(title="角色管理",business_type=BusinessType.INSERT)
-@ViewSerializer()
+@JsonSerializer()
 def system_role_create(dto:SysRole):
     '''
         创建角色
@@ -85,7 +85,7 @@ def system_role_create(dto:SysRole):
 @BodyValidator()
 @PreAuthorize(HasPerm("system:role:edit"))
 @Log(title="角色管理",business_type=BusinessType.UPDATE)
-@ViewSerializer()
+@JsonSerializer()
 def system_role_update(dto:SysRole):
     '''
         修改角色
@@ -106,7 +106,7 @@ def system_role_update(dto:SysRole):
 @BodyValidator()
 @PreAuthorize(HasPerm("system:role:edit"))
 @Log(title="角色管理",business_type=BusinessType.UPDATE)
-@ViewSerializer()
+@JsonSerializer()
 def system_data_scope_update(dto:SysRole):
     '''
         修改数据权限
@@ -120,7 +120,7 @@ def system_data_scope_update(dto:SysRole):
 @BodyValidator()
 @PreAuthorize(HasPerm("system:role:edit"))
 @Log(title="角色管理",business_type=BusinessType.UPDATE)
-@ViewSerializer()
+@JsonSerializer()
 def system_role_change_status(dto:SysRole):
     '''
         修改角色状态
@@ -135,7 +135,7 @@ def system_role_change_status(dto:SysRole):
 @PathValidator()
 @PreAuthorize(HasPerm("system:role:remove"))
 @Log(title="角色管理",business_type=BusinessType.DELETE)
-@ViewSerializer()
+@JsonSerializer()
 def system_role_delete(
     ids: Annotated[List[int],BeforeValidator(ids_to_list)]
 ):
@@ -148,7 +148,7 @@ def system_role_delete(
 
 @reg.api.route("/system/role/optionselect", methods=["GET"])
 @PreAuthorize(HasPerm("system:role:query"))
-@ViewSerializer()
+@JsonSerializer()
 def system_role_options():
     '''
         获取角色选择框列表
@@ -160,7 +160,7 @@ def system_role_options():
 @reg.api.route("/system/role/authUser/allocatedList", methods=["GET"])
 @QueryValidator()
 @PreAuthorize(HasPerm("system:role:list"))
-@ViewSerializer()
+@JsonSerializer()
 def system_role_user_allocated_list(dto:SysRole):
     '''
         获取角色选择框列表
@@ -172,7 +172,7 @@ def system_role_user_allocated_list(dto:SysRole):
 @reg.api.route("/system/role/authUser/unallocatedList", methods=["GET"])
 @QueryValidator()
 @PreAuthorize(HasPerm("system:role:list"))
-@ViewSerializer()
+@JsonSerializer()
 def system_role_user_unallocated_list(dto:SysRole):
     '''
         查询未分配用户角色列表
@@ -185,7 +185,7 @@ def system_role_user_unallocated_list(dto:SysRole):
 @BodyValidator()
 @PreAuthorize(HasPerm("system:role:edit"))
 @Log(title="角色管理",business_type=BusinessType.GRANT)
-@ViewSerializer()
+@JsonSerializer()
 def system_role_user_cancel(dto:SysUserRole):
     '''
         取消授权用户
@@ -198,7 +198,7 @@ def system_role_user_cancel(dto:SysUserRole):
 @BodyValidator()
 @PreAuthorize(HasPerm("system:role:edit"))
 @Log(title="角色管理",business_type=BusinessType.GRANT)
-@ViewSerializer()
+@JsonSerializer()
 def system_role_user_cancel_all(
     role_id:Annotated[int,Field(gt=0)], 
     user_ids:Annotated[List[int],Field(default_factory=List)]
@@ -217,7 +217,7 @@ def system_role_user_cancel_all(
 @BodyValidator()
 @PreAuthorize(HasPerm("system:role:edit"))
 @Log(title="角色管理",business_type=BusinessType.GRANT)
-@ViewSerializer()
+@JsonSerializer()
 def system_role_user_select_all(
     role_id:Annotated[int,Field(gt=0)], 
     user_ids:Annotated[List[int],Field(default_factory=List)]

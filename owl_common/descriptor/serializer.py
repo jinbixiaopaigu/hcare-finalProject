@@ -11,7 +11,66 @@ from owl_common.base.signal import log_signal
 from owl_common.utils.base import DescriptUtil
 
 
-class ViewSerializer:
+class BaseSerializer:
+    
+    def __call__(self, func) -> Callable:
+        
+        @functools.wraps(func)
+        def wrapper(*args: Any, **kwargs: Any) -> Any:
+            try:
+                res = func(*args, **kwargs)
+            except HTTPException as e:
+                self.send_http_exception(func, e)
+                raise e
+            except Exception as e:
+                raise e
+            else:
+                response = self.serialize(func, res)
+                self.send_success(func, res)
+            return response
+        return wrapper
+
+    def send_http_exception(self, func, e:HTTPException):
+        """
+        发送http异常的消息
+        
+        Args:
+            func: 被装饰的函数
+            e: http异常
+        """
+        raw_func = DescriptUtil.get_raw(func)
+        log_signal.send(raw_func,message=e)
+        
+    def send_success(self, func, res:Response):
+        """
+        发送成功响应的消息
+        
+        Args:
+            func: 被装饰的函数
+            res: 成功响应
+        """
+        raw_func = DescriptUtil.get_raw(func)        
+        log_signal.send(raw_func,message=res)
+    
+    def serialize(self, func, res:Any) -> Response:
+        """
+        序列化对象
+        
+        Args:
+            func: 被装饰的函数
+            res: 被序列化的对象
+        
+        Returns:
+            Response: 序列化后的Response对象
+        """
+        if isinstance(res, Response):
+            response = res
+        else:
+            response = make_response(res, self.success_code)
+        return response
+
+    
+class JsonSerializer(BaseSerializer):
     
     def __init__(self, 
         exclude_fields: list=[], 
@@ -36,23 +95,6 @@ class ViewSerializer:
             exclude_default=exclude_default
         )
 
-    def __call__(self, func) -> Callable:
-        
-        @functools.wraps(func)
-        def wrapper(*args: Any, **kwargs: Any) -> Any:
-            try:
-                res = func(*args, **kwargs)
-            except HTTPException as e:
-                self.send_http_exception(func, e)
-                raise e
-            except Exception as e:
-                raise e
-            else:
-                response = self.serialize(func, res)
-                self.send_success(func, res)
-            return response
-        return wrapper
-
     def serialize(self, func, res:Any) -> Response:
         """
         序列化对象
@@ -75,28 +117,6 @@ class ViewSerializer:
         else:
             response = self.handle_other(func, res)
         return response
-    
-    def send_http_exception(self, func, e:HTTPException):
-        """
-        发送http异常的消息
-        
-        Args:
-            func: 被装饰的函数
-            e: http异常
-        """
-        raw_func = DescriptUtil.get_raw(func)
-        log_signal.send(raw_func,message=e)
-        
-    def send_success(self, func, res:Response):
-        """
-        发送成功响应的消息
-        
-        Args:
-            func: 被装饰的函数
-            res: 成功响应
-        """
-        raw_func = DescriptUtil.get_raw(func)        
-        log_signal.send(raw_func,message=res)
     
     def handle_entity(self, func, res:BaseEntity) -> Response:
         """

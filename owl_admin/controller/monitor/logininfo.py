@@ -7,7 +7,7 @@ from typing_extensions import Annotated
 
 from owl_common.base.transformer import ids_to_list
 from owl_common.base.model import AjaxResponse, TableResponse
-from owl_common.descriptor.serializer import ViewSerializer
+from owl_common.descriptor.serializer import JsonSerializer
 from owl_common.descriptor.validator import QueryValidator, PathValidator
 from owl_common.domain.enum import BusinessType
 from owl_system.domain.entity import SysLogininfor
@@ -20,7 +20,7 @@ from ... import reg
 @reg.api.route('/monitor/logininfor/list',methods=['GET'])
 @QueryValidator(is_page=True)
 @PreAuthorize(HasPerm("monitor:logininfor:list"))
-@ViewSerializer()
+@JsonSerializer()
 def monitor_logininfo_list(dto:SysLogininfor):
     '''
         查询登录日志列表
@@ -32,7 +32,7 @@ def monitor_logininfo_list(dto:SysLogininfor):
 @reg.api.route('/monitor/logininfor/export',methods=['POST'])
 @PreAuthorize(HasPerm("monitor:logininfor:export"))
 @Log(title = "登录日志", business_type = BusinessType.EXPORT)
-@ViewSerializer()
+@JsonSerializer()
 def monitor_logininfo_export():
     '''
         导出登录日志
@@ -45,7 +45,7 @@ def monitor_logininfo_export():
 @PathValidator()
 @PreAuthorize(HasPerm("monitor:logininfor:remove"))
 @Log(title = "登录日志", business_type = BusinessType.DELETE)
-@ViewSerializer()
+@JsonSerializer()
 def monitor_logininfo_delete(
     ids: Annotated[List[int],BeforeValidator(ids_to_list)]
 ):
@@ -59,7 +59,7 @@ def monitor_logininfo_delete(
 @reg.api.route('/monitor/logininfor/clean',methods=['DELETE'])
 @PreAuthorize(HasPerm("monitor:logininfor:remove"))
 @Log(title = "登录日志", business_type = BusinessType.CLEAN)
-@ViewSerializer()
+@JsonSerializer()
 def monitor_logininfo_clean():
     '''
         清空登录日志

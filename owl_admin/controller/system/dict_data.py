@@ -10,7 +10,7 @@ from owl_common.base.transformer import ids_to_list
 from owl_common.base.model import AjaxResponse, TableResponse
 from owl_common.domain.entity import SysDictData
 from owl_common.domain.enum import BusinessType
-from owl_common.descriptor.serializer import ViewSerializer
+from owl_common.descriptor.serializer import JsonSerializer
 from owl_common.descriptor.validator import BodyValidator, QueryValidator, PathValidator
 from owl_common.utils import security_util as SecurityUtil
 from owl_system.service import SysDictDataService
@@ -23,7 +23,7 @@ from ... import reg
 @reg.api.route("/system/dict/data/list", methods=["GET"])
 @QueryValidator()
 @PreAuthorize(HasPerm("system:dict:list"))
-@ViewSerializer()
+@JsonSerializer()
 def system_dict_data_list(dto:SysDictData):
     '''
         获取字典数据列表
@@ -36,7 +36,7 @@ def system_dict_data_list(dto:SysDictData):
 @BodyValidator()
 @PreAuthorize(HasPerm("system:dict:export"))
 @Log(title = "字典数据", business_type = BusinessType.EXPORT)
-@ViewSerializer()
+@JsonSerializer()
 def system_dict_data_export(dto:SysDictData):
     '''
         # todo
@@ -49,7 +49,7 @@ def system_dict_data_export(dto:SysDictData):
 @reg.api.route("/system/dict/data/<int:id>", methods=["GET"])
 @PathValidator()
 @PreAuthorize(HasPerm("system:dict:query"))
-@ViewSerializer()
+@JsonSerializer()
 def system_dict_data_get(id:int):
     '''
         根据id，获取字典数据
@@ -61,7 +61,7 @@ def system_dict_data_get(id:int):
 @reg.api.route("/system/dict/data/type/<name>", methods=["GET"])
 @PathValidator()
 @login_required
-@ViewSerializer()
+@JsonSerializer()
 def system_dict_data_by_type(name:str):
     '''
         根据字典类型查询字典数据信息
@@ -74,7 +74,7 @@ def system_dict_data_by_type(name:str):
 @BodyValidator()
 @PreAuthorize(HasPerm("system:dict:add"))
 @Log(title = "字典数据", business_type = BusinessType.INSERT)
-@ViewSerializer()
+@JsonSerializer()
 def system_dict_data_add(dto:SysDictData):
     '''
         添加字典数据
@@ -89,7 +89,7 @@ def system_dict_data_add(dto:SysDictData):
 @BodyValidator()
 @PreAuthorize(HasPerm("system:dict:edit"))
 @Log(title = "字典数据", business_type = BusinessType.UPDATE)
-@ViewSerializer()
+@JsonSerializer()
 def system_dict_data_update(dto:SysDictData):
     '''
         修改字典数据
@@ -103,7 +103,7 @@ def system_dict_data_update(dto:SysDictData):
 @PathValidator()
 @PreAuthorize(HasPerm("system:dict:remove"))
 @Log(title="字典数据",business_type = BusinessType.DELETE)
-@ViewSerializer()
+@JsonSerializer()
 def system_dict_data_delete(
     ids: Annotated[List[int],BeforeValidator(ids_to_list)]
 ):

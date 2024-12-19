@@ -11,7 +11,7 @@ from werkzeug.exceptions import NotFound
 
 from owl_common.config import OWLConfig
 from owl_common.constant import Constants
-from owl_common.descriptor.serializer import ViewSerializer
+from owl_common.descriptor.serializer import JsonSerializer
 from owl_common.descriptor.validator import FileValidator, QueryValidator
 from owl_common.base.model import AjaxResponse, MultiFile
 from owl_common.utils import FileUploadUtil, FileUtil, StringUtil
@@ -20,7 +20,7 @@ from ... import reg
 
 @reg.api.route('/common/download')
 @QueryValidator()
-@ViewSerializer()
+@JsonSerializer()
 def common_download(
     file_name:Annotated[str,Field(min_length=1,max_length=100)],
     delete:Annotated[bool,Field(annotations=bool,default=False)],
@@ -45,7 +45,7 @@ def common_download(
 
 @reg.api.route('/common/upload')
 @FileValidator()
-@ViewSerializer()
+@JsonSerializer()
 def common_upload(file:MultiFile):
     file:FileStorage = file.one()
     file_name = FileUploadUtil.upload(file,OWLConfig.upload_path)
@@ -62,7 +62,7 @@ def common_upload(file:MultiFile):
 
 @reg.api.route('/common/uploads')
 @FileValidator()
-@ViewSerializer()
+@JsonSerializer()
 def common_uploads(files:MultiFile):
     file_names = []
     urls = []
@@ -87,7 +87,7 @@ def common_uploads(files:MultiFile):
 
 @reg.api.route('/common/download/resource')
 @QueryValidator()
-@ViewSerializer()
+@JsonSerializer()
 def common_download_resource(
     resource:Annotated[str,Field(annotation=str,min_length=1,max_length=100)]
 ):

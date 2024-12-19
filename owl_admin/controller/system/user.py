@@ -13,7 +13,7 @@ from owl_common.utils import security_util as SecurityUtil
 from owl_common.utils.base import ExcelUtil
 from owl_common.domain.entity import SysUser, SysRole
 from owl_common.domain.enum import BusinessType
-from owl_common.descriptor.serializer import ViewSerializer
+from owl_common.descriptor.serializer import BaseSerializer, JsonSerializer
 from owl_common.descriptor.validator import QueryValidator, BodyValidator, PathValidator
 from owl_system.service.sys_role import SysRoleService
 from owl_system.service import SysUserService
@@ -25,7 +25,7 @@ from ... import reg
 @reg.api.route("/system/user/list", methods=["GET"])
 @QueryValidator(is_page=True)
 @PreAuthorize(HasPerm("system:user:list"))
-@ViewSerializer()
+@JsonSerializer()
 def system_user_list(dto:SysUser):
     '''
         获取用户列表
@@ -38,7 +38,7 @@ def system_user_list(dto:SysUser):
 @reg.api.route("/system/user/<int:id>", methods=["GET"])
 @PathValidator()
 @PreAuthorize(HasPerm("system:user:query"))
-@ViewSerializer()
+@JsonSerializer()
 def system_get_user(id:int):
     '''
         获取用户详情
@@ -52,7 +52,7 @@ def system_get_user(id:int):
 @BodyValidator()
 @PreAuthorize(HasPerm("system:user:add"))
 @Log(title="用户管理",business_type=BusinessType.INSERT)
-@ViewSerializer()
+@JsonSerializer()
 def system_create_user(dto:SysUser):
     '''
         新增用户
@@ -84,7 +84,7 @@ def system_create_user(dto:SysUser):
 @BodyValidator()
 @PreAuthorize(HasPerm("system:user:edit"))
 @Log(title="用户管理",business_type=BusinessType.UPDATE)
-@ViewSerializer()
+@JsonSerializer()
 def system_update_user(dto:SysUser):
     '''
         修改用户
@@ -113,7 +113,7 @@ def system_update_user(dto:SysUser):
 @PathValidator()
 @PreAuthorize(HasPerm("system:user:remove"))
 @Log(title="用户管理",business_type=BusinessType.DELETE)
-@ViewSerializer()
+@JsonSerializer()
 def system_delete_users(
     ids: Annotated[List[int],BeforeValidator(ids_to_list)]
 ):
@@ -131,7 +131,7 @@ def system_delete_users(
 @BodyValidator()
 @PreAuthorize(HasPerm("system:user:export"))
 @Log(title="用户管理",business_type=BusinessType.EXPORT)
-@ViewSerializer()
+@BaseSerializer()
 def system_user_export(dto:SysUser):
     '''
         导出用户数据
@@ -145,10 +145,10 @@ def system_user_export(dto:SysUser):
 @BodyValidator()
 @PreAuthorize(HasPerm("system:user:import"))
 @Log(title="用户管理",business_type=BusinessType.IMPORT)
-@ViewSerializer()
+@BaseSerializer()
 def system_user_importdata(dto:SysUser):
     '''
-        导入用户数据
+        导入用户模板
     '''
     print("system_user_importdata:",dto)
     # todo
@@ -168,7 +168,7 @@ def system_user_importtemplate():
 @BodyValidator()
 @PreAuthorize(HasPerm("system:user:resetPwd"))
 @Log(title="用户管理",business_type=BusinessType.UPDATE)
-@ViewSerializer()
+@JsonSerializer()
 def system_update_user_resetpwd(dto:SysUser):
     '''
         重置密码
@@ -186,7 +186,7 @@ def system_update_user_resetpwd(dto:SysUser):
 @BodyValidator()
 @PreAuthorize(HasPerm("system:user:edit"))
 @Log(title="用户管理",business_type=BusinessType.UPDATE)
-@ViewSerializer()
+@JsonSerializer()
 def system_update_user_changestatus(dto:SysUser):
     '''
         修改用户状态
@@ -202,7 +202,7 @@ def system_update_user_changestatus(dto:SysUser):
 @reg.api.route("/system/user/authRole/<int:id>", methods=["GET"])
 @PathValidator()
 @PreAuthorize(HasPerm("system:user:query"))
-@ViewSerializer()
+@JsonSerializer()
 def system_get_user_authrole(id:int):
     '''
         获取用户授权角色
@@ -219,7 +219,7 @@ def system_get_user_authrole(id:int):
 @BodyValidator()
 @PreAuthorize(HasPerm("system:user:edit"))
 @Log(title="用户管理",business_type=BusinessType.GRANT)
-@ViewSerializer()
+@JsonSerializer()
 def system_update_user_authrole(
     user_id:Annotated[int,Field(gt=0)],
     role_ids:Annotated[List[int],Field(default_factory=List)]

@@ -11,7 +11,7 @@ from owl_apscheduler.util import ScheduleUtil
 from owl_common.base.model import AjaxResponse, TableResponse
 from owl_common.base.transformer import ids_to_list
 from owl_common.constant import Constants
-from owl_common.descriptor.serializer import ViewSerializer
+from owl_common.descriptor.serializer import JsonSerializer
 from owl_common.descriptor.validator import BodyValidator, QueryValidator, PathValidator
 from owl_common.domain.enum import BusinessType
 from owl_common.utils import security_util as SecurityUtil
@@ -23,7 +23,7 @@ from .. import reg
 @reg.api.route("/monitor/job/list", methods=["GET"])
 @QueryValidator(is_page=True)
 @PreAuthorize(HasPerm("monitor:job:list"))
-@ViewSerializer()
+@JsonSerializer()
 def common_job_list(dto:SysJob) -> TableResponse:
     """
     获取定时任务列表
@@ -43,7 +43,7 @@ def common_job_list(dto:SysJob) -> TableResponse:
 @BodyValidator()
 @PreAuthorize(HasPerm("monitor:job:export"))
 @Log(title="定时任务",business_type=BusinessType.EXPORT)
-@ViewSerializer()
+@JsonSerializer()
 def common_job_export(dto:SysJob):
     """
     导出定时任务列表
@@ -62,7 +62,7 @@ def common_job_export(dto:SysJob):
 @reg.api.route("/monitor/job/<int:id>", methods=["GET"])
 @PathValidator()
 @PreAuthorize(HasPerm("monitor:job:query"))
-@ViewSerializer()
+@JsonSerializer()
 def common_job_detail(id: int) -> AjaxResponse:
     """
     获取定时任务详情
@@ -81,7 +81,7 @@ def common_job_detail(id: int) -> AjaxResponse:
 @BodyValidator()
 @PreAuthorize(HasPerm("monitor:job:add"))
 @Log(title="定时任务",business_type=BusinessType.INSERT)
-@ViewSerializer()
+@JsonSerializer()
 def common_job_add(dto:SysJob) -> AjaxResponse:
     """
     新增定时任务
@@ -114,7 +114,7 @@ def common_job_add(dto:SysJob) -> AjaxResponse:
 @BodyValidator()
 @PreAuthorize(HasPerm("monitor:job:edit"))
 @Log(title="定时任务",business_type=BusinessType.UPDATE)
-@ViewSerializer()
+@JsonSerializer()
 def common_job_edit(dto:SysJob) -> AjaxResponse:
     """
     修改定时任务
@@ -147,7 +147,7 @@ def common_job_edit(dto:SysJob) -> AjaxResponse:
 @BodyValidator()
 @PreAuthorize(HasPerm('monitor:job:changeStatus'))
 @Log(title = "定时任务", business_type = BusinessType.UPDATE)
-@ViewSerializer()
+@JsonSerializer()
 def common_job_status_edit(dto:SysJob) -> AjaxResponse:
     """
     修改定时任务状态
@@ -169,7 +169,7 @@ def common_job_status_edit(dto:SysJob) -> AjaxResponse:
 @BodyValidator()
 @PreAuthorize(HasPerm('monitor:job:changeStatus'))
 @Log(title = "定时任务", business_type = BusinessType.UPDATE)
-@ViewSerializer()
+@JsonSerializer()
 def common_job_run(dto:SysJob) -> AjaxResponse:
     """
     立即执行定时任务
@@ -188,7 +188,7 @@ def common_job_run(dto:SysJob) -> AjaxResponse:
 @PathValidator()
 @PreAuthorize(HasPerm('monitor:job:remove'))
 @Log(title = "定时任务", business_type = BusinessType.DELETE)
-@ViewSerializer()
+@JsonSerializer()
 def common_job_remove(
     ids: Annotated[List[int],BeforeValidator(ids_to_list)]
 ) -> AjaxResponse:
