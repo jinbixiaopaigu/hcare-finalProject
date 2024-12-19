@@ -131,8 +131,8 @@ class JsonSerializer(BaseSerializer):
         """
         try:
             res = res.model_dump_json(
-                context=self.context
                 **self.context.as_kwargs(),
+                context=self.context
             )
         except HTTPException as e:
             http_exc = InternalServerError(description="序列化实体对象异常")

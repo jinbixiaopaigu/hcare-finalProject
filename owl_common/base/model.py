@@ -120,7 +120,7 @@ class VoSerializerContext:
     
     def as_kwargs(self):
         return {
-            "by_alias": self.by_alais,
+            "by_alias": self.by_alias,
             "exclude": self.exclude_fields,
             "include": self.include_fields,
             "exclude_none": self.exclude_none,
