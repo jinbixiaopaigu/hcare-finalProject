@@ -19,13 +19,9 @@ def ExcelField(
     date_format:str='',
     is_export:bool=True,
     is_statistics:bool=False,
-    header_background_color:str='#F2F2F2',
-    header_color:str='#000000',
-    background_color:str='#FFFFFF',
-    color:str='#000000',
+    background_color:str='FFFFFFFF',
+    color:str='FF000000',
     align:str='left',
-    handler=None,
-    args:List=[],
     action:Literal['import', 'export', 'both']='both'
 ):
     excel_access = ExcelAccess(
@@ -40,25 +36,22 @@ def ExcelField(
         combo=combo,
         is_export=is_export,
         is_statistics=is_statistics,
-        header_background_color=header_background_color,
-        header_color=header_color,
         background_color=background_color,
         color=color,
         align=align,
-        handler=handler,
-        args=args,
         action=action
     )
     Field(excel_access=excel_access)
 
-def ExcelFields(accesses:List["ExcelAccess"]):
+def ExcelFields(*accesses:"ExcelAccess"):
     Field(excel_access=accesses)    
 
 
+@dataclass
 class ExcelAccess:
     
     # 导出时在excel中排序
-    # sort: int = 0
+    sort: int = 0
     
     # 导出到Excel中的名字
     name: str = ''
@@ -67,19 +60,19 @@ class ExcelAccess:
     date_format: str = ''
     
     # 字典类型，请设置字典的type值 (如: sys_user_sex)
-    # dict_type: str = ''
+    dict_type: str = ''
     
     # 读取内容转表达式 (如: 0=男,1=女,2=未知)
-    # converter: str = ''
+    converter: str = ''
     
     # 分隔符，读取字符串组内容
-    # separators: str = ','
+    separators: str = ','
     
     # Decimal 精度 默认:False(默认不开启Decimal格式化)
-    # scale: bool = False
+    scale: bool = False
     
     # Decimal 舍入规则
-    # roundmode: str = ''
+    roundmode: str = ''
     
     # 导出时在excel中每个行的高度 单位为字符
     height: int = 14
@@ -88,7 +81,7 @@ class ExcelAccess:
     width: int = 16
     
     # 文字后缀,如% 90 变成90%
-    # suffix: str = ''
+    suffix: str = ''
     
     # 当值为空时,字段的默认值
     default: str = ''
@@ -103,25 +96,25 @@ class ExcelAccess:
     attr: str = ''
     
     # 是否导出数据,应对需求:有时我们需要导出一份模板,这是标题需要但内容需要用户手工填写.
-    # is_export: bool = True
+    is_export: bool = True
     
     # 是否自动统计数据,在最后追加一行统计数据总和
-    # is_statistics : bool = False
+    is_statistics : bool = False
     
     # 导出类型（numeric 数字 string 字符串 image 图片）
-    # cell_type: Literal['numeric', 'string', 'image'] = 'string'
+    cell_type: Literal['numeric', 'string', 'image'] = 'string'
     
     # # 表头背景色
-    # header_background_color: str = '#F2F2F2'
+    # header_background_color: str = 'FFF2F2F2'
     
     # # 表头文字颜色
-    # header_color: str = '#000000'
+    # header_color: str = 'FF000000'
     
     # 单元格背景色
-    background_color: str = '#FFFFFF'
+    background_color: str = 'FFFFFFFF'
     
     # 单元格文字颜色
-    color: str = '#000000'
+    color: str = 'FF000000'
     
     # 导出字段对齐方式（left：默认；left：靠左；center：居中；right：靠右）
     align: Literal['left', 'center', 'right'] = 'left'
@@ -139,8 +132,8 @@ class ExcelAccess:
 
     def __post_init__(self):
         self._fill = PatternFill(
-            bgColor=self.background_color,
-            fgColor=self.color,
+            end_color=self.background_color,
+            start_color=self.color,
             fill_type='solid'
         )
         self._alig = Alignment(

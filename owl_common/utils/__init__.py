@@ -3,4 +3,4 @@
 
 from .base import StringUtil, FileUtil, DictUtil, Base64Util, IpUtil, \
     AddressUtil, MimeTypeUtil, FileUploadUtil, MessageUtil, \
-    FunctionParameterParser,TokenUtil, DateUtil
+    TokenUtil, DateUtil,ExcelUtil

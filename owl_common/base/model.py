@@ -108,7 +108,7 @@ class VoSerializerContext:
 
     include_fields: Set = field(default_factory=set)
 
-    by_alais: bool = True
+    by_alias: bool = True
 
     exclude_none: bool = True
 
