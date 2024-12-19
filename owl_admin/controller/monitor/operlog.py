@@ -8,7 +8,7 @@ from typing_extensions import Annotated
 from owl_common.base.transformer import ids_to_list
 from owl_common.base.model import AjaxResponse, TableResponse
 from owl_common.descriptor.validator import QueryValidator, PathValidator
-from owl_common.descriptor.serializer import JsonSerializer
+from owl_common.descriptor.serializer import BaseSerializer, JsonSerializer
 from owl_common.domain.enum import BusinessType
 from owl_system.domain.entity import SysOperLog
 from owl_system.service.sys_oper_log import SysOperLogService
@@ -32,7 +32,7 @@ def monitor_operlog_list(dto:SysOperLog):
 @reg.api.route('/monitor/operlog/export',methods=['POST'])
 @PreAuthorize(HasPerm("monitor:operlog:EXPORT"))
 @Log(title = "操作日志", business_type = BusinessType.EXPORT)
-@JsonSerializer()
+@BaseSerializer()
 def monitor_operlog_export():
     '''
         导出登录日志

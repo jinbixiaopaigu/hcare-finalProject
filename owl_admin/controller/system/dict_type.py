@@ -11,7 +11,7 @@ from owl_common.constant import UserConstants
 from owl_common.base.model import AjaxResponse, TableResponse
 from owl_common.domain.entity import SysDictType
 from owl_common.domain.enum import BusinessType
-from owl_common.descriptor.serializer import JsonSerializer
+from owl_common.descriptor.serializer import BaseSerializer, JsonSerializer
 from owl_common.descriptor.validator import BodyValidator, QueryValidator, PathValidator
 from owl_common.utils import security_util as SecurityUtil
 from owl_system.service import SysDictTypeService
@@ -37,7 +37,7 @@ def system_dict_type_list(dto:SysDictType):
 @BodyValidator()
 @PreAuthorize(HasPerm("system:dict:export"))
 @Log(title = "字典类型", business_type = BusinessType.EXPORT)
-@JsonSerializer()
+@BaseSerializer()
 def system_dict_type_export(dto:SysDictType):
     '''
         # todo

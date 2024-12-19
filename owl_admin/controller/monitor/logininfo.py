@@ -7,7 +7,7 @@ from typing_extensions import Annotated
 
 from owl_common.base.transformer import ids_to_list
 from owl_common.base.model import AjaxResponse, TableResponse
-from owl_common.descriptor.serializer import JsonSerializer
+from owl_common.descriptor.serializer import BaseSerializer, JsonSerializer
 from owl_common.descriptor.validator import QueryValidator, PathValidator
 from owl_common.domain.enum import BusinessType
 from owl_system.domain.entity import SysLogininfor
@@ -32,7 +32,7 @@ def monitor_logininfo_list(dto:SysLogininfor):
 @reg.api.route('/monitor/logininfor/export',methods=['POST'])
 @PreAuthorize(HasPerm("monitor:logininfor:export"))
 @Log(title = "登录日志", business_type = BusinessType.EXPORT)
-@JsonSerializer()
+@BaseSerializer()
 def monitor_logininfo_export():
     '''
         导出登录日志

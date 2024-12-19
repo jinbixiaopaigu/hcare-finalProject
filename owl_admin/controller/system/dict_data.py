@@ -10,7 +10,7 @@ from owl_common.base.transformer import ids_to_list
 from owl_common.base.model import AjaxResponse, TableResponse
 from owl_common.domain.entity import SysDictData
 from owl_common.domain.enum import BusinessType
-from owl_common.descriptor.serializer import JsonSerializer
+from owl_common.descriptor.serializer import BaseSerializer, JsonSerializer
 from owl_common.descriptor.validator import BodyValidator, QueryValidator, PathValidator
 from owl_common.utils import security_util as SecurityUtil
 from owl_system.service import SysDictDataService
@@ -36,7 +36,7 @@ def system_dict_data_list(dto:SysDictData):
 @BodyValidator()
 @PreAuthorize(HasPerm("system:dict:export"))
 @Log(title = "字典数据", business_type = BusinessType.EXPORT)
-@JsonSerializer()
+@BaseSerializer()
 def system_dict_data_export(dto:SysDictData):
     '''
         # todo
