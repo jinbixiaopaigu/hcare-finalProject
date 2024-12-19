@@ -8,6 +8,7 @@ from typing import Any, Callable, Dict, List, Literal, Optional, Tuple, Type, ge
 from datetime import datetime
 from openpyxl import Workbook
 from openpyxl.worksheet.worksheet import Worksheet
+from openpyxl.styles import PatternFill
 from pydantic import BaseModel
 from pydantic._internal import _typing_extra
 from werkzeug.exceptions import NotFound
@@ -928,97 +929,6 @@ class FileUtil:
         return flag  
 
 
-class FunctionParameterParser:
-    
-    """
-        解析函数参数，并检查参数
-    """
-    
-    
-    def __init__(self, func:Callable):
-        self.func = func
-        self.flag, self._keys = self.parse_func(func)
-        self.new_args = ()
-        self.new_kwargs = {}
-    
-    @staticmethod
-    def parse_func(func) -> Tuple[str, List[str]]:
-        """
-        提前检验被装饰方法
-        1. 判断是否为实例或类方法
-        2. 获取参数名
-        
-        return:
-            flag: "normal", "object", "class"
-                - "normal": 普通方法
-                - "object": 实例方法
-                - "class": 类方法
-            keys: 参数名列表
-        """
-        sig = inspect.signature(func)
-        flag = "normal"
-        if "self" in sig.parameters:
-            flag = "object"
-            keys = list(sig.parameters.keys())[1:]
-        elif "cls" in sig.parameters:
-            flag = "class"
-            keys = list(sig.parameters.keys())[1:]
-        else:
-            keys = list(sig.parameters.keys())
-        return flag, keys
-        
-    def parse_params(self, *args, **kwargs):
-        """
-        解析函数参数
-        
-        Args:
-            *args: 位置参数
-            **kwargs: 关键字参数
-        
-        Returns:
-            self: 返回自身对象
-        """
-        new_args = () if self.flag == "normal" else (args[0],)
-        new_kwargs = {}
-        for i, key in enumerate(self._keys):
-            val = kwargs.get(key)
-            if self.flag == "normal":
-                val = args[i] if not val else val
-            else:
-                val = args[i+1] if not val else val
-            new_kwargs.update({key: val})
-        self.new_args = new_args
-        self.new_kwargs = new_kwargs
-        return self
-    
-    def value(self, index=0) -> Any:
-        """
-        获取函数参数值
-        
-        Args:
-            index: 参数索引
-        
-        Returns:
-            参数值
-        """
-        key = self._keys[index]
-        if self.new_kwargs is {}:
-            raise Exception("请先解析参数")
-        return self.new_kwargs.get(key)
-    
-    def key(self, index=0) -> str:
-        """
-        获取函数参数名
-        
-        Args:
-            index: 参数索引
-        
-        Returns:
-            参数名
-        """
-        return self._keys[index]
-
-
 class DescriptUtil:
     
     @classmethod
@@ -1041,6 +951,20 @@ class DescriptUtil:
 
 class ExcelUtil:
     
+    default_header_fill = {
+        "start_color": "FFFFFF",
+        "end_color": "FFFFFF",
+        "font_color": "000000",
+        "fill_type": "solid",
+    }
+    
+    default_row_fill = {
+        "start_color": "FFFFFF",
+        "end_color": "FFFFFF",
+        "font_color": "000000",
+        "fill_type": "solid",
+    }
+    
     @classmethod
     def write(cls, data:List[BaseModel], sheetname:str) -> BytesIO:
         """
@@ -1059,18 +983,12 @@ class ExcelUtil:
         data_one = data[0]
         if not isinstance(data_one,dict):
             raise Exception("data格式错误")
-
-    
-        data_keys = data_one.keys()
-        
-        real_headers = data_keys
-            
+                    
         workbook = Workbook(write_only=True)
         worksheet = workbook.active
         worksheet.title = sheetname
-        worksheet.append(real_headers)
-        for row in data:
-            worksheet.append(row.values())
+        
+        cls.render_data(worksheet,data)
         
         output = BytesIO()
         workbook.save(output)
@@ -1079,7 +997,7 @@ class ExcelUtil:
         return output
     
     @classmethod
-    def render_header(cls, sheet:Worksheet,row:BaseModel):
+    def render_header(cls, sheet:Worksheet,row:BaseModel,fill:PatternFill=None):
         """
         渲染Excel表头
 
@@ -1089,6 +1007,8 @@ class ExcelUtil:
         """
         for col_index,key,access in enumerate(row.dump_excel_access(),start=1):
             cell = sheet.cell(row=1,column=col_index,value=access.name)
+            cell.fill = fill
+            cell.font = access.header_font
     
     @classmethod
     def render_row(cls, sheet:Worksheet,row:BaseModel,row_index:int):
@@ -1100,8 +1020,14 @@ class ExcelUtil:
             row (BaseModel): 行数据模型
             row_index(int): 行索引
         """
+        default_row_fill = PatternFill(
+            **cls.default_row_fill
+        )
         for col_index,key,access in enumerate(row.dump_excel_access(),start=1):
             cell = sheet.cell(row=row_index,column=col_index,value=access.val)
+            cell.alignment = access.align
+            cell.fill = access.fill if access.fill else default_row_fill
+            cell.font = access.row_font
 
     @classmethod
     def render_footer(cls, sheet:Worksheet):
@@ -1114,7 +1040,7 @@ class ExcelUtil:
         pass
     
     @classmethod
-    def render_data(cls, sheet:Worksheet, data:List[BaseModel]):
+    def render_data(cls, sheet:Worksheet, data:List[BaseModel],header_fill:PatternFill=None):
         """
         渲染Excel数据
         
@@ -1122,9 +1048,14 @@ class ExcelUtil:
             sheet (Worksheet): 工作表
             data(List[BaseModel]): 数据模型列表
         """
-        cls.render_header(sheet,data[0])
+        if not header_fill:
+            header_fill = PatternFill(
+                **cls.default_header_fill
+            )
+        cls.render_header(sheet,data[0],header_fill)
         for row_index,row in enumerate(data,start=2):
             cls.render_row(sheet,row,row_index)
+        cls.render_footer(sheet)
         
     @classmethod
     def response(cls, data:List[BaseModel], sheetname:str, filename:str=None) -> Response:

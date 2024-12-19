@@ -3,7 +3,7 @@
 
 from dataclasses import dataclass, field
 from typing import List, Literal
-
+from openpyxl.styles import PatternFill,Alignment,Font
 from pydantic import Field
 
 
@@ -58,7 +58,7 @@ def ExcelFields(accesses:List["ExcelAccess"]):
 class ExcelAccess:
     
     # 导出时在excel中排序
-    sort: int = 0
+    # sort: int = 0
     
     # 导出到Excel中的名字
     name: str = ''
@@ -67,28 +67,28 @@ class ExcelAccess:
     date_format: str = ''
     
     # 字典类型，请设置字典的type值 (如: sys_user_sex)
-    dict_type: str = ''
+    # dict_type: str = ''
     
     # 读取内容转表达式 (如: 0=男,1=女,2=未知)
-    converter: str = ''
+    # converter: str = ''
     
     # 分隔符，读取字符串组内容
-    separators: str = ','
+    # separators: str = ','
     
     # Decimal 精度 默认:False(默认不开启Decimal格式化)
-    scale: bool = False
+    # scale: bool = False
     
     # Decimal 舍入规则
-    roundmode: str = ''
+    # roundmode: str = ''
     
-    # 导出时在excel中每个列的高度 单位为字符
+    # 导出时在excel中每个行的高度 单位为字符
     height: int = 14
     
     # 导出时在excel中每个列的宽 单位为字符
     width: int = 16
     
     # 文字后缀,如% 90 变成90%
-    suffix: str = ''
+    # suffix: str = ''
     
     # 当值为空时,字段的默认值
     default: str = ''
@@ -103,19 +103,19 @@ class ExcelAccess:
     attr: str = ''
     
     # 是否导出数据,应对需求:有时我们需要导出一份模板,这是标题需要但内容需要用户手工填写.
-    is_export: bool = True
+    # is_export: bool = True
     
     # 是否自动统计数据,在最后追加一行统计数据总和
-    is_statistics : bool = False
+    # is_statistics : bool = False
     
     # 导出类型（numeric 数字 string 字符串 image 图片）
-    cell_type: Literal['numeric', 'string', 'image'] = 'string'
+    # cell_type: Literal['numeric', 'string', 'image'] = 'string'
     
-    # 表头背景色
-    header_background_color: str = '#F2F2F2'
+    # # 表头背景色
+    # header_background_color: str = '#F2F2F2'
     
-    # 表头文字颜色
-    header_color: str = '#000000'
+    # # 表头文字颜色
+    # header_color: str = '#000000'
     
     # 单元格背景色
     background_color: str = '#FFFFFF'
@@ -127,14 +127,52 @@ class ExcelAccess:
     align: Literal['left', 'center', 'right'] = 'left'
     
     # 自定义数据处理器
-    handler: str = ''
+    # handler: str = ''
     
     # 自定义数据处理器参数
-    args: List = field(default_factory=list)
+    # args: List = field(default_factory=list)
     
     # 字段类型（both：导出导入；export：仅导出；import：仅导入）
     action: Literal['import', 'export', 'both'] = 'both'
     
     val: str = field(default=None, init=False)
 
+    def __post_init__(self):
+        self._fill = PatternFill(
+            bgColor=self.background_color,
+            fgColor=self.color,
+            fill_type='solid'
+        )
+        self._alig = Alignment(
+            horizontal=self.align,
+            vertical='center',
+            text_rotation=0,
+            wrap_text=False,
+            shrink_to_fit=False,
+            indent=0
+        )
+        self._header_font = Font(
+            bold=True,
+            size=12
+        )
+        self._row_font = Font(
+            size=12
+        )
+    
+    @property
+    def fill(self):
+        return self._fill
+    
+    @property
+    def alig(self):
+        return self._alig
+    
+    @property
+    def header_font(self):
+        return self._header_font
+    
+    @property
+    def row_font(self):
+        return self._row_font
+    
     
