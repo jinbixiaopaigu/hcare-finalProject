@@ -1,7 +1,8 @@
 
 from abc import ABC, abstractmethod
+from collections import namedtuple
 from dataclasses import dataclass
-from typing import ClassVar, Dict, List, Set
+from typing import ClassVar, Dict, List, Set, Tuple
 from flask import g, request
 from pydantic import BaseModel
 from werkzeug.datastructures import ImmutableMultiDict
@@ -64,6 +65,15 @@ class BaseReqParser(AbsReqParser):
 
     def prepare(self):
         pass
+
+
+@dataclass
+class ReqData:
+    
+    query: Dict = None
+    body: Dict = None
+    form: Dict = None
+    file: Dict = None
     
 
 class QueryReqParser(BaseReqParser):
@@ -144,41 +154,6 @@ class BodyReqParser(BaseReqParser):
         data = self.data()
         bo = bo_model.model_validate(data, context=self.context)
         return bo
-    
-
-@dataclass
-class FormReqParser(BaseReqParser):
-    
-    minetype: ClassVar[str] = "multipart/form-data"
-    
-    def __init__(self, include:Set[str]=None):
-        self.include = include
-    
-    def validate_request(self) -> Dict:
-        content_type = request.headers.get("Content-Type", "").lower()
-        minetype = content_type.split(";")[0]
-        if minetype == self.minetype:
-            form:ImmutableMultiDict = request.form
-            if not form:
-                raise BadRequest(
-                    description="在{}, form数据不能为空".format(content_type),
-                )
-            body = form.to_dict()
-        else:
-            raise UnsupportedMediaType(
-                description="除了{},content-type不支持{}".format(self.minetype,minetype)
-            )
-        return body
-    
-    def data(self) -> Dict:
-        data = self.validate_request().copy()
-        if not self.include:
-            return data
-        new_data = {}
-        for key in data:
-            if key in self.include:
-                new_data[key] = data[key]
-        return new_data
 
 
 @dataclass
@@ -201,6 +176,40 @@ class FormUrlencodedReqParser(QueryReqParser):
             )
         return body
     
+
+class FormReqParser(BaseReqParser):
+    
+    minetype: ClassVar[str] = "multipart/form-data"
+    
+    def __init__(
+        self, 
+        is_form:bool=True,
+        is_query:bool=False,
+        is_file:bool=False
+        ):
+        self.is_form = is_form
+        self.is_query = is_query
+        self.is_file = is_file
+        self._data = ReqData()
+        
+    def validate_request(self) -> ReqData:
+        content_type = request.headers.get("Content-Type", "").lower()
+        minetype = content_type.split(";")[0]
+        if minetype == self.minetype:
+            self._data.form = request.form.to_dict() if self.is_form else None
+            self._data.query = request.args.to_dict() if self.is_query else None
+            self._data.file = request.files.to_dict() if self.is_file else None
+        else:
+            raise UnsupportedMediaType(
+                description="除了{},content-type不支持{}".format(self.minetype,minetype)
+            )
+        return self._data
+    
+    def data(self) -> Dict:
+        data = self.validate_request()
+        
+        return data
+
     
 class FileFormReqParser(FormReqParser):
     
@@ -229,7 +238,36 @@ class FileFormReqParser(FormReqParser):
     def cast_model(self, bo_model:MultiFile) -> MultiFile:
         data = self.data()
         return bo_model.from_obj(data)
+
+
+class UploadFileParser(BaseReqParser):
     
+    minetype: ClassVar[str] = "multipart/form-data"
+    
+    def __init__(self, include:Set[str]=None):
+        self.include = include
+    
+    def validate_request(self) -> Tuple:
+        content_type = request.headers.get("Content-Type", "").lower()
+        minetype = content_type.split(";")[0]
+        if minetype == self.minetype:
+            data = request.files, request.args
+        else:
+            raise UnsupportedMediaType(
+                description="除了{},content-type不支持{}".format(self.minetype,minetype)
+            )
+        return data
+    
+    def data(self) -> Dict:
+        data = self.validate_request()
+        if not self.include:
+            return data
+        new_data = {}
+        for key in data:
+            if key in self.include:
+                new_data[key] = data[key]
+        return new_data
+        
             
 class StreamReqParser(BaseReqParser):
 

@@ -474,7 +474,7 @@ class FormSchemaFactory(AbcSchemaFactory):
     model_config = strict_valid_config
     
     def validate_annotation(self, annotation: Type[BaseModel]) -> Optional[Type[BaseModel]]:
-        return None
+        pass
 
 
 class PathSchemaFactory(AbcSchemaFactory):
@@ -483,7 +483,7 @@ class PathSchemaFactory(AbcSchemaFactory):
     model_config = query_valid_config
     
     def validate_annotation(self, annotation: Type[BaseModel]) -> Optional[Type[BaseModel]]:
-        return None
+        pass
     
 
 class FileSchemaFactory(AbcSchemaFactory):
