@@ -41,10 +41,10 @@ def ExcelField(
         align=align,
         action=action
     )
-    Field(excel_access=excel_access)
+    return Field(excel_access=excel_access)
 
 def ExcelFields(*accesses:"ExcelAccess"):
-    Field(excel_access=accesses)    
+    return Field(excel_access=accesses)    
 
 
 @dataclass
@@ -132,11 +132,10 @@ class ExcelAccess:
 
     def __post_init__(self):
         self._fill = PatternFill(
+            start_color=self.background_color,
             end_color=self.background_color,
-            start_color=self.color,
-            fill_type='solid'
         )
-        self._alig = Alignment(
+        self._align = Alignment(
             horizontal=self.align,
             vertical='center',
             text_rotation=0,
@@ -157,8 +156,8 @@ class ExcelAccess:
         return self._fill
     
     @property
-    def alig(self):
-        return self._alig
+    def alignment(self):
+        return self._align
     
     @property
     def header_font(self):

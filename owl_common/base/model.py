@@ -205,10 +205,11 @@ class BaseEntity(BaseModel):
         data = self.model_dump()
         new_data = {}
         for k,info in self.model_fields.items():
+            if info.json_schema_extra is None:continue
             excel_access = info.json_schema_extra.get("excel_access",False)
             if excel_access:
                 value = data.get(k,None)
-                if value and isinstance(excel_access,list):
+                if value and isinstance(excel_access,(list,tuple,)):
                     new_data[k] = {}
                     for access in excel_access:
                         subvalue = value.get(access.attr,None)

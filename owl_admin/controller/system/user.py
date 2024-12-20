@@ -131,12 +131,11 @@ def system_delete_users(
 @FormUrlencodedValidator()
 @PreAuthorize(HasPerm("system:user:export"))
 @Log(title="用户管理",business_type=BusinessType.EXPORT)
-# @BaseSerializer()
+@BaseSerializer()
 def system_user_export(dto:SysUser):
     '''
         导出用户数据
     '''
-    print("system_user_export:",dto)
     rows = SysUserService.select_user_list(dto)
     return ExcelUtil.response(rows, "用户数据")
 

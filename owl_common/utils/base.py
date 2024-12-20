@@ -4,17 +4,20 @@
 from io import BytesIO
 import os,socket,threading,re,base64,inspect,ipaddress,math,psutil
 import typing_extensions
+import time
 from typing import Any, Callable, Dict, List, Literal, Optional, Tuple, Type, get_args, get_origin
 from datetime import datetime
 from openpyxl import Workbook
 from openpyxl.worksheet.worksheet import Worksheet
-from openpyxl.styles import PatternFill
+from openpyxl.styles import PatternFill,Alignment
 from pydantic import BaseModel
 from pydantic._internal import _typing_extra
 from werkzeug.exceptions import NotFound
 from werkzeug.datastructures import FileStorage
 from flask import Response, request
 from jwt import api_jwt
+
+from owl_common.base.schema_excel import ExcelAccess
 
 from ..constant import Constants
 
@@ -952,15 +955,15 @@ class DescriptUtil:
 class ExcelUtil:
     
     default_header_fill = {
-        "start_color": "FFFFFF",
-        "end_color": "FFFFFF",
-        "fill_type": "solid",
+        "start_color": "FFFFFFFF",
+        "end_color": "FFFFFFFF",
+        "fill_type": None, # "solid" or None
     }
-    
+
     default_row_fill = {
-        "start_color": "FFFFFF",
-        "end_color": "FFFFFF",
-        "fill_type": "solid",
+        "start_color": "FFFFFFFF",
+        "end_color": "FFFFFFFF",
+        "fill_type": None, # "solid" or None
     }
     
     @classmethod
@@ -982,10 +985,8 @@ class ExcelUtil:
         if not isinstance(data_one,BaseModel):
             raise Exception("data格式错误")
                     
-        workbook = Workbook(write_only=True)
-        print("workbook created")
+        workbook = Workbook()
         worksheet = workbook.create_sheet(title=sheetname)
-        print("worksheet created")
         
         cls.render_data(worksheet,data)
         
@@ -1004,7 +1005,8 @@ class ExcelUtil:
             sheet (Worksheet): 工作表
             row (BaseModel): 行数据模型
         """
-        for col_index,key,access in enumerate(row.dump_excel_access(),start=1):
+        for col_index,access in enumerate(row.dump_excel_access(),start=1):
+            _, access = access
             cell = sheet.cell(row=1,column=col_index,value=access.name)
             cell.fill = fill
             cell.font = access.header_font
@@ -1022,9 +1024,10 @@ class ExcelUtil:
         default_row_fill = PatternFill(
             **cls.default_row_fill
         )
-        for col_index,key,access in enumerate(row.dump_excel_access(),start=1):
+        for col_index,access in enumerate(row.dump_excel_access(),start=1):
+            _,access = access
             cell = sheet.cell(row=row_index,column=col_index,value=access.val)
-            cell.alignment = access.align
+            cell.alignment = access.alignment
             cell.fill = access.fill if access.fill else default_row_fill
             cell.font = access.row_font
 
@@ -1051,32 +1054,30 @@ class ExcelUtil:
             header_fill = PatternFill(
                 **cls.default_header_fill
             )
+        
         cls.render_header(sheet,data[0],header_fill)
         for row_index,row in enumerate(data,start=2):
             cls.render_row(sheet,row,row_index)
         cls.render_footer(sheet)
         
     @classmethod
-    def response(cls, data:List[BaseModel], sheetname:str, filename:str=None) -> Response:
+    def response(cls, data:List[BaseModel], sheetname:str) -> Response:
         """
         响应Excel文件
         
         Args:
             data(List[BaseModel]): 数据
             sheetname(str): 工作表名
-            filename(str): 文件名
         
         Returns:
             Response: 文件流响应
         """
         output:BytesIO = cls.write(data,sheetname)
-        if not filename:
-            filename = sheetname
         response = Response(
             response=output.getvalue(),
             status=200,
             mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            headers={"Content-Disposition": f"attachment; filename={filename}.xlsx"}
+            headers={"Content-Disposition": f"attachment; filename={time.time()}.xlsx"}
         )
         return response
 

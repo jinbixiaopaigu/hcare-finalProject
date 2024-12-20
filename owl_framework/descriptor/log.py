@@ -117,8 +117,9 @@ class Log:
         if self.is_save_response_data:
             if isinstance(response, BaseModel):
                 self._oper_log.json_result = response.model_dump_json(exclude_none=True)[:2000]
-            else:
-                json_result = response.get_data(as_text=True)
+            elif isinstance(response, Response):
+                print("handle_response response: {}".format(response))
+                json_result = response.get_data(as_text=False)
                 if json_result:
                     self._oper_log.json_result = json_result[:2000]
                     
