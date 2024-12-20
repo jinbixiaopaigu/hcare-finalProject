@@ -137,11 +137,12 @@ def system_user_export(dto:SysUser):
         导出用户数据
     '''
     rows = SysUserService.select_user_list(dto)
-    return ExcelUtil.response(rows, "用户数据")
+    excel_util = ExcelUtil(SysUser)
+    return excel_util.export_response(rows, "用户数据")
 
 
 @reg.api.route("/system/user/importData", methods=["POST"])
-@FormUrlencodedValidator()
+@BodyValidator()
 @PreAuthorize(HasPerm("system:user:import"))
 @Log(title="用户管理",business_type=BusinessType.IMPORT)
 @BaseSerializer()
@@ -150,17 +151,20 @@ def system_user_importdata(dto:SysUser):
         导入用户模板
     '''
     print("system_user_importdata:",dto)
-    # todo
+    excel_util = ExcelUtil(SysUser)
+    excel_util.import_data(dto)
+    
 
 
 @reg.api.route("/system/user/importTemplate", methods=["POST"])
 @login_required
+@BaseSerializer()
 def system_user_importtemplate():
     '''
-        导入模板
+        导出模板
     '''
-    print("system_user_importtemplate")
-    # todo
+    excel_util = ExcelUtil(SysUser)
+    return excel_util.import_template_response("用户数据")
     
     
 @reg.api.route("/system/user/resetPwd", methods=["PUT"])

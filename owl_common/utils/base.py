@@ -966,8 +966,10 @@ class ExcelUtil:
         "fill_type": None, # "solid" or None
     }
     
-    @classmethod
-    def write(cls, data:List[BaseModel], sheetname:str) -> BytesIO:
+    def __init__(self, model:Type[BaseModel]):
+        self.model = model
+    
+    def write(self, data:List[BaseModel], sheetname:str) -> BytesIO:
         """
         写入Excel文件
         
@@ -979,16 +981,11 @@ class ExcelUtil:
             BytesIO: 文件字节流
         """
         if len(data) == 0:
-            raise NotFound(description="无法导出excel,数据为空")
-        
-        data_one = data[0]
-        if not isinstance(data_one,BaseModel):
-            raise Exception("data格式错误")
-                    
+            raise NotFound(description="无法导出excel,数据为空")  
         workbook = Workbook()
         worksheet = workbook.create_sheet(title=sheetname)
-        
-        cls.render_data(worksheet,data)
+        workbook.active = worksheet
+        self.render_data(worksheet,data)
         
         output = BytesIO()
         workbook.save(output)
@@ -996,23 +993,24 @@ class ExcelUtil:
         
         return output
     
-    @classmethod
-    def render_header(cls, sheet:Worksheet,row:BaseModel,fill:PatternFill=None):
+    def render_header(self, sheet:Worksheet,fill:PatternFill=None):
         """
         渲染Excel表头
 
         Args:
             sheet (Worksheet): 工作表
-            row (BaseModel): 行数据模型
+            fill(PatternFill): 表头填充
         """
-        for col_index,access in enumerate(row.dump_excel_access(),start=1):
+        for col_index,access in enumerate(
+            self.model.generate_excel_schema(),
+            start=1
+        ):
             _, access = access
             cell = sheet.cell(row=1,column=col_index,value=access.name)
             cell.fill = fill
             cell.font = access.header_font
     
-    @classmethod
-    def render_row(cls, sheet:Worksheet,row:BaseModel,row_index:int):
+    def render_row(self, sheet:Worksheet,row:BaseModel,row_index:int):
         """
         渲染Excel行数据
                 
@@ -1022,17 +1020,16 @@ class ExcelUtil:
             row_index(int): 行索引
         """
         default_row_fill = PatternFill(
-            **cls.default_row_fill
+            **self.default_row_fill
         )
-        for col_index,access in enumerate(row.dump_excel_access(),start=1):
+        for col_index,access in enumerate(row.generate_excel_data(),start=1):
             _,access = access
             cell = sheet.cell(row=row_index,column=col_index,value=access.val)
             cell.alignment = access.alignment
             cell.fill = access.fill if access.fill else default_row_fill
             cell.font = access.row_font
 
-    @classmethod
-    def render_footer(cls, sheet:Worksheet):
+    def render_footer(self, sheet:Worksheet):
         """
         渲染Excel表尾
 
@@ -1041,8 +1038,7 @@ class ExcelUtil:
         """
         pass
     
-    @classmethod
-    def render_data(cls, sheet:Worksheet, data:List[BaseModel],header_fill:PatternFill=None):
+    def render_data(self, sheet:Worksheet, data:List[BaseModel],header_fill:PatternFill=None):
         """
         渲染Excel数据
         
@@ -1052,16 +1048,15 @@ class ExcelUtil:
         """
         if not header_fill:
             header_fill = PatternFill(
-                **cls.default_header_fill
+                **self.default_header_fill
             )
         
-        cls.render_header(sheet,data[0],header_fill)
+        self.render_header(sheet,header_fill)
         for row_index,row in enumerate(data,start=2):
-            cls.render_row(sheet,row,row_index)
-        cls.render_footer(sheet)
+            self.render_row(sheet,row,row_index)
+        self.render_footer(sheet)
         
-    @classmethod
-    def response(cls, data:List[BaseModel], sheetname:str) -> Response:
+    def export_response(self, data:List[BaseModel], sheetname:str) -> Response:
         """
         响应Excel文件
         
@@ -1072,7 +1067,7 @@ class ExcelUtil:
         Returns:
             Response: 文件流响应
         """
-        output:BytesIO = cls.write(data,sheetname)
+        output:BytesIO = self.write(data,sheetname)
         response = Response(
             response=output.getvalue(),
             status=200,
@@ -1080,6 +1075,71 @@ class ExcelUtil:
             headers={"Content-Disposition": f"attachment; filename={time.time()}.xlsx"}
         )
         return response
+
+    def import_template_response(self, sheetname:str) -> Response:
+        """
+        响应导入模板
+        
+        Args:
+            sheetname(str): 工作表名
+        
+        Returns:
+            Response: 文件流响应
+        """
+        output:BytesIO = self.write_template(sheetname)
+        response = Response(
+            response=output.getvalue(),
+            status=200,
+            mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            headers={"Content-Disposition": f"attachment; filename={self.model.__name__}_import_template.xlsx"}
+        )
+        return response
+    
+    def write_template(self,sheetname:str) -> BytesIO:
+        """
+        写入导入模板
+        
+        Args:
+            sheetname(str): 工作表名
+        
+        Returns:
+            BytesIO: 文件字节流
+        """
+        workbook = Workbook()
+        worksheet = workbook.create_sheet(title=sheetname)
+        workbook.active = worksheet
+        
+        self.render_template(worksheet)
+        
+        output = BytesIO()
+        workbook.save(output)
+        output.seek(0)
+        
+        return output
+    
+    def render_template(self, sheet:Worksheet):
+        """
+        渲染导入模板
+        
+        Args:
+            sheet (Worksheet): 工作表
+        """
+        header_fill = PatternFill(
+            **self.default_header_fill
+        )
+        self.render_header(sheet,header_fill)
+    
+    def import_data(self, dto):
+        """
+        导入数据
+        
+        Args:
+            dto(ImportDto): 导入数据模型
+        
+        Returns:
+            List[BaseModel]: 导入数据模型列表
+        """
+        pass
 
 
 def get_final_type(annotation) -> Type:

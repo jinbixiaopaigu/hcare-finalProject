@@ -201,25 +201,33 @@ class BaseEntity(BaseModel):
                 new_values = data._mapping
         return new_values if new_values else data
     
-    def dump_excel_access(self) -> Generator[Tuple[str,ExcelAccess],None,None]:
-        data = self.model_dump()
-        new_data = {}
-        for k,info in self.model_fields.items():
+    
+    @classmethod
+    def generate_excel_schema(cls) -> Generator[Tuple[str,ExcelAccess],None,None]:
+        for k,info in cls.model_fields.items():
             if info.json_schema_extra is None:continue
             excel_access = info.json_schema_extra.get("excel_access",False)
             if excel_access:
-                value = data.get(k,None)
-                if value and isinstance(excel_access,(list,tuple,)):
-                    new_data[k] = {}
+                if isinstance(excel_access,(list,tuple,)):
                     for access in excel_access:
-                        subvalue = value.get(access.attr,None)
-                        access.val = subvalue
                         yield "{}.{}".format(k,access.attr),access
-                elif value:
-                    excel_access.val = value
+                else:
                     yield k,excel_access
+    
+    def generate_excel_data(self) -> Generator[Tuple[str,ExcelAccess],None,None]:
+        data = self.model_dump()
+        for k,access in self.generate_excel_schema():
+            if "." in k:
+                k1,k2 = k.split(".")
+                sub_data = data.get(k1,{})
+                if sub_data:
+                    val = sub_data.get(k2,None)
+                else:
+                    val = None
             else:
-                continue
+                val = data.get(k)
+            access.val = val
+            yield k,access
     
     def create_by_user(self, user_id: str | int) -> None:
         self.create_by = user_id
