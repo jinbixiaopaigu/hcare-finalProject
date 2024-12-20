@@ -20,7 +20,7 @@ class BaseSerializer:
             try:
                 res = func(*args, **kwargs)
             except HTTPException as e:
-                self.send_http_exception(func, e)
+                # self.send_http_exception(func, e)
                 raise e
             except Exception as e:
                 raise e

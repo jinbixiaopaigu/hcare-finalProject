@@ -468,6 +468,15 @@ class QuerySchemaFactory(BaseSchemaFactory):
         return flag
 
 
+class FormSchemaFactory(AbcSchemaFactory):
+    
+    action = "form"
+    model_config = strict_valid_config
+    
+    def validate_annotation(self, annotation: Type[BaseModel]) -> Optional[Type[BaseModel]]:
+        return None
+
+
 class PathSchemaFactory(AbcSchemaFactory):
     
     action = "path"

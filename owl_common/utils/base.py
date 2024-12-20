@@ -954,14 +954,12 @@ class ExcelUtil:
     default_header_fill = {
         "start_color": "FFFFFF",
         "end_color": "FFFFFF",
-        "font_color": "000000",
         "fill_type": "solid",
     }
     
     default_row_fill = {
         "start_color": "FFFFFF",
         "end_color": "FFFFFF",
-        "font_color": "000000",
         "fill_type": "solid",
     }
     
@@ -981,12 +979,13 @@ class ExcelUtil:
             raise NotFound(description="无法导出excel,数据为空")
         
         data_one = data[0]
-        if not isinstance(data_one,dict):
+        if not isinstance(data_one,BaseModel):
             raise Exception("data格式错误")
                     
         workbook = Workbook(write_only=True)
-        worksheet = workbook.active
-        worksheet.title = sheetname
+        print("workbook created")
+        worksheet = workbook.create_sheet(title=sheetname)
+        print("worksheet created")
         
         cls.render_data(worksheet,data)
         

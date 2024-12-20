@@ -1,7 +1,7 @@
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import ClassVar, Dict, Set
+from typing import ClassVar, Dict, List, Set
 from flask import g, request
 from pydantic import BaseModel
 from werkzeug.datastructures import ImmutableMultiDict
@@ -80,8 +80,11 @@ class QueryReqParser(BaseReqParser):
         self.criterian_meta = CriterianMeta()
         g.criterian_meta = self.criterian_meta
     
+    def validate_request(self) -> Dict:
+        return request.args.to_dict()
+    
     def data(self) -> Dict:
-        data = request.args.to_dict().copy()
+        data = self.validate_request().copy()
         if self.context.is_page:
             page = PageModel.model_validate(data,context=self.context)
             if page.model_fields_set:
@@ -98,7 +101,6 @@ class QueryReqParser(BaseReqParser):
     
     def cast_model(self, bo_model:BaseEntity) -> BaseModel:
         data = self.data()
-        print("data:",data)
         bo = bo_model.model_validate(data)
         return bo
     
@@ -121,15 +123,16 @@ class BodyReqParser(BaseReqParser):
     def validate_request(self) -> Dict:
         content_type = request.headers.get("Content-Type", "").lower()
         minetype = content_type.split(";")[0]
+        print("content_type:", content_type)
         if minetype == self.minetype:
             body: dict | list = request.get_json()
             if not body:
-                return BadRequest(
+                raise BadRequest(
                     description="在{}, body数据不能为空".format(content_type),
                 )
         else:
-            return UnsupportedMediaType(
-                description="content-type不支持application/json 和 application/form-data"
+            raise UnsupportedMediaType(
+                description="content-type仅支持application/json"
             )
         return body
     
@@ -146,10 +149,10 @@ class BodyReqParser(BaseReqParser):
 @dataclass
 class FormReqParser(BaseReqParser):
     
+    minetype: ClassVar[str] = "multipart/form-data"
+    
     def __init__(self, include:Set[str]=None):
         self.include = include
-        
-    minetype: ClassVar[str] = "multipart/form-data"
     
     def validate_request(self) -> Dict:
         content_type = request.headers.get("Content-Type", "").lower()
@@ -157,12 +160,12 @@ class FormReqParser(BaseReqParser):
         if minetype == self.minetype:
             form:ImmutableMultiDict = request.form
             if not form:
-                return BadRequest(
+                raise BadRequest(
                     description="在{}, form数据不能为空".format(content_type),
                 )
             body = form.to_dict()
         else:
-            return UnsupportedMediaType(
+            raise UnsupportedMediaType(
                 description="除了{},content-type不支持{}".format(self.minetype,minetype)
             )
         return body
@@ -176,6 +179,27 @@ class FormReqParser(BaseReqParser):
             if key in self.include:
                 new_data[key] = data[key]
         return new_data
+
+
+@dataclass
+class FormUrlencodedReqParser(QueryReqParser):
+    
+    minetype: ClassVar[str] = "application/x-www-form-urlencoded"
+    
+    def __init__(self, context:VoValidatorContext):
+        super().__init__(context)
+    
+    def validate_request(self) -> Dict:
+        content_type = request.headers.get("Content-Type", "").lower()
+        minetype = content_type.split(";")[0]
+        if minetype == self.minetype:
+            form:ImmutableMultiDict = request.form
+            body = form.to_dict()
+        else:
+            raise UnsupportedMediaType(
+                description="除了{},content-type不支持{}".format(self.minetype,minetype)
+            )
+        return body
     
     
 class FileFormReqParser(FormReqParser):

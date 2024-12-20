@@ -14,7 +14,7 @@ from owl_common.utils.base import ExcelUtil
 from owl_common.domain.entity import SysUser, SysRole
 from owl_common.domain.enum import BusinessType
 from owl_common.descriptor.serializer import BaseSerializer, JsonSerializer
-from owl_common.descriptor.validator import QueryValidator, BodyValidator, PathValidator
+from owl_common.descriptor.validator import FormUrlencodedValidator, QueryValidator, BodyValidator, PathValidator
 from owl_system.service.sys_role import SysRoleService
 from owl_system.service import SysUserService
 from owl_framework.descriptor.permission import HasPerm, PreAuthorize
@@ -128,10 +128,10 @@ def system_delete_users(
 
 
 @reg.api.route("/system/user/export", methods=["POST"])
-@BodyValidator()
+@FormUrlencodedValidator()
 @PreAuthorize(HasPerm("system:user:export"))
 @Log(title="用户管理",business_type=BusinessType.EXPORT)
-@BaseSerializer()
+# @BaseSerializer()
 def system_user_export(dto:SysUser):
     '''
         导出用户数据
@@ -142,7 +142,7 @@ def system_user_export(dto:SysUser):
 
 
 @reg.api.route("/system/user/importData", methods=["POST"])
-@BodyValidator()
+@FormUrlencodedValidator()
 @PreAuthorize(HasPerm("system:user:import"))
 @Log(title="用户管理",business_type=BusinessType.IMPORT)
 @BaseSerializer()

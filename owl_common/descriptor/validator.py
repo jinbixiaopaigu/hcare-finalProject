@@ -11,8 +11,8 @@ from pydantic import BaseModel, ValidationError, validate_call
 from pydantic.fields import FieldInfo
 
 from owl_common.base.reqparser import BaseReqParser, BodyReqParser, \
-    FileFormReqParser, PathReqParser, QueryReqParser, VoValidatorContext
-from owl_common.base.schema_vo import BaseSchemaFactory, BodySchemaFactory, FileSchemaFactory, \
+    FileFormReqParser, FormReqParser, FormUrlencodedReqParser, PathReqParser, QueryReqParser, VoValidatorContext
+from owl_common.base.schema_vo import BaseSchemaFactory, BodySchemaFactory, FileSchemaFactory, FormSchemaFactory, \
     PathSchemaFactory, QuerySchemaFactory
 
 
@@ -257,7 +257,19 @@ class BodyValidator(BaseValidator):
         )
         self.schema_factory = BodySchemaFactory(vo_context)
         self.data_parser = BodyReqParser(vo_context)
-        
+
+
+@dataclass
+class FormUrlencodedValidator(BaseValidator):
+    
+    def __post_init__(self):
+        vo_context = VoValidatorContext(
+            exclude_data_alias=True,
+            is_page=True,
+        )
+        self.schema_factory = QuerySchemaFactory(vo_context)
+        self.data_parser = FormUrlencodedReqParser(vo_context)
+    
 
 @dataclass
 class FileValidator(BaseValidator):
