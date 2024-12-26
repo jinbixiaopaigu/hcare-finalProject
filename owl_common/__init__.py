@@ -31,6 +31,3 @@ def register_listener(module:ModuleType, registry:OwlModuleRegistry):
     registry.app.register_error_handler(
         HTTPException, handle_http_exception
     )
-    registry.api.register_error_handler(
-        HTTPException, handle_http_exception
-    )

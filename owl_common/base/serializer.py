@@ -59,7 +59,9 @@ class HttpException(HTTPException):
         Returns:
             HttpException: HttpException
         """
-        return cls(description=exc.description, response=exc.response)
+        error = cls(description=exc.description, response=exc.response)
+        error.code = exc.code
+        return error
     
     @property
     def name(self) -> str:
