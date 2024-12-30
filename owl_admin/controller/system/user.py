@@ -147,7 +147,7 @@ def system_user_export(dto:SysUser):
 @FileUploadValidator()
 @PreAuthorize(HasPerm("system:user:import"))
 @Log(title="用户管理",business_type=BusinessType.IMPORT)
-@BaseSerializer()
+@JsonSerializer()
 def system_user_importdata(
     file:List[FileStorage],
     update_support: Annotated[bool,BeforeValidator(lambda x:x!="0")]
@@ -158,7 +158,7 @@ def system_user_importdata(
     print("system_user_importdata update_support:",update_support)
     print("system_user_importdata file:",file)
     excel_util = ExcelUtil(SysUser)
-    excel_util.import_data(None)
+    excel_util.import_file(None)
     return AjaxResponse.from_success()
 
 

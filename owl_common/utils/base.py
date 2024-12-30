@@ -1129,18 +1129,21 @@ class ExcelUtil:
         )
         self.render_header(sheet,header_fill)
     
-    def import_data(self, dto):
+    def import_file(self, excel_file:FileStorage):
         """
         导入数据
         
         Args:
-            dto(ImportDto): 导入数据模型
+            excel_file(FileStorage): 导入excel文件
         
         Returns:
             List[BaseModel]: 导入数据模型列表
         """
         pass
 
+    def check_file(self, excel_file:FileStorage):
+        pass
+    
 
 def get_final_type(annotation) -> Type:
     args = get_args(annotation)
