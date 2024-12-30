@@ -11,10 +11,10 @@ from pydantic import BaseModel, ValidationError, validate_call
 from pydantic.fields import FieldInfo
 
 from owl_common.base.reqparser import BaseReqParser, BodyReqParser, \
-    FileFormReqParser, FormReqParser, FormUrlencodedReqParser, PathReqParser, QueryReqParser, VoValidatorContext
-from owl_common.base.schema_vo import BaseSchemaFactory, BodySchemaFactory, FileSchemaFactory, FormSchemaFactory, \
-    PathSchemaFactory, QuerySchemaFactory
-
+    DownloadFileQueryReqParser, UploadFileFormReqParser, PathReqParser, \
+    QueryReqParser, VoValidatorContext
+from owl_common.base.schema_vo import ArbitrarySchemaFactory, \
+    BaseSchemaFactory, BodySchemaFactory, PathSchemaFactory, QuerySchemaFactory
 
 
 class AbcValidatorFunction(ABC):
@@ -187,7 +187,6 @@ class ValidatorViewFunction(AbcValidatorFunction):
             return self.func(*self.args, **self.kwargs)
 
 
-
 @dataclass
 class BaseValidator:
     
@@ -215,7 +214,7 @@ class PathValidator(BaseValidator):
     def __post_init__(self):
         self.schema_factory = PathSchemaFactory()
         self.data_parser = PathReqParser()
-        
+
 
 @dataclass
 class QueryValidator(BaseValidator):
@@ -260,7 +259,7 @@ class BodyValidator(BaseValidator):
 
 
 @dataclass
-class FormUrlencodedValidator(BaseValidator):
+class FileDownloadValidator(BaseValidator):
     
     def __post_init__(self):
         vo_context = VoValidatorContext(
@@ -268,15 +267,17 @@ class FormUrlencodedValidator(BaseValidator):
             is_page=True,
         )
         self.schema_factory = QuerySchemaFactory(vo_context)
-        self.data_parser = FormUrlencodedReqParser(vo_context)
+        self.data_parser = DownloadFileQueryReqParser(vo_context)
 
 
 @dataclass
-class FormValidator(BaseValidator):
-    
+class FileUploadValidator(BaseValidator):
+        
     def __post_init__(self):
-        self.data_parser = FormReqParser()
-        self.schema_factory = FormSchemaFactory()
+        self.schema_factory = ArbitrarySchemaFactory()
+        self.data_parser = UploadFileFormReqParser(
+            is_form=False, is_query=True, is_file=True
+        )
 
 
 @dataclass
@@ -285,5 +286,6 @@ class FileValidator(BaseValidator):
     include:Optional[Set[str]] = field(default=None)
     
     def __post_init__(self):
-        self.data_parser = FileFormReqParser()
-        self.schema_factory = FileSchemaFactory()
+        self.schema_factory = ArbitrarySchemaFactory()
+        self.data_parser = UploadFileFormReqParser()
+        

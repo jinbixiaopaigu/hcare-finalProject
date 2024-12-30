@@ -66,7 +66,7 @@ class BaseSerializer:
         if isinstance(res, Response):
             response = res
         else:
-            response = make_response(res, self.success_code)
+            response = make_response(res, 200)
         return response
 
     

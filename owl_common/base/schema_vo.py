@@ -217,8 +217,9 @@ class BaseSchemaFactory(AbcSchemaFactory):
         Returns:
             Optional[Type]: 合法的类型
         """
-        if issubclass(annotation, BaseEntity):
-            model = self.rebuild_model(model_cls=annotation)
+        bo_model = get_final_model(annotation)
+        if issubclass(bo_model, BaseEntity):
+            model = self.rebuild_model(model_cls=bo_model)
             return model
         else:
             return None
@@ -486,9 +487,8 @@ class PathSchemaFactory(AbcSchemaFactory):
         pass
     
 
-class FileSchemaFactory(AbcSchemaFactory):
+class ArbitrarySchemaFactory(AbcSchemaFactory):
     
-    action = "file"
     model_config = query_valid_config
     
     def __init__(self):
@@ -499,12 +499,11 @@ class FileSchemaFactory(AbcSchemaFactory):
         })
         self.model_config = query_valid_config_copy
     
-    def validate_annotation(self, annotation: Type) -> Optional[Type[MultiFile]]:
+    def validate_annotation(self, annotation: Type) -> Optional[Type[BaseEntity]]:
         bo_model = get_final_model(annotation)
-        if issubclass(bo_model, MultiFile):
+        if issubclass(bo_model, BaseEntity):
             return bo_model
         else:
-            raise Exception(f"注解{annotation.__name__}不是MultiFile模型")
-    
+            return None
     
     

@@ -1,16 +1,15 @@
 
 from abc import ABC, abstractmethod
-from collections import namedtuple
 from dataclasses import dataclass
-from typing import ClassVar, Dict, List, Set, Tuple
+from typing import ClassVar, Dict
 from flask import g, request
 from pydantic import BaseModel
 from werkzeug.datastructures import ImmutableMultiDict
 from werkzeug.exceptions import BadRequest,UnsupportedMediaType
 
 from owl_common.base.model import BaseEntity, CriterianMeta, ExtraModel, \
-    BaseEntity, MultiFile, OrderModel, PageModel, VoValidatorContext
-from owl_common.base.schema_vo import BaseSchemaFactory, FileSchemaFactory, QuerySchemaFactory
+    BaseEntity, OrderModel, PageModel, VoValidatorContext
+from owl_common.base.schema_vo import BaseSchemaFactory, QuerySchemaFactory
 
 
 class AbsReqParser(ABC):
@@ -65,15 +64,6 @@ class BaseReqParser(AbsReqParser):
 
     def prepare(self):
         pass
-
-
-@dataclass
-class ReqData:
-    
-    query: Dict = None
-    body: Dict = None
-    form: Dict = None
-    file: Dict = None
     
 
 class QueryReqParser(BaseReqParser):
@@ -157,7 +147,7 @@ class BodyReqParser(BaseReqParser):
 
 
 @dataclass
-class FormUrlencodedReqParser(QueryReqParser):
+class FormUrlencodedQueryReqParser(QueryReqParser):
     
     minetype: ClassVar[str] = "application/x-www-form-urlencoded"
     
@@ -175,7 +165,14 @@ class FormUrlencodedReqParser(QueryReqParser):
                 description="除了{},content-type不支持{}".format(self.minetype,minetype)
             )
         return body
+
+
+@dataclass
+class DownloadFileQueryReqParser(FormUrlencodedQueryReqParser):
     
+    def __init__(self, context:VoValidatorContext):
+        super().__init__(context)
+
 
 class FormReqParser(BaseReqParser):
     
@@ -185,89 +182,43 @@ class FormReqParser(BaseReqParser):
         self, 
         is_form:bool=True,
         is_query:bool=False,
-        is_file:bool=False
+        is_file:bool|None=None,
         ):
         self.is_form = is_form
         self.is_query = is_query
         self.is_file = is_file
-        self._data = ReqData()
         
-    def validate_request(self) -> ReqData:
+    def validate_request(self) -> Dict:
         content_type = request.headers.get("Content-Type", "").lower()
         minetype = content_type.split(";")[0]
+        new_data = {}
         if minetype == self.minetype:
-            self._data.form = request.form.to_dict() if self.is_form else None
-            self._data.query = request.args.to_dict() if self.is_query else None
-            self._data.file = request.files.to_dict() if self.is_file else None
+            if self.is_form:
+                new_data.update(request.form.to_dict())
+            if self.is_query:
+                new_data.update(request.args.to_dict())
+            if self.is_file:
+                new_data.update(request.files.to_dict(flat=False))
         else:
             raise UnsupportedMediaType(
                 description="除了{},content-type不支持{}".format(self.minetype,minetype)
             )
-        return self._data
+        return new_data
     
     def data(self) -> Dict:
         data = self.validate_request()
-        
         return data
 
     
-class FileFormReqParser(FormReqParser):
+class UploadFileFormReqParser(FormReqParser):
     
     def validate_request(self) -> Dict:
-        super().validate_request()
-        if not request.files:
-            raise BadRequest(
-                description="在{}, 文件数据不能为空".format(self.minetype),
-            )
-        return request.files
+        return super().validate_request()
 
-    def data(self) -> Dict:
-        data = self.validate_request().copy()
-        if not self.include:
-            return data
-        new_data = {}
-        for key in data:
-            if key in self.include:
-                new_data[key] = data[key]
-        if not new_data:
-            raise BadRequest(
-                description="在{}, 文件数据不能为空".format(self.minetype),
-            )
-        return new_data
-    
-    def cast_model(self, bo_model:MultiFile) -> MultiFile:
-        data = self.data()
-        return bo_model.from_obj(data)
-
-
-class UploadFileParser(BaseReqParser):
-    
-    minetype: ClassVar[str] = "multipart/form-data"
-    
-    def __init__(self, include:Set[str]=None):
-        self.include = include
-    
-    def validate_request(self) -> Tuple:
-        content_type = request.headers.get("Content-Type", "").lower()
-        minetype = content_type.split(";")[0]
-        if minetype == self.minetype:
-            data = request.files, request.args
-        else:
-            raise UnsupportedMediaType(
-                description="除了{},content-type不支持{}".format(self.minetype,minetype)
-            )
-        return data
-    
     def data(self) -> Dict:
         data = self.validate_request()
-        if not self.include:
-            return data
-        new_data = {}
-        for key in data:
-            if key in self.include:
-                new_data[key] = data[key]
-        return new_data
-        
+        return data
+    
             
 class StreamReqParser(BaseReqParser):
 

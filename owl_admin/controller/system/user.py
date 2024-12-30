@@ -4,6 +4,7 @@
 from typing import List
 from pydantic import BeforeValidator, Field
 from typing_extensions import Annotated
+from werkzeug.datastructures import ImmutableMultiDict, FileStorage
 from flask_login import login_required
 
 from owl_common.base.transformer import ids_to_list
@@ -14,7 +15,8 @@ from owl_common.utils.base import ExcelUtil
 from owl_common.domain.entity import SysUser, SysRole
 from owl_common.domain.enum import BusinessType
 from owl_common.descriptor.serializer import BaseSerializer, JsonSerializer
-from owl_common.descriptor.validator import FormUrlencodedValidator, FormValidator, QueryValidator, BodyValidator, PathValidator
+from owl_common.descriptor.validator import FileDownloadValidator, \
+    FileUploadValidator, QueryValidator, BodyValidator, PathValidator
 from owl_system.service.sys_role import SysRoleService
 from owl_system.service import SysUserService
 from owl_framework.descriptor.permission import HasPerm, PreAuthorize
@@ -128,7 +130,7 @@ def system_delete_users(
 
 
 @reg.api.route("/system/user/export", methods=["POST"])
-@FormUrlencodedValidator()
+@FileDownloadValidator()
 @PreAuthorize(HasPerm("system:user:export"))
 @Log(title="用户管理",business_type=BusinessType.EXPORT)
 @BaseSerializer()
@@ -142,18 +144,22 @@ def system_user_export(dto:SysUser):
 
 
 @reg.api.route("/system/user/importData", methods=["POST"])
-@FormValidator()
+@FileUploadValidator()
 @PreAuthorize(HasPerm("system:user:import"))
 @Log(title="用户管理",business_type=BusinessType.IMPORT)
 @BaseSerializer()
-def system_user_importdata(dto:SysUser):
+def system_user_importdata(
+    file:List[FileStorage],
+    update_support: Annotated[bool,BeforeValidator(lambda x:x!="0")]
+):
     '''
         导入用户模板
     '''
-    print("system_user_importdata:",dto)
+    print("system_user_importdata update_support:",update_support)
+    print("system_user_importdata file:",file)
     excel_util = ExcelUtil(SysUser)
-    excel_util.import_data(dto)
-    
+    excel_util.import_data(None)
+    return AjaxResponse.from_success()
 
 
 @reg.api.route("/system/user/importTemplate", methods=["POST"])
