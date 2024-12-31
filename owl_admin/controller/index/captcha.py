@@ -24,11 +24,17 @@ def index_captcha_image():
     ImageCaptcha.character_rotate = (-15, 15)
     ImageCaptcha.character_warp_dx = (0.1, 0.1)
     ImageCaptcha.character_warp_dy = (0.1, 0.1)
-    ImageCaptcha.word_offset_dx = 0.2
+    ImageCaptcha.word_offset_dx = 0.1
     ImageCaptcha.word_space_probability = 0
-    image = ImageCaptcha(width=230, height=76, font_sizes=[60])
-    
-    code = ''.join(random.sample(string.ascii_letters + string.digits, 4))
+    image = ImageCaptcha(
+        width=160, 
+        height=60, 
+        font_sizes=[42,45,48]
+    )
+    wait_letters = string.ascii_letters + string.digits
+    exclude_letters = "oO0iIl1"
+    sample_letters = [i for i in wait_letters if i not in exclude_letters]
+    code = ''.join(random.sample(sample_letters, 4))
     uuid_str = uuid.uuid4().hex
     verifyKey = Constants.CAPTCHA_CODE_KEY + uuid_str
     redis_cache.set(verifyKey, code, ex=Constants.CAPTCHA_EXPIRATION*60)
