@@ -1146,7 +1146,9 @@ class ExcelUtil:
             List[BaseModel]: 导入数据模型列表
         """
         self.check_file(file)
-        file_stream = BytesIO(file.read())
+        file_stream = BytesIO()
+        file_stream.write(file.read())
+        # file_stream = BytesIO(file.read())
         data = self.read(file_stream, sheetname)
         return data
         
