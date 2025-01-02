@@ -8,7 +8,7 @@ from owl_common.exception import ServiceException
 from owl_common.sqlalchemy.transaction import Transactional
 from owl_common.domain.entity import SysRole, SysUser
 from owl_common.utils import security_util
-from owl_common.utils.base import StringUtil
+from owl_common.utils.base import LogUtil, StringUtil
 from owl_framework.descriptor.datascope import DataScope
 from owl_system.domain.entity import SysPost, SysUserPost, SysUserRole
 from owl_system.mapper import SysUserMapper
@@ -17,6 +17,7 @@ from owl_system.mapper.sys_role import SysRoleMapper
 from owl_system.mapper.sys_user_post import SysUserPostMapper
 from owl_system.mapper.sys_user_role import SysUserRoleMapper
 from owl_admin.ext import db
+from owl_system.service.sys_config import SysConfigService
 
 
 class SysUserService:
@@ -426,15 +427,50 @@ class SysUserService:
         return True
                 
     @classmethod
-    def import_user(cls, users: List[SysUser]) -> str:
+    def import_user(cls, users: List[SysUser],is_update:bool=False) -> str:
         """
         导入用户
 
         Args:
             users (List[SysUser]):  用户列表
+            is_update (bool): 是否更新
 
         Returns:
-            str: 导入结果
+            str: 导入消息结果
         """
-        # todo
-        pass
+        if not users:
+            raise ServiceException("导入用户不能为空")
+        success_count = 0
+        fail_count = 0
+        success_msg = ""
+        fail_msg = ""
+        default_password = SysConfigService.select_config_by_key("sys.user.initPassword")
+        for user in users:
+            try:
+                dto = SysUserMapper.select_user_by_user_name(user.user_name)
+                if not dto:
+                    user.password = security_util.encrypt_password(default_password)
+                    user.create_by_user(security_util.get_user_id())
+                    cls.insert_user(user)
+                    success_count += 1
+                    success_msg += f"<br/> 第{success_count}个账号，导入成功：{user.user_name}"
+                elif is_update:
+                    user.update_by_user(security_util.get_user_id())
+                    cls.update_user(user)
+                    success_count += 1
+                    success_msg += f"<br/> 第{success_count}个账号，更新成功：{user.user_name}"
+                else:
+                    fail_count += 1
+                    fail_msg += f"<br/> 第{fail_count}个账号，已存在：{user.user_name}"
+            except Exception as e:
+                fail_count += 1
+                fail_msg += f"<br/> 第{fail_count}个账号，导入失败：{user.user_name}，原因：{e}"
+                LogUtil.logger.error(f"导入用户失败，原因：{e}")
+        if fail_count > 0:
+            fail_msg = f"导入成功{success_count}个，失败{fail_count}个。{success_msg} \
+                <br/>{fail_msg}" + fail_msg
+            raise ServiceException(fail_msg)
+        else:
+            success_msg = f"恭喜您，数据已全部导入成功！共 {success_count} 条，数据如下：" \
+                + success_msg
+        return success_msg

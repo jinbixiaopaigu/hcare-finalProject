@@ -155,11 +155,11 @@ def system_user_importdata(
     '''
         导入用户模板
     '''
-    print("system_user_importdata update_support:",update_support)
-    print("system_user_importdata file:",file)
+    file = file[0]
     excel_util = ExcelUtil(SysUser)
-    excel_util.import_file(None)
-    return AjaxResponse.from_success()
+    datas = excel_util.import_file(file,sheetname="用户数据")
+    msg = SysUserService.import_user(datas,update_support)
+    return AjaxResponse.from_success(msg=msg)
 
 
 @reg.api.route("/system/user/importTemplate", methods=["POST"])
@@ -170,7 +170,7 @@ def system_user_importtemplate():
         导出模板
     '''
     excel_util = ExcelUtil(SysUser)
-    return excel_util.import_template_response("用户数据")
+    return excel_util.import_template_response(sheetname="用户数据")
     
     
 @reg.api.route("/system/user/resetPwd", methods=["PUT"])

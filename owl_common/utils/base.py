@@ -2,22 +2,21 @@
 # @Author  : shaw-lee
 
 from io import BytesIO
-import os,socket,threading,re,base64,inspect,ipaddress,math,psutil
-import typing_extensions
+import os,socket,threading,re,base64,ipaddress,math,psutil
 import time
-from typing import Any, Callable, Dict, List, Literal, Optional, Tuple, Type, get_args, get_origin
+from typing import Callable, List, Literal, Optional, Type, get_args, \
+    get_origin
 from datetime import datetime
-from openpyxl import Workbook
+from openpyxl import Workbook, load_workbook
 from openpyxl.worksheet.worksheet import Worksheet
-from openpyxl.styles import PatternFill,Alignment
+from openpyxl.styles import PatternFill
 from pydantic import BaseModel
-from pydantic._internal import _typing_extra
 from werkzeug.exceptions import NotFound
 from werkzeug.datastructures import FileStorage
+from werkzeug.utils import secure_filename
 from flask import Response, request
 from jwt import api_jwt
-
-from owl_common.base.schema_excel import ExcelAccess
+from logging import Logger
 
 from ..constant import Constants
 
@@ -966,6 +965,12 @@ class ExcelUtil:
         "fill_type": None, # "solid" or None
     }
     
+    allowed_extensions = ["xlsx","xls"]
+    allowed_content_types = [
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    ]
+    max_content_length = 6 * 1024 * 1024 # 6M
+    
     def __init__(self, model:Type[BaseModel]):
         self.model = model
     
@@ -1129,21 +1134,79 @@ class ExcelUtil:
         )
         self.render_header(sheet,header_fill)
     
-    def import_file(self, excel_file:FileStorage):
+    def import_file(self, file:FileStorage, sheetname:str) -> List[BaseModel]:
         """
         导入数据
         
         Args:
-            excel_file(FileStorage): 导入excel文件
+            file(FileStorage): 导入文件
+            sheetname(str): 工作表名
         
         Returns:
             List[BaseModel]: 导入数据模型列表
         """
-        pass
-
-    def check_file(self, excel_file:FileStorage):
-        pass
+        self.check_file(file)
+        file_stream = BytesIO(file.read())
+        data = self.read(file_stream, sheetname)
+        return data
+        
+    def check_file(self, file:FileStorage):
+        '''
+        检查文件是否合法
+        '''
+        filename = secure_filename(file.filename)
+        if "." not in filename:
+            raise Exception("文件名称不正确")
+        ext = filename.rsplit(".", 1)[1]
+        if ext not in self.allowed_extensions:
+            raise Exception("文件名称扩展名不正确")
+        if file.content_type not in self.allowed_content_types:
+            raise Exception("文件类型不正确")
+        # 文件大小
+        file.seek(0,os.SEEK_END)
+        if file.tell() > self.max_content_length:
+            raise Exception("文件大小超过限制")
     
+    def read(self, stream:BytesIO,sheetname:str) -> List[BaseModel]:
+        """
+        读取文件数据
+        
+        Args:
+            stream(BytesIO): 导入文件流
+            sheetname(str): 工作表名
+        
+        Returns:
+            List[BaseModel]: 导入数据模型列表
+        """
+        workbook = load_workbook(stream,read_only=True,data_only=True)
+        if sheetname not in workbook.sheetnames:
+            raise NotFound(description="工作表不存在")
+        worksheet = workbook[sheetname]
+        headers = worksheet[1]
+        data = []
+        for row in worksheet.iter_rows(min_row=2):
+            row_data = {}
+            for header, cell in zip(headers,row):
+                row_data[header.value] = cell.value
+            new_row = self.model.rebuild_excel_schema(row_data)
+            data.append(self.model(**new_row))
+        return data
+
+
+class LogUtil:
+    
+    @classmethod
+    def logger(cls) -> Logger:
+        """
+        获取日志对象
+
+        Returns:
+            logging.Logger: 日志对象
+        """
+        from flask import current_app
+        app = current_app
+        return app.logger
+
 
 def get_final_type(annotation) -> Type:
     args = get_args(annotation)

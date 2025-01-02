@@ -178,7 +178,10 @@ class BaseEntity(BaseModel):
     model_config = strict_base_config.copy()
     
     @model_validator(mode="before")
-    def model_before_validation(cls, data:Any, info:ValidationInfo) -> dict:
+    def model_before_validation(cls, data:Any, info:ValidationInfo) -> Dict:
+        '''
+        数据校验前的处理
+        '''
         new_values = {}
         if isinstance(info.context,DbValidatorContext):
             db_columns_alias = info.context.col_entity_list
@@ -204,6 +207,9 @@ class BaseEntity(BaseModel):
     
     @classmethod
     def generate_excel_schema(cls) -> Generator[Tuple[str,ExcelAccess],None,None]:
+        '''
+        生成excel的schema
+        '''
         for k,info in cls.model_fields.items():
             if info.json_schema_extra is None:continue
             excel_access = info.json_schema_extra.get("excel_access",False)
@@ -214,7 +220,25 @@ class BaseEntity(BaseModel):
                 else:
                     yield k,excel_access
     
+    @classmethod
+    def rebuild_excel_schema(cls,row:Dict[str,str]) -> Dict[str,str]:
+        '''
+        重新修改excel的schema，将别名修改为实际字段名
+        '''
+        new_row = {}
+        for k,access in cls.generate_excel_schema():
+            val = row.get(access.name)
+            if "." in k:
+                k1,k2 = k.split(".")
+                new_row.setdefault(k1,{})[k2] = val
+            else:
+                new_row[k] = val
+        return new_row
+    
     def generate_excel_data(self) -> Generator[Tuple[str,ExcelAccess],None,None]:
+        '''
+        生成excel数据
+        '''
         data = self.model_dump()
         for k,access in self.generate_excel_schema():
             if "." in k:
@@ -361,7 +385,7 @@ class VoModel(BaseModel):
     )
 
     @model_validator(mode="before")
-    def model_before_validation(cls, data:Any, info:ValidationInfo) -> dict:
+    def model_before_validation(cls, data:Any, info:ValidationInfo) -> Dict:
         """
         处理data中的别名
 
@@ -370,7 +394,7 @@ class VoModel(BaseModel):
             info (ValidationInfo): 验证信息
 
         Returns:
-            dict: 处理后的数据
+            Dict: 处理后的数据
         """
         new_data = {}
         for k,finfo in cls.model_fields.items():
@@ -518,7 +542,7 @@ class OrderModel(VoModel):
     is_asc: Annotated[Literal["asc", "desc"],Field(default="asc")]
     
     @field_validator("order_by_column",mode="before")
-    def order_by_column_before_validation(cls, value:str, info:ValidationInfo) -> dict:
+    def order_by_column_before_validation(cls, value:str, info:ValidationInfo) -> List[str]:
         value = value.split(",")
         if info.context and isinstance(info.context,VoValidatorContext):
             for val in value:

@@ -4,7 +4,7 @@
 import os
 from typing import Dict, Optional
 from logging.handlers import RotatingFileHandler
-
+from logging import Logger
 
 class OwlLog:
 
