@@ -1180,7 +1180,8 @@ class ExcelUtil:
         Returns:
             List[BaseModel]: 导入数据模型列表
         """
-        workbook = load_workbook(stream,read_only=True,data_only=True)
+        
+        workbook = (stream,read_only=True,data_only=True)
         if sheetname not in workbook.sheetnames:
             raise NotFound(description="工作表不存在")
         worksheet = workbook[sheetname]
