@@ -58,7 +58,6 @@ def system_get_user(id:Optional[int]=None):
     setattr(ajax_response,"posts",posts)
     if id:
         user = SysUserService.select_user_by_id(id)
-        print("id: {} user: {}".format(id,user))
         setattr(ajax_response,"data",user)
         post_ids = SysPostService.select_post_list_by_user_id(id)
         setattr(ajax_response,"post_ids",post_ids)

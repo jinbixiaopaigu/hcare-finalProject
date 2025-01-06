@@ -217,10 +217,11 @@ class SysUserService:
         Returns:
             bool: 操作结果
         """
-        flag = SysUserMapper.insert_user(user)
+        last_pid = SysUserMapper.insert_user(user)
+        user.user_id = last_pid
         cls.insert_user_post_by_user(user)
         cls.insert_user_role_by_user(user)
-        return flag > 0
+        return last_pid > 0
     
     @classmethod
     def register_user(cls, user: SysUser) -> bool:

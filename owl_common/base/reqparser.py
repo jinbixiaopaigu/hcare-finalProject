@@ -123,7 +123,6 @@ class BodyReqParser(BaseReqParser):
     def validate_request(self) -> Dict:
         content_type = request.headers.get("Content-Type", "").lower()
         minetype = content_type.split(";")[0]
-        print("content_type:", content_type)
         if minetype == self.minetype:
             body: dict | list = request.get_json()
             if not body:

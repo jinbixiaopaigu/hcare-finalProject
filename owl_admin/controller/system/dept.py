@@ -38,7 +38,7 @@ def system_dept_list_exclude(id:int):
     rows = SysDeptService.select_dept_list(None)
     rows_copy = []
     for row in rows:
-        if row.id != id:
+        if row.dept_id != id:
             rows_copy.append(row)
     ajax_response = AjaxResponse.from_success(data=rows_copy)
     return ajax_response

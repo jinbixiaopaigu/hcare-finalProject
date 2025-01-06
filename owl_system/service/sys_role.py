@@ -194,7 +194,8 @@ class SysRoleService:
         Returns:
             int: 新增角色ID
         """
-        SysRoleMapper.insert_role(role)
+        last_id = SysRoleMapper.insert_role(role)
+        role.role_id = last_id
         return cls.insert_role_menu(role)
 
     @classmethod

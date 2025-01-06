@@ -410,7 +410,7 @@ class SysDept(AuditEntity):
     
     del_flag: Optional[str] = None  
     
-    parent_name: Annotated[str,Field(default=None,exclude=True,vo=VoAccess(body=False))]
+    parent_name: Annotated[Optional[str],Field(default=None,exclude=True,vo=VoAccess(body=False))]
     
     children: Annotated[List["SysDept"],Field(default=[],vo=VoAccess(body=False))]
     
