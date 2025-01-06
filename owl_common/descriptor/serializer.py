@@ -8,6 +8,7 @@ from werkzeug.exceptions import HTTPException, InternalServerError
 
 from owl_common.base.model import BaseEntity,VoSerializerContext
 from owl_common.base.signal import log_signal
+from owl_common.exception import ServiceException
 from owl_common.utils.base import DescriptUtil
 
 

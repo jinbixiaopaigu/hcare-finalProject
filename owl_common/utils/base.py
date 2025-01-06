@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 # @Author  : shaw-lee
 
-from io import BytesIO
+from io import BufferedReader, BytesIO
+import io
 import os,socket,threading,re,base64,ipaddress,math,psutil
+from zipfile import is_zipfile
 import time
 from typing import Callable, List, Literal, Optional, Type, get_args, \
     get_origin
@@ -17,6 +19,8 @@ from werkzeug.utils import secure_filename
 from flask import Response, request
 from jwt import api_jwt
 from logging import Logger
+
+from owl_common.base.snippet import classproperty
 
 from ..constant import Constants
 
@@ -1146,10 +1150,8 @@ class ExcelUtil:
             List[BaseModel]: 导入数据模型列表
         """
         self.check_file(file)
-        file_stream = BytesIO()
-        file_stream.write(file.read())
-        # file_stream = BytesIO(file.read())
-        data = self.read(file_stream, sheetname)
+        buffer = io.BufferedReader(file.stream)
+        data = self.read_buffer(buffer, sheetname)
         return data
         
     def check_file(self, file:FileStorage):
@@ -1169,19 +1171,21 @@ class ExcelUtil:
         if file.tell() > self.max_content_length:
             raise Exception("文件大小超过限制")
     
-    def read(self, stream:BytesIO,sheetname:str) -> List[BaseModel]:
+    def read_buffer(self, buffer:BufferedReader,sheetname:str) -> List[BaseModel]:
         """
-        读取文件数据
+        读取文件流
         
         Args:
-            stream(BytesIO): 导入文件流
+            buffer(BufferedReader): 导入文件流
             sheetname(str): 工作表名
         
         Returns:
             List[BaseModel]: 导入数据模型列表
         """
-        
-        workbook = (stream,read_only=True,data_only=True)
+        try:
+            workbook = load_workbook(buffer,read_only=True,data_only=True)
+        except Exception as e:
+            raise Exception("文件格式不正确")
         if sheetname not in workbook.sheetnames:
             raise NotFound(description="工作表不存在")
         worksheet = workbook[sheetname]
@@ -1197,8 +1201,8 @@ class ExcelUtil:
 
 
 class LogUtil:
-    
-    @classmethod
+
+    @classproperty
     def logger(cls) -> Logger:
         """
         获取日志对象
