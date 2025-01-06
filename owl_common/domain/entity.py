@@ -357,8 +357,8 @@ class SysDictData(AuditEntity):
     ]
     
     css_class: Annotated[
-        str,
-        Field(default=None)
+        Optional[str],
+        Field(default=None,vo=VoAccess(body=False))
     ]
     
     list_class: Annotated[

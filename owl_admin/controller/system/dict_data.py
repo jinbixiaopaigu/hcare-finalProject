@@ -21,7 +21,7 @@ from ... import reg
 
 
 @reg.api.route("/system/dict/data/list", methods=["GET"])
-@QueryValidator()
+@QueryValidator(is_page=True)
 @PreAuthorize(HasPerm("system:dict:list"))
 @JsonSerializer()
 def system_dict_data_list(dto:SysDictData):
