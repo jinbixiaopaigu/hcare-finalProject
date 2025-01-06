@@ -28,3 +28,12 @@ class ServiceException(AcceptedException):
     
     description = 'Service Accept Status'
     
+
+class CaptchaException(AcceptedException):
+    
+    description = 'Captcha Accept Status'
+    
+
+class CaptchaExpireException(AcceptedException):
+    
+    description = 'Captcha Expire Status'

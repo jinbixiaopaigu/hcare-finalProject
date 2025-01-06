@@ -463,11 +463,15 @@ class SysUserService:
                     fail_msg += f"<br/> 第{fail_count}个账号，已存在：{user.user_name}"
             except Exception as e:
                 fail_count += 1
-                fail_msg += f"<br/> 第{fail_count}个账号，导入失败：{user.user_name}，原因：{e}"
+                fail_msg += f"<br/> 第{fail_count}个账号，导入失败：{user.user_name}，\
+                    原因：{e.__class__.__name__}"
                 LogUtil.logger.error(f"导入用户失败，原因：{e}")
         if fail_count > 0:
-            fail_msg = f"导入成功{success_count}个，失败{fail_count}个。{success_msg} \
-                <br/>{fail_msg}" + fail_msg
+            if success_msg:
+                fail_msg = f"导入成功{success_count}个，失败{fail_count}个。{success_msg} \
+                    <br/>" + fail_msg
+            else:
+                fail_msg = f"导入成功{success_count}个，失败{fail_count}个。{fail_msg}"
             raise ServiceException(fail_msg)
         else:
             success_msg = f"恭喜您，数据已全部导入成功！共 {success_count} 条，数据如下：" \
