@@ -3,49 +3,28 @@
 
 # todo: 完善异常类
 
-from werkzeug.exceptions import HTTPException,InternalServerError
-
-class CaptchaException(HTTPException):
-    pass
+from werkzeug.exceptions import HTTPException
 
 
-class CaptchaExpireException(HTTPException):
-    pass
-
-
-class UserException(HTTPException):
-    pass
-
-
-class UserPasswordNotMatchException(HTTPException):
-    pass
-
-
-class UserNotFound(HTTPException):
-    pass
-
-
-class UserExistsError(HTTPException):
-    pass
-
-
-class ServiceException(InternalServerError):
+class CreatedException(HTTPException):
     
-    code = 500
-    description = 'Service Error'
+    code = 201
+    description = 'Request Create Status'
 
-
-class BusinessException(InternalServerError):
     
-    code = 500
-    description = 'Business Error'
+class AcceptedException(HTTPException):
     
-
-class MapperException(HTTPException):
-    
-    pass
+    code = 202
+    description = 'Request Accept Status'
 
 
-class MapperDataNotFound(MapperException):
+class NoContentException(HTTPException):
     
-    pass
+    code = 204
+    description = 'Request No Content Status'
+
+
+class ServiceException(AcceptedException):
+    
+    description = 'Service Accept Status'
+    

@@ -217,7 +217,6 @@ class SysUserService:
             bool: 操作结果
         """
         flag = SysUserMapper.insert_user(user)
-        print("flag:",flag)
         cls.insert_user_post_by_user(user)
         cls.insert_user_role_by_user(user)
         return flag > 0
