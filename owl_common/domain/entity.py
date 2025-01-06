@@ -428,7 +428,7 @@ class TreeSelect(BaseModel):
     
     @classmethod
     def from_menu(cls, menu: SysMenu) -> "TreeSelect":
-        return cls(id=menu.menu_id, label=menu.menu_name, children=[cls.from_dept(child) for child in menu.children])
+        return cls(id=menu.menu_id, label=menu.menu_name, children=[cls.from_menu(child) for child in menu.children])
     
     @classmethod
     def from_dept(cls, dept: SysDept) -> "TreeSelect":

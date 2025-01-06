@@ -33,6 +33,20 @@ class SysRoleService:
         return SysRoleMapper.select_role_list(query)
 
     @classmethod
+    def select_role_all(cls) -> List[SysRole]:
+        """
+        查询所有角色数据
+
+        Args:
+            query (SysRole): 包含查询条件的传输对象
+
+        Returns:
+            List[SysRole]: 角色列表
+
+        """
+        return SysRoleMapper.select_role_all()
+    
+    @classmethod
     def select_roles_by_user_id(cls, user_id:int) -> List[SysRole]:
         """
         根据用户ID查询角色列表

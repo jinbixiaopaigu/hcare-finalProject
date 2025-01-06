@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # @Author  : shaw-lee
 
-from typing import List
+from typing import List, Optional
 from pydantic import BeforeValidator, Field
 from typing_extensions import Annotated
 from werkzeug.datastructures import ImmutableMultiDict, FileStorage
@@ -17,6 +17,8 @@ from owl_common.domain.enum import BusinessType
 from owl_common.descriptor.serializer import BaseSerializer, JsonSerializer
 from owl_common.descriptor.validator import FileDownloadValidator, \
     FileUploadValidator, QueryValidator, BodyValidator, PathValidator
+from owl_system.domain.entity import SysPost
+from owl_system.service.sys_post import SysPostService
 from owl_system.service.sys_role import SysRoleService
 from owl_system.service import SysUserService
 from owl_framework.descriptor.permission import HasPerm, PreAuthorize
@@ -37,16 +39,30 @@ def system_user_list(dto:SysUser):
     return table_response
 
 
+@reg.api.route("/system/user/", methods=["GET"])
 @reg.api.route("/system/user/<int:id>", methods=["GET"])
 @PathValidator()
 @PreAuthorize(HasPerm("system:user:query"))
 @JsonSerializer()
-def system_get_user(id:int):
+def system_get_user(id:Optional[int]=None):
     '''
         获取用户详情
     '''
-    user = SysUserService.select_user_by_id(id)
-    ajax_response = AjaxResponse.from_success(data=user)
+    SysUserService.check_user_data_scope(id)
+    ajax_response = AjaxResponse.from_success()
+    roles:List[SysRole] = SysRoleService.select_role_all()
+    posts:List[SysPost] = SysPostService.select_post_all()
+    if not SecurityUtil.is_admin(id):
+        roles = [role for role in roles if not role.is_admin()]
+    setattr(ajax_response,"roles",roles)
+    setattr(ajax_response,"posts",posts)
+    if id:
+        user = SysUserService.select_user_by_id(id)
+        print("id: {} user: {}".format(id,user))
+        setattr(ajax_response,"data",user)
+        post_ids = SysPostService.select_post_list_by_user_id(id)
+        setattr(ajax_response,"post_ids",post_ids)
+        setattr(ajax_response,"role_ids",user.role_ids)
     return ajax_response
 
 

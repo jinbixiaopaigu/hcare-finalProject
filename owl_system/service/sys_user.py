@@ -189,18 +189,19 @@ class SysUserService:
             raise ServiceException("不允许操作超级管理员用户")
     
     @classmethod
-    def check_user_data_scope(cls, user_id: int):
+    def check_user_data_scope(cls, user_id: Optional[int]):
         """
         检查用户数据权限
 
         Args:
-            user_id (int): 用户ID
+            user_id (Optional[int]): 用户ID
 
         Raises:
             ServiceException: 无权限访问用户数据
         """
         if not security_util.login_user_is_admin():
-            users: List[SysUser] = cls.select_user_list(user_id)
+            user = SysUser(user_id=user_id) if user_id else SysUser()
+            users: List[SysUser] = cls.select_user_list(user)
             if not users:
                 raise ServiceException("没有权限访问用户数据")
             

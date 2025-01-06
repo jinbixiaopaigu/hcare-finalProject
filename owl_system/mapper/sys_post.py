@@ -87,7 +87,7 @@ class SysPostMapper:
             List[int]: 岗位ID列表
         """        
         stmt = select(SysPostPo.post_id).select_from(SysPostPo) \
-            .join(SysUserPostPo, SysUserPostPo.post_id == SysPostPo.id) \
+            .join(SysUserPostPo, SysUserPostPo.post_id == SysPostPo.post_id) \
            .join(SysUserPo, SysUserPo.user_id == SysUserPostPo.user_id) \
            .where(SysUserPo.user_id == user_id)
         return db.session.execute(stmt).scalars().all()
