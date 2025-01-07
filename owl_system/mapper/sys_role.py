@@ -27,9 +27,9 @@ class SysRoleMapper:
     default_columns = ColumnEntityList(SysRolePo, default_fields)
     
     default_select = select(*default_columns).distinct() \
-        .join(SysUserRolePo, SysUserRolePo.role_id == SysRolePo.role_id) \
-        .join(SysUserPo,SysUserPo.user_id == SysUserRolePo.user_id) \
-        .join(SysDeptPo,SysDeptPo.dept_id == SysUserPo.dept_id)
+        .outerjoin(SysUserRolePo, SysUserRolePo.role_id == SysRolePo.role_id) \
+        .outerjoin(SysUserPo,SysUserPo.user_id == SysUserRolePo.user_id) \
+        .outerjoin(SysDeptPo,SysDeptPo.dept_id == SysUserPo.dept_id)
 
     @classmethod
     def select_role_list(cls, role: SysRole) -> List[SysRole]:
@@ -63,7 +63,7 @@ class SysRoleMapper:
         stmt = cls.default_select.where(*criterions)
         if "criterian_meta" in g and g.criterian_meta.page:
             g.criterian_meta.page.stmt = stmt
-        
+                
         rows = db.session.execute(stmt).all()
         
         eos = list()
