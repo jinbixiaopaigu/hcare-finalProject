@@ -116,20 +116,20 @@ npm run dev
 
 <table>
     <tr>
-        <td><img src="https://pic1.imgdb.cn/item/677c9c12d0e0a243d4f0c490.png"/></td>
-        <td><img src="https://pic1.imgdb.cn/item/677c9c22d0e0a243d4f0c4ab.png"/></td>
+        <td><img src="https://pic1.imgdb.cn/item/677c9c12d0e0a243d4f0c490.png" alt="用户管理.PNG"/></td>
+        <td><img src="https://pic1.imgdb.cn/item/677c9c22d0e0a243d4f0c4ab.png" alt="菜单管理.PNG"/></td>
     </tr>
     <tr>
-        <td><img src="https://pic1.imgdb.cn/item/677c9c25d0e0a243d4f0c4af.png"/></td>
-        <td><img src="https://pic1.imgdb.cn/item/677c9c27d0e0a243d4f0c4b4.png"/></td>
+        <td><img src="https://pic1.imgdb.cn/item/677c9c25d0e0a243d4f0c4af.png" alt="部门管理.PNG"/></td>
+        <td><img src="https://pic1.imgdb.cn/item/677c9c27d0e0a243d4f0c4b4.png" alt="岗位管理.PNG"/></td>
     </tr>
     <tr>
-        <td><img src="https://pic1.imgdb.cn/item/677c9c29d0e0a243d4f0c4b8.png"/></td>
-        <td><img src="https://pic1.imgdb.cn/item/677c9c2bd0e0a243d4f0c4bb.png"/></td>
+        <td><img src="https://pic1.imgdb.cn/item/677c9c29d0e0a243d4f0c4b8.png" alt="字典管理.PNG"/></td>
+        <td><img src="https://pic1.imgdb.cn/item/677c9c2bd0e0a243d4f0c4bb.png" alt="操作日志.PNG"/></td>
     </tr>
 	<tr>
-        <td><img src="https://pic1.imgdb.cn/item/677c9c2ed0e0a243d4f0c4c0.png"/></td>
-        <td><img src="https://pic1.imgdb.cn/item/677c9c34d0e0a243d4f0c4c6.png"/></td>
+        <td><img src="https://pic1.imgdb.cn/item/677c9c2ed0e0a243d4f0c4c0.png" alt="登录日志.PNG"/></td>
+        <td><img src="https://pic1.imgdb.cn/item/677c9c34d0e0a243d4f0c4c6.png" alt="定时任务.PNG"/></td>
     </tr>	 
     <tr>
         <td><img src="https://pic1.imgdb.cn/item/677c9c36d0e0a243d4f0c4c9.png" alt="缓存监控.PNG"/></td>
