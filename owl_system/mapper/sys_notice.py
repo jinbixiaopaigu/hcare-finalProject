@@ -113,7 +113,7 @@ class SysNoticeMapper:
             "update_by", "update_time", "remark"
         }
         data = notice.model_dump(
-            fields=fields, exclude_none=True, exclude_unset=True
+            include=fields, exclude_none=True, exclude_unset=True
         )
         stmt = update(SysNoticePo) \
             .where(SysNoticePo.notice_id == notice.notice_id) \

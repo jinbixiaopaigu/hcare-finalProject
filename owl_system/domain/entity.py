@@ -232,7 +232,7 @@ class SysNotice(AuditEntity):
     # 公告内容
     notice_content: Annotated[
         Optional[str],
-        BeforeValidator(lambda x: x.decode('utf-8')),
+        BeforeValidator(lambda x: x.decode('utf-8') if isinstance(x, bytes) else x),
         PlainSerializer(lambda x: x.encode('utf-8'), return_type=bytes)
     ] = None
 

@@ -50,8 +50,8 @@ def get_username() -> str:
         str: 当前登录用户的账户 
     """
     try:
-        return get_login_user().username
-    except Exception:
+        return get_login_user().user_name
+    except Exception as e:
         raise UtilException("获取用户账户异常", HttpStatus.UNAUTHORIZED)
 
 def get_login_user() -> LoginUser:
