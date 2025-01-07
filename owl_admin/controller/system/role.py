@@ -74,7 +74,7 @@ def system_role_create(dto:SysRole):
     elif UserConstants.NOT_UNIQUE == \
         SysRoleService.check_role_key_unique(dto):
         return AjaxResponse.from_error(f"新增角色'{dto.role_name}'失败，角色权限已存在")
-    dto.create_by_user(SecurityUtil.get_user_id())
+    dto.create_by_user(SecurityUtil.get_username())
     flag = SysRoleService.insert_role(dto)
     ajax_response = \
         AjaxResponse.from_success() if flag else AjaxResponse.from_error()
@@ -97,7 +97,7 @@ def system_role_update(dto:SysRole):
     elif UserConstants.NOT_UNIQUE == \
         SysRoleService.check_role_key_unique(dto):
         return AjaxResponse.from_error(f"新增角色'{dto.role_name}'失败，角色权限已存在")
-    dto.update_by_user(SecurityUtil.get_user_id())
+    dto.update_by_user(SecurityUtil.get_username())
     SysRoleService.update_role(dto)
     return AjaxResponse.from_success()
 

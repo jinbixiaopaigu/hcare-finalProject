@@ -85,7 +85,7 @@ def system_config_add(dto:SysConfig):
     '''
     if UserConstants.NOT_UNIQUE == SysConfigService.check_config_key_unique(dto):
         return AjaxResponse.from_error("配置项已存在:{}".format(dto.config_name))
-    dto.create_by_user(SecurityUtil.get_user_id())
+    dto.create_by_user(SecurityUtil.get_username())
     SysConfigService.insert_config(dto)
     ajax_response = AjaxResponse.from_success()
     return ajax_response
@@ -103,7 +103,7 @@ def system_config_update(dto:SysConfig):
     if UserConstants.NOT_UNIQUE == \
         SysConfigService.check_config_key_unique(dto):
         return AjaxResponse.from_error(f"修改参数'{dto.config_key}'失败，参数键名已存在")
-    dto.update_by_user(SecurityUtil.get_user_id())
+    dto.update_by_user(SecurityUtil.get_username())
     flag = SysConfigService.update_config(dto)
     return AjaxResponse.from_success() if flag else AjaxResponse.from_error()
 

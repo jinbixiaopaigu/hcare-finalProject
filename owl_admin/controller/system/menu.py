@@ -89,7 +89,7 @@ def system_menu_create(dto:SysMenu):
         return AjaxResponse.from_error(
             "新增菜单'{}'失败，地址必须以http(s)://开头".format(dto.menu_name)
         )
-    dto.create_by_user(SecurityUtil.get_user_id())
+    dto.create_by_user(SecurityUtil.get_username())
     SysMenuService.insert_menu(dto)
     ajax_response = AjaxResponse.from_success()
     return ajax_response
@@ -112,7 +112,7 @@ def system_menu_update(dto:SysMenu):
         return AjaxResponse.from_error(
             "新增菜单'{}'失败，地址必须以http(s)://开头".format(dto.menu_name)
             )
-    dto.update_by_user(SecurityUtil.get_user_id())
+    dto.update_by_user(SecurityUtil.get_username())
     flag = SysMenuService.update_menu(dto)
     return AjaxResponse.from_success() if flag else AjaxResponse.from_error()
 

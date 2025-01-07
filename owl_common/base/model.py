@@ -253,12 +253,12 @@ class BaseEntity(BaseModel):
             access.val = val
             yield k,access
     
-    def create_by_user(self, user_id: str | int) -> None:
-        self.create_by = user_id
+    def create_by_user(self, name: str ) -> None:
+        self.create_by = name
         self.create_time = datetime.now()
     
-    def update_by_user(self, user_id: str | int) -> None:
-        self.update_by = user_id
+    def update_by_user(self, name: str) -> None:
+        self.update_by = name
         self.update_time = datetime.now()
         
 

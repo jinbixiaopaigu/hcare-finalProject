@@ -53,7 +53,7 @@ def system_notice_add(dto:SysNotice):
     '''
         添加公告信息
     '''
-    dto.create_by_user(SecurityUtil.get_user_id())
+    dto.create_by_user(SecurityUtil.get_username())
     SysNoticeService.insert_notice(dto)
     return AjaxResponse.from_success()
 
@@ -67,7 +67,7 @@ def system_notice_update(dto:SysNotice):
     '''
         修改公告信息
     '''
-    dto.update_by_user(SecurityUtil.get_user_id())
+    dto.update_by_user(SecurityUtil.get_username())
     flag = SysNoticeService.update_notice(dto)
     return AjaxResponse.from_success() if flag else AjaxResponse.from_error()
 

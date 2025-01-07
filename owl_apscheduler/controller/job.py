@@ -105,7 +105,7 @@ def common_job_add(dto:SysJob) -> AjaxResponse:
             return AjaxResponse.from_error(f"新增任务{dto.job_name}失败，调用目标中包含非法字符{forbid_word}")
     if not ScheduleUtil.white_list_check(dto.invoke_target):
         return AjaxResponse.from_error(f"新增任务{dto.job_name}失败，目标字符串不在白名单中")
-    dto.create_by_user(SecurityUtil.get_user_id())
+    dto.create_by_user(SecurityUtil.get_username())
     flag = SysJobService.insert_job(dto)
     return AjaxResponse.from_success() if flag else AjaxResponse.from_error()
 
@@ -138,7 +138,7 @@ def common_job_edit(dto:SysJob) -> AjaxResponse:
             return AjaxResponse.from_error(f"新增任务{dto.job_name}失败，调用目标中包含非法字符{forbid_word}")
     if not ScheduleUtil.white_list_check(dto.invoke_target):
         return AjaxResponse.from_error(f"新增任务{dto.job_name}失败，目标字符串不在白名单中")
-    dto.update_by_user(SecurityUtil.get_user_id())
+    dto.update_by_user(SecurityUtil.get_username())
     flag = SysJobService.update_job(dto)
     return AjaxResponse.from_success() if flag else AjaxResponse.from_error()
 
@@ -161,7 +161,7 @@ def common_job_status_edit(dto:SysJob) -> AjaxResponse:
     job: SysJob = SysJobService.select_job_by_id(dto.job_id)
     job.status = dto.status
     flag = SysJobService.change_job_status(job)
-    dto.update_by_user(SecurityUtil.get_user_id())
+    dto.update_by_user(SecurityUtil.get_username())
     return AjaxResponse.from_success() if flag else AjaxResponse.from_error()
 
 

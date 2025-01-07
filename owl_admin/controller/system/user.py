@@ -91,7 +91,7 @@ def system_create_user(dto:SysUser):
         return AjaxResponse.from_error(
             f"新增用户'{dto.email}'失败，邮箱已存在"
         )
-    dto.create_by_user(SecurityUtil.get_user_id())
+    dto.create_by_user(SecurityUtil.get_username())
     flag = SysUserService.insert_user(dto)
     ajax_response = AjaxResponse.from_success() if flag else AjaxResponse.from_error()
     return ajax_response
@@ -120,7 +120,7 @@ def system_update_user(dto:SysUser):
         return AjaxResponse.from_error(
             f"新增用户'{dto.email}'失败，邮箱已存在"
         )
-    dto.update_by_user(SecurityUtil.get_user_id())
+    dto.update_by_user(SecurityUtil.get_username())
     flag = SysUserService.update_user(dto)
     ajax_response = AjaxResponse.from_success() if flag else AjaxResponse.from_error()
     return ajax_response
@@ -200,7 +200,7 @@ def system_update_user_resetpwd(dto:SysUser):
     SysUserService.check_user_allowed(dto)
     SysUserService.check_user_data_scope(dto.user_id)
     dto.password = SecurityUtil.encrypt_password(dto.password)
-    dto.update_by_user(SecurityUtil.get_user_id())
+    dto.update_by_user(SecurityUtil.get_username())
     flag = SysUserService.reset_pwd(dto)
     ajax_response = AjaxResponse.from_success() if flag else AjaxResponse.from_error()
     return ajax_response
@@ -217,7 +217,7 @@ def system_update_user_changestatus(dto:SysUser):
     '''
     SysUserService.check_user_allowed(dto)
     SysUserService.check_user_data_scope(dto.user_id)
-    dto.update_by_user(SecurityUtil.get_user_id())
+    dto.update_by_user(SecurityUtil.get_username())
     flag = SysUserService.update_user_status(dto)
     ajax_response = AjaxResponse.from_success() if flag else AjaxResponse.from_error()
     return ajax_response

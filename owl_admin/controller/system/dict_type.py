@@ -72,7 +72,7 @@ def system_dict_type_add(dto:SysDictType):
     '''
     if UserConstants.NOT_UNIQUE == SysDictTypeService.check_dict_type_unique(dto):
         return AjaxResponse.from_error("新增字典'{}'失败，字典已存在".format(dto.dict_name))
-    dto.create_by_user(SecurityUtil.get_user_id())
+    dto.create_by_user(SecurityUtil.get_username())
     SysDictTypeService.insert_dict_type(dto)
     return AjaxResponse.from_success()
 
@@ -90,7 +90,7 @@ def system_dict_type_update(dto:SysDictType):
         return AjaxResponse.from_error(
             "修改字典'{}'失败，字典已存在".format(dto.dict_name)
         )
-    dto.update_by_user(SecurityUtil.get_user_id())
+    dto.update_by_user(SecurityUtil.get_username())
     flag = SysDictTypeService.update_dict_type(dto)
     return AjaxResponse.from_success() if flag else AjaxResponse.from_error()
 

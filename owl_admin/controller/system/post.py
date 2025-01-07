@@ -68,7 +68,7 @@ def system_post_add(dto:SysPost):
     '''
         添加岗位信息
     '''
-    dto.create_by_user(SecurityUtil.get_user_id())
+    dto.create_by_user(SecurityUtil.get_username())
     SysPostService.insert_post(dto)
     ajax_response = AjaxResponse.from_success()
     return ajax_response
@@ -83,7 +83,7 @@ def system_post_update(dto:SysPost):
     '''
         修改岗位信息
     '''
-    dto.update_by_user(SecurityUtil.get_user_id())
+    dto.update_by_user(SecurityUtil.get_username())
     flag = SysPostService.update_post(dto)
     return AjaxResponse.from_success() if flag else AjaxResponse.from_error()
 

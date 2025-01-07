@@ -98,7 +98,7 @@ def system_dept_create(dto:SysDept):
     if UserConstants.NOT_UNIQUE == SysDeptService.check_dept_name_unique(dto):
         ajax_response = AjaxResponse.from_error("部门名称已存在")
         return ajax_response
-    dto.create_by_user(SecurityUtil.get_user_id())
+    dto.create_by_user(SecurityUtil.get_username())
     SysDeptService.insert_dept(dto)
     ajax_response = AjaxResponse.from_success()
     return ajax_response
@@ -121,7 +121,7 @@ def system_dept_update(dto:SysDept):
     elif UserConstants.DEPT_DISABLE == dto.status and \
         SysDeptService.select_normal_children_dept_by_id(dto.id) > 0:
         return AjaxResponse.from_error("该部门包含未停用的子部门！")
-    dto.update_by_user(SecurityUtil.get_user_id())
+    dto.update_by_user(SecurityUtil.get_username())
     flag = SysDeptService.update_dept(dto)
     return AjaxResponse.from_success() if flag else AjaxResponse.from_error()
 

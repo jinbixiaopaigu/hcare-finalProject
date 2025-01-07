@@ -79,7 +79,7 @@ def system_dict_data_add(dto:SysDictData):
     '''
         添加字典数据
     '''
-    dto.create_by_user(SecurityUtil.get_user_id())
+    dto.create_by_user(SecurityUtil.get_username())
     SysDictDataService.insert_dict_data(dto)
     ajax_response = AjaxResponse.from_success()
     return ajax_response
@@ -94,7 +94,7 @@ def system_dict_data_update(dto:SysDictData):
     '''
         修改字典数据
     '''
-    dto.update_by_user(SecurityUtil.get_user_id())
+    dto.update_by_user(SecurityUtil.get_username())
     flag = SysDictDataService.update_dict_data(dto)
     return AjaxResponse.from_success() if flag else AjaxResponse.from_error()
 
