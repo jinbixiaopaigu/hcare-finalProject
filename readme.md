@@ -140,7 +140,7 @@ npm run dev
         <td><img src="https://oscimg.oschina.net/oscnet/up-49003ed83f60f633e7153609a53a2b644f7.png"/></td>
     </tr>
     <tr>
-        <td><img src="https://oscimg.oschina.net/oscnet/b6115bc8c31de52951982e509930b20684a.jpg"/></td>
+        <td><img src="https://pic1.imgdb.cn/item/677c93cad0e0a243d4f0bd1e.png" alt="服务监控.PNG"/></td>
     </tr>
 </table>
 
