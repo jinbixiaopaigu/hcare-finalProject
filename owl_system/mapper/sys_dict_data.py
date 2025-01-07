@@ -20,9 +20,9 @@ class SysDictDataMapper:
     """
     
     default_fields = {
-        "dict_code", "dict_label", "dict_value", "is_default", "status", 
-        "css_class", "list_class", "create_by", "create_time", "update_by",
-        "update_time"
+        "dict_code", "dict_label", "dict_type", "dict_value", "is_default", 
+        "status", "css_class", "list_class", "create_by", "create_time", 
+        "update_by", "update_time"
     }
     
     default_columns = ColumnEntityList(SysDictDataPo, default_fields, False)
