@@ -6,6 +6,7 @@ from io import BytesIO
 from threading import Lock
 from types import NoneType
 from typing import Any, Dict, Generator, Iterator, List, Literal, Optional, Set, Tuple, Union
+from flask import g
 from typing_extensions import Annotated
 from dataclasses import dataclass, field, replace
 from werkzeug.datastructures import FileStorage, ImmutableMultiDict
@@ -15,7 +16,7 @@ from pydantic.alias_generators import to_camel,to_pascal
 from pydantic.aliases import AliasGenerator
 from pydantic.fields import FieldInfo
 from pydantic import AliasChoices, AliasPath, BaseModel, BeforeValidator, \
-    ConfigDict, Field, ValidationInfo, field_validator, model_validator
+    ConfigDict, Field, ValidationInfo, computed_field, field_validator, model_validator
     
 from owl_common.base.schema_excel import ExcelAccess
 from owl_common.base.transformer import to_datetime
@@ -333,12 +334,13 @@ class TableResponse(BaseEntity):
     
     __pydantic_extra__: Dict[str, Any] = Field(init=False)
     
-    # @computed_field
-    # @property
-    # def total(self) -> int:
-    #     if "count" in g.page_criterian:
-    #         return g.page_criterian["count"]
-    #     return len(self.rows)
+    @computed_field
+    @property
+    def total(self) -> int:
+        page:PageModel = g.criterian_meta.page
+        if page.total:
+            return page.total
+        return len(self.rows)
 
 
 class TreeEntity(AuditEntity):
@@ -521,18 +523,6 @@ class PageModel(VoModel):
     total: Annotated[int, Field(default=None)]
     
     stmt: Annotated[Any, Field(default=None)]
-    
-        
-    def criterians(self,po:Model)-> List[Any]:
-        """
-        构建查询条件
-        
-        Args:
-            po (Model): 数据库模型
-        
-        Returns:
-            List[Any]: 查询条件
-        """
     
         
 class OrderModel(VoModel):
