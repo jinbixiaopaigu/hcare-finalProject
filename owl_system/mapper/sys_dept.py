@@ -295,9 +295,11 @@ class SysDeptMapper:
         Returns:
             int: 数量
         """
+        print("depts: {}".format(depts))
+        
         case_expr = case(
-            [(SysDept.dept_id==dept.dept_id, dept.ancestors) for dept in depts],
-            else_=SysDept.ancestors
+            *[(SysDeptPo.dept_id==dept.dept_id, dept.ancestors) for dept in depts],
+            else_=SysDeptPo.ancestors
         )
         stmt = update(SysDeptPo) \
             .where(SysDeptPo.dept_id.in_([dept.dept_id for dept in depts])) \
