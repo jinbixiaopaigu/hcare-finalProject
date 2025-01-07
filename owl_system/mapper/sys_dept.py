@@ -89,7 +89,7 @@ class SysDeptMapper:
         ) \
             .where(*criterions) \
             .order_by(SysDeptPo.parent_id, SysDeptPo.order_num)
-        rows = db.session.execute(stmt).sclars().all()
+        rows = db.session.execute(stmt).all()
         return rows
 
     @classmethod

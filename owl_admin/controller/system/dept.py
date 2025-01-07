@@ -58,7 +58,7 @@ def system_dept_treeselect(dto:SysDept):
     return ajax_response
 
 
-@reg.api.route("/system/dept/roleDeptTreeselect/<int:role_id>", methods=["GET"])
+@reg.api.route("/system/dept/roleDeptTreeselect/<int:roleId>", methods=["GET"])
 @PathValidator()
 @JsonSerializer()
 def system_dept_roletreeselect(role_id:int):

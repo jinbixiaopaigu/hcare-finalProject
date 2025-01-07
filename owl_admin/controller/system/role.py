@@ -156,7 +156,7 @@ def system_role_options():
 
 
 @reg.api.route("/system/role/authUser/allocatedList", methods=["GET"])
-@QueryValidator()
+@QueryValidator(is_page=True)
 @PreAuthorize(HasPerm("system:role:list"))
 @JsonSerializer()
 def system_role_user_allocated_list(dto:SysRole):
@@ -168,7 +168,7 @@ def system_role_user_allocated_list(dto:SysRole):
 
 
 @reg.api.route("/system/role/authUser/unallocatedList", methods=["GET"])
-@QueryValidator()
+@QueryValidator(is_page=True)
 @PreAuthorize(HasPerm("system:role:list"))
 @JsonSerializer()
 def system_role_user_unallocated_list(dto:SysRole):
