@@ -18,8 +18,9 @@ from .. import reg
 class SysConfigService:
 
     @classmethod
-    @AppSignalListener(reg.app,app_completed)
-    def init(cls):
+    # @AppSignalListener(reg.app,app_completed)
+    @app_completed.connect_via(reg.app)
+    def init(cls, sender,**kwargs):
         """
         初始化配置缓存
         """

@@ -81,7 +81,6 @@ class OwlModuleRegistry(object):
         '''
         modpath = os.path.join(self.proot,modname)
         mod = import_module(path_to_module(modpath,self.proot))
-        print("modname: {} mod: {}".format(modname,mod))
         module_initailize.send(mod,registry=self)
     
     def is_registered_module(self, modname:str) -> bool:

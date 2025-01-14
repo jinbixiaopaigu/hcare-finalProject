@@ -20,7 +20,7 @@ from .. import reg
 class SysDictTypeService:
     
     @classmethod
-    @AppSignalListener(reg.app,app_completed)
+    # @AppSignalListener(reg.app,app_completed)
     def init(cls):
         '''
         初始化字典缓存

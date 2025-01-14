@@ -23,7 +23,7 @@ from .. import reg,scheduler
 class SysJobService:
     
     @classmethod
-    @AppSignalListener(reg.app,app_completed)
+    # @AppSignalListener(reg.app,app_completed)
     def init(cls):
         """
         初始化定时任务
