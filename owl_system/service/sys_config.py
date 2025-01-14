@@ -4,17 +4,21 @@
 from types import NoneType
 from typing import List
 
+from owl_common.descriptor.listener import AppSignalListener
+from owl_common.base.signal import app_completed
 from owl_common.utils import StringUtil
 from owl_common.constant import Constants, UserConstants
 from owl_common.exception import ServiceException
 from owl_system.mapper import SysConfigMapper
 from owl_system.domain.entity import SysConfig
 from owl_admin.ext import redis_cache
+from .. import reg
 
 
 class SysConfigService:
 
     @classmethod
+    @AppSignalListener(reg.app,app_completed)
     def init(cls):
         """
         初始化配置缓存

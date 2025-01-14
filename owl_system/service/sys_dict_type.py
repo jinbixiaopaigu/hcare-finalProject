@@ -7,16 +7,20 @@ from typing import List
 from pydantic_core import to_json
 
 from owl_common.constant import Constants, UserConstants
+from owl_common.descriptor.listener import AppSignalListener
+from owl_common.base.signal import app_completed
 from owl_common.domain.entity import SysDictData, SysDictType
 from owl_common.sqlalchemy.transaction import Transactional
 from owl_common.exception import ServiceException
 from owl_system.mapper import SysDictDataMapper,SysDictTypeMapper
 from owl_admin.ext import redis_cache,db
+from .. import reg
 
 
 class SysDictTypeService:
     
     @classmethod
+    @AppSignalListener(reg.app,app_completed)
     def init(cls):
         '''
         初始化字典缓存
