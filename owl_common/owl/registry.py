@@ -81,6 +81,7 @@ class OwlModuleRegistry(object):
         '''
         modpath = os.path.join(self.proot,modname)
         mod = import_module(path_to_module(modpath,self.proot))
+        print("modname: {} mod: {}".format(modname,mod))
         module_initailize.send(mod,registry=self)
     
     def is_registered_module(self, modname:str) -> bool:
@@ -92,8 +93,8 @@ class OwlModuleRegistry(object):
         Returns:
             bool: 是否已经注册
         '''
-        print("sys.modules: {}".format(sys.modules))
-        return modname in sys.modules
+        flag = modname in sys.modules
+        return flag
         
     def unregister_module(self, mod:ModuleType):
         '''
@@ -111,11 +112,12 @@ class OwlModuleRegistry(object):
         注册所有控制层路由
         '''
         for modname in os.listdir(self.proot):
-            if not self.is_registered_module(modname):
-                continue
+            
             if not modname.startswith(self.module_prefix):
                 continue
             if modname in self.exclude_modules:
+                continue
+            if not self.is_registered_module(modname):
                 continue
             self.register_controller(modname)
         self.app.register_blueprint(self.api)
@@ -130,7 +132,6 @@ class OwlModuleRegistry(object):
         modpath = os.path.join(self.proot,modname)
         mod_con_path = os.path.join(modpath,self.controller_name)
         if not os.path.exists(mod_con_path):
-            self.app.logger.warning(f"模块控制器路径不存在: {mod_con_path}")
             return  
         try:
             self._register_rules(mod_con_path)
