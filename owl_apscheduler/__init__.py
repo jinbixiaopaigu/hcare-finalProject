@@ -16,9 +16,9 @@ scheduler: BackgroundScheduler
 
 
 @ModuleSignalListener(sys.modules[__name__],module_initailize)
-def register_listener(module:ModuleType, registry:OwlModuleRegistry):
+def import_hook(module:ModuleType, registry:OwlModuleRegistry):
     """
-    注册模块
+    导入模块
 
     Args:
         module: 模块对象
@@ -33,4 +33,4 @@ def register_listener(module:ModuleType, registry:OwlModuleRegistry):
     
     global reg
     reg = registry
-    registry.register_controller(module)
+

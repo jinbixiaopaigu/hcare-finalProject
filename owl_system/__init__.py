@@ -11,7 +11,7 @@ from owl_common.owl.registry import OwlModuleRegistry
 reg: OwlModuleRegistry
 
 @ModuleSignalListener(sys.modules[__name__],module_initailize)
-def register_listener(module:ModuleType, registry:OwlModuleRegistry):
+def import_hook(module:ModuleType, registry:OwlModuleRegistry):
     """
     注册模块
 

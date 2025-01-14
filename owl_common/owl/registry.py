@@ -5,6 +5,7 @@
 import os.path
 from importlib import import_module
 from pathlib import Path
+import sys
 from types import ModuleType
 from flask import Blueprint, Flask
 
@@ -33,15 +34,8 @@ def path_to_module(file_path:str, root_path:str) -> str:
 class OwlModuleRegistry(object):
     
     module_prefix = "owl_"
-    
     controller_name = "controller"
-    
-    default_modules = [
-        "owl_common", 
-        "owl_system", 
-        "owl_admin", 
-        "owl_framework"
-    ]
+    exclude_modules = ["owl_ui"]
     
     def __init__(self, app:Flask=None, proot:str=None):
         self.app = app
@@ -59,27 +53,47 @@ class OwlModuleRegistry(object):
         '''
         注册所有模块
         '''
-        for modname in os.listdir(self.proot):
-            if modname == "__pycache__":continue
-            self.register_module(modname)    
-        self.app.register_blueprint(self.api)
-        
-    def register_module(self, modname:str):
+        self.import_modules()
+        self.register_controllers()
+    
+    def import_modules(self):
         '''
-        注册模块
+        导入所有模块
+        '''
+        for modname in os.listdir(self.proot):
+            if not modname.startswith(self.module_prefix):
+                continue
+            if modname in self.exclude_modules:
+                continue
+            if not os.path.exists(
+                os.path.join(self.proot,modname,"__init__.py")
+            ):
+                self.app.logger.warning(f"模块路径不存在__init__.py文件: {modname}")
+                continue
+            self.import_module(modname)
+        
+    def import_module(self, modname:str):
+        '''
+        导入模块
         
         Args:
             modname (str): 模块名称
         '''
         modpath = os.path.join(self.proot,modname)
-        if not modname.startswith(self.module_prefix):
-            return
-        mod_path = os.path.join(modpath,"__init__.py")
-        if not os.path.exists(mod_path):
-            self.app.logger.warning(f"模块路径不存在__init__.py文件: {modname}")
-            return
         mod = import_module(path_to_module(modpath,self.proot))
         module_initailize.send(mod,registry=self)
+    
+    def is_registered_module(self, modname:str) -> bool:
+        '''
+        检查模块是否已经注册
+        
+        Args:
+            modname (str): 模块名称
+        Returns:
+            bool: 是否已经注册
+        '''
+        print("sys.modules: {}".format(sys.modules))
+        return modname in sys.modules
         
     def unregister_module(self, mod:ModuleType):
         '''
@@ -92,14 +106,28 @@ class OwlModuleRegistry(object):
             return
         # todo
 
-    def register_controller(self, mod:ModuleType):
+    def register_controllers(self):
+        '''
+        注册所有控制层路由
+        '''
+        for modname in os.listdir(self.proot):
+            if not self.is_registered_module(modname):
+                continue
+            if not modname.startswith(self.module_prefix):
+                continue
+            if modname in self.exclude_modules:
+                continue
+            self.register_controller(modname)
+        self.app.register_blueprint(self.api)
+    
+    def register_controller(self, modname:str):
         '''
         注册控制层路由
         
         Args:
-            mod (ModuleType): 模块对象
+            mod (str): 模块名称
         '''
-        modpath = os.path.dirname(mod.__file__)
+        modpath = os.path.join(self.proot,modname)
         mod_con_path = os.path.join(modpath,self.controller_name)
         if not os.path.exists(mod_con_path):
             self.app.logger.warning(f"模块控制器路径不存在: {mod_con_path}")
@@ -108,10 +136,10 @@ class OwlModuleRegistry(object):
             self._register_rules(mod_con_path)
         except Exception as e:
             raise Exception(
-                "在模块中的路由，注册失败: {}，原因: {}".format(mod.__name__,str(e))
+                "在模块中的路由，注册失败: {}，原因: {}".format(modname,str(e))
             )
     
-    def unregister_controller(self, modname):
+    def unregister_controller(self, modname:str):
         '''
         注销控制层路由
         
