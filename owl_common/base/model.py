@@ -338,7 +338,7 @@ class TableResponse(BaseEntity):
     @property
     def total(self) -> int:
         page:PageModel = g.criterian_meta.page
-        if page.total:
+        if page and page.total:
             return page.total
         return len(self.rows)
 
