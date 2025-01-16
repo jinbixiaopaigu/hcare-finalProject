@@ -10,6 +10,8 @@ from flask import Flask
 class AppSignalListener(object):
     '''
     Application信号监听器
+    
+    Depreciated
     '''
         
     def __init__(self, app:Flask, signal:Signal, method:str):
@@ -28,8 +30,6 @@ class AppSignalListener(object):
                 ret = func(cls, *args, **kwargs)
             return ret
         setattr(clz, self._method, wrapper)
-
-    
 
 
 class ModuleSignalListener(object):

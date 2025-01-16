@@ -6,8 +6,8 @@ from datetime import datetime
 from typing import List, Optional
 from apscheduler.events import EVENT_JOB_EXECUTED, EVENT_JOB_ERROR, \
     EVENT_JOB_MISSED, EVENT_JOB_SUBMITTED, EVENT_JOB_REMOVED, JobEvent
+from flask import Flask
 
-from owl_common.descriptor.listener import AppSignalListener
 from owl_common.base.signal import app_completed
 from owl_common.exception import ServiceException
 from owl_common.sqlalchemy.transaction import Transactional
@@ -23,7 +23,6 @@ from .. import reg,scheduler
 class SysJobService:
     
     @classmethod
-    # @AppSignalListener(reg.app,app_completed)
     def init(cls):
         """
         初始化定时任务
@@ -244,3 +243,15 @@ def job_listener(event:JobEvent):
         pass
     with reg.app.app_context():
         SysJobLogService.insert_job_log(joblog)
+
+
+@app_completed.connect_via(reg.app)
+def init(sender:Flask):
+    '''
+    初始化操作
+    
+    Args:
+        sender (Flask): 消息发送者
+    '''
+    with sender.app_context():
+        SysJobService.init()

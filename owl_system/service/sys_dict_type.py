@@ -4,10 +4,10 @@
 from itertools import groupby
 from types import NoneType
 from typing import List
+from flask import Flask
 from pydantic_core import to_json
 
 from owl_common.constant import Constants, UserConstants
-from owl_common.descriptor.listener import AppSignalListener
 from owl_common.base.signal import app_completed
 from owl_common.domain.entity import SysDictData, SysDictType
 from owl_common.sqlalchemy.transaction import Transactional
@@ -20,7 +20,6 @@ from .. import reg
 class SysDictTypeService:
     
     @classmethod
-    # @AppSignalListener(reg.app,app_completed)
     def init(cls):
         '''
         初始化字典缓存
@@ -216,3 +215,16 @@ class DictCacheUtil:
     @classmethod
     def set_dict_cache(cls, key, dict_data_list:List[SysDictData]):
         redis_cache.set(cls.get_cache_key(key), to_json(dict_data_list))
+
+
+@app_completed.connect_via(reg.app)
+def init(sender:Flask):
+    '''
+    初始化操作
+    
+    Args:
+        sender (Flask): 消息发送者
+    '''
+    with sender.app_context():
+        SysDictTypeService.init()
+

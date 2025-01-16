@@ -3,8 +3,8 @@
 
 from types import NoneType
 from typing import List
+from flask import Flask
 
-from owl_common.descriptor.listener import AppSignalListener
 from owl_common.base.signal import app_completed
 from owl_common.utils import StringUtil
 from owl_common.constant import Constants, UserConstants
@@ -18,9 +18,7 @@ from .. import reg
 class SysConfigService:
 
     @classmethod
-    # @AppSignalListener(reg.app,app_completed)
-    @app_completed.connect_via(reg.app)
-    def init(cls, sender,**kwargs):
+    def init(cls):
         """
         初始化配置缓存
         """
@@ -207,3 +205,15 @@ class SysConfigService:
             str: 缓存key
         """
         return Constants.SYS_CONFIG_KEY + key
+
+
+@app_completed.connect_via(reg.app)
+def init(sender:Flask):
+    '''
+    初始化操作
+    
+    Args:
+        sender (Flask): 消息发送者
+    '''
+    with sender.app_context():
+        SysConfigService.init()
