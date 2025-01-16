@@ -82,7 +82,7 @@ class SysRoleService:
         return list(permset)
 
     @classmethod
-    def select_role_list_by_user_id(cls, user_id:int) -> List[int]:
+    def select_role_list_by_user_id(cls, user_id:int) -> List[SysRole]:
         """
         根据用户ID，查询角色选择框列表
 
@@ -90,9 +90,17 @@ class SysRoleService:
             user_id(int): 用户ID
 
         Returns:
-            List[int]: 角色选择框列表
+            List[SysRole]: 角色选择框列表
         """
-        return SysRoleMapper.select_role_list_by_user_id(user_id)
+        user_eos:List[SysRole] = SysRoleMapper. \
+            select_role_permission_by_user_id(user_id)
+        eos:List[SysRole] = cls.select_role_list(SysRole())
+        for eo in eos:
+            for user_eo in user_eos:
+                if eo.role_id == user_eo.role_id:
+                    eo.flag = True
+                    break
+        return eos
 
     @classmethod
     def select_role_by_id(cls, role_id:int) -> Optional[SysRole]:

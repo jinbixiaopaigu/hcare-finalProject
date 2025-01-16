@@ -232,7 +232,9 @@ def system_get_user_authrole(id:int):
         获取用户授权角色
     '''
     sysuser:SysUser = SysUserService.select_user_by_id(id)
-    roles:SysRole = SysRoleService.select_role_by_id(id)
+    roles:List[SysRole] = SysRoleService.select_role_list_by_user_id(id)
+    if not sysuser.is_admin():
+        roles = [role for role in roles if not role.is_admin()]
     ajax_response = AjaxResponse.from_success() if sysuser else AjaxResponse.from_error()
     setattr(ajax_response,"user",sysuser)
     setattr(ajax_response,"roles",roles)

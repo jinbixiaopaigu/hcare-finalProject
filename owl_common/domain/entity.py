@@ -6,7 +6,7 @@ from datetime import datetime
 from types import NoneType
 from typing_extensions import Annotated
 from flask_login import UserMixin
-from pydantic import BaseModel, BeforeValidator, Field, Strict
+from pydantic import BaseModel, BeforeValidator, Field, Strict, computed_field
 from typing import List, Optional
 from pydantic.types import UUID4
 
@@ -183,9 +183,12 @@ class SysUser(AuditEntity):
         VoField(body=False)
     ]
     
-    @property
     def is_admin(self) -> bool:
         return True if self.user_id and self.user_id == 1 else False
+
+    # @computed_field
+    # def admin(self) -> bool:
+    #     return self.is_admin()
 
 
 class SysRole(AuditEntity):
