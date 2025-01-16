@@ -186,10 +186,6 @@ class SysUser(AuditEntity):
     def is_admin(self) -> bool:
         return True if self.user_id and self.user_id == 1 else False
 
-    # @computed_field
-    # def admin(self) -> bool:
-    #     return self.is_admin()
-
 
 class SysRole(AuditEntity):
     
