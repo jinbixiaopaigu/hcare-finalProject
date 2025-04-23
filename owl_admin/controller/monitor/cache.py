@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 # @Author  : shaw-lee
 
-from flask import jsonify
+from flask import jsonify, request
+import logging
 import logging
 from owl_common.descriptor.serializer import JsonSerializer
 from owl_framework.descriptor.permission import HasPerm, PreAuthorize
@@ -58,6 +59,132 @@ def monitor_cache():
         return jsonify({
             'code': 500,
             'msg': f'获取缓存信息失败: {str(e)}',
+            'data': None
+        }), 500
+
+
+from urllib.parse import unquote
+
+@reg.api.route('/monitor/cache/getValue', methods=['GET'])
+@PreAuthorize(HasPerm("monitor:cache:list"))
+@JsonSerializer()
+def get_cache_value():
+    '''
+        获取指定缓存的值
+    '''
+    try:
+        # 记录请求参数
+        logger.info(f"请求参数: {request.args}")
+        
+        # 参数验证
+        cache_name = request.args.get('cache_name')
+        cache_key = request.args.get('cache_key')
+        
+        if not cache_name or not cache_key:
+            error_msg = f"缺少必要参数 cache_name: {cache_name}, cache_key: {cache_key}"
+            logger.error(error_msg)
+            return jsonify({
+                'code': 400,
+                'msg': error_msg,
+                'data': None
+            }), 400
+            
+        # Redis连接检查
+        try:
+            redis_cache.ping()
+        except Exception as e:
+            error_msg = f"Redis连接失败: {str(e)}"
+            logger.error(error_msg)
+            return jsonify({
+                'code': 500,
+                'msg': error_msg,
+                'data': None
+            }), 500
+            
+        # 处理请求
+        decoded_key = unquote(cache_key).strip()
+        logger.info(f"处理请求 - 缓存名: {cache_name}, 键: {decoded_key}")
+        
+        # 验证参数
+        if not cache_name:
+            logger.error("缺少缓存名称参数")
+            return jsonify({
+                'code': 400,
+                'msg': '缺少缓存名称参数',
+                'data': None
+            }), 400
+            
+        if not decoded_key:
+            logger.error("缺少缓存键参数")
+            return jsonify({
+                'code': 400,
+                'msg': '缺少缓存键参数',
+                'data': None
+            }), 400
+            
+        # 处理特殊缓存名称
+        if cache_name == "info":
+            logger.info("处理Redis info命令请求")
+        
+        # 处理特殊缓存名称
+        if cache_name == "info":
+            # 获取Redis服务器信息
+            try:
+                info_data = redis_cache.info()
+                if isinstance(info_data, bytes):
+                    value = info_data.decode('utf-8')
+                elif isinstance(info_data, dict):
+                    value = {k.decode('utf-8') if isinstance(k, bytes) else k: 
+                            v.decode('utf-8') if isinstance(v, bytes) else v
+                            for k, v in info_data.items()}
+                else:
+                    value = str(info_data)
+                
+                return jsonify({
+                    'code': 200,
+                    'msg': '操作成功',
+                    'data': value
+                })
+            except Exception as e:
+                logger.error(f"获取Redis信息失败: {str(e)}", exc_info=True)
+                return jsonify({
+                    'code': 500,
+                    'msg': f'获取Redis信息失败: {str(e)}',
+                    'data': None
+                }), 500
+        else:
+            # 获取普通缓存值
+            try:
+                value = redis_cache.get(cache_key)
+                if value is None:
+                    return jsonify({
+                        'code': 404,
+                        'msg': '缓存键不存在',
+                        'data': None
+                    }), 404
+                
+                # 处理不同类型返回值
+                if isinstance(value, bytes):
+                    value = value.decode('utf-8')
+                
+                return jsonify({
+                    'code': 200,
+                    'msg': '操作成功',
+                    'data': value
+                })
+            except Exception as e:
+                logger.error(f"获取缓存值失败: {str(e)}", exc_info=True)
+                return jsonify({
+                    'code': 500,
+                    'msg': f'获取缓存值失败: {str(e)}',
+                    'data': None
+                }), 500
+                
+    except Exception as e:
+        logger.error(f"获取缓存值失败: {str(e)}", exc_info=True)
+        return jsonify({
+            'code': 500,
+            'msg': f'获取缓存值失败: {str(e)}',
             'data': None
         }), 500
 

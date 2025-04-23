@@ -37,7 +37,7 @@ export function listCacheKey(cacheName) {
     url: '/monitor/cache/keys/' + cacheName,
     method: 'get'
   }).then(response => {
-    console.log('缓存键名原始数据:', response.data)
+    // console.log('缓存键名原始数据:', response.data)
     
     // 处理不同类型的返回数据
     let processedData = [];
@@ -81,7 +81,7 @@ export function listCacheKey(cacheName) {
       }
     }
     
-    console.log('转换后的缓存键名数据:', processedData)
+    // console.log('转换后的缓存键名数据:', processedData)
     return {
       code: response.code,
       msg: response.msg,
@@ -96,10 +96,47 @@ export function listCacheKey(cacheName) {
 
 // 查询缓存内容
 export function getCacheValue(cacheName, cacheKey) {
+  // 确保参数是字符串类型
+  const name = String(cacheName || '');
+  let key = cacheKey;
+  
+  // 处理对象类型的cacheKey
+  if (key && typeof key === 'object') {
+    // 从对象中提取cacheKey属性
+    key = key.cacheKey || '';
+  }
+  
+  // 确保key是字符串并编码URI组件
+  const encodedKey = encodeURIComponent(String(key || ''));
+  
   return request({
-    url: '/monitor/cache/getValue/' + cacheName + '/' + cacheKey,
-    method: 'get'
-  })
+    url: '/monitor/cache/getValue',
+    method: 'get',
+    params: {
+      cache_name: name,
+      cache_key: encodedKey
+    }
+  }).then(response => {
+    // 处理响应数据
+    let value = response.data;
+    
+    // 如果是对象或数组，转换为JSON字符串显示
+    if (value && typeof value === 'object') {
+      value = JSON.stringify(value, null, 2);
+    }
+    
+    return {
+      ...response,
+      data: {
+        cacheName: name,
+        cacheKey: key,
+        cacheValue: value
+      }
+    };
+  }).catch(error => {
+    console.error('获取缓存值失败:', error);
+    throw error;
+  });
 }
 
 // 清理指定名称缓存

@@ -181,7 +181,7 @@ function getCacheKeys(row) {
         keyType: typeof key,
         original: item
       };
-      console.log('格式化后的键名项:', formattedItem);
+      // console.log('格式化后的键名项:', formattedItem);
       return formattedItem;
     });
 
@@ -193,7 +193,7 @@ function getCacheKeys(row) {
 
     // 整体替换数组确保响应式更新
     cacheKeys.value = simplifiedKeys;
-    console.log('简化后的键名列表数据:', JSON.parse(JSON.stringify(cacheKeys.value)));
+    // console.log('简化后的键名列表数据:', JSON.parse(JSON.stringify(cacheKeys.value)));
 
     nowCacheName.value = cacheName;
   }).catch(error => {
@@ -247,19 +247,66 @@ function keyFormatter(row, column, cellValue, index) {
 }
 
 /** 查询缓存内容详细 */
-function handleCacheValue(cacheKey) {
+function handleCacheValue(row) {
+  subLoading.value = true;
   console.group('获取缓存内容');
   console.log('缓存名称:', nowCacheName.value);
-  console.log('缓存键名:', cacheKey);
-  getCacheValue(nowCacheName.value, cacheKey).then(response => {
+  console.log('缓存键名:', row);
+
+  // 优先使用keyValue作为缓存键，确保简单键名
+  const cacheKey = row?.keyValue || row?.cacheKey || '';
+  if (!cacheKey) {
+    proxy.$modal.msgError("无效的缓存键名");
+    subLoading.value = false;
+    console.groupEnd();
+    return;
+  }
+
+  // 只传递简单键名，去除特殊字符
+  const simpleKey = String(cacheKey).replace(/[^\w]/g, '');
+  if (!simpleKey) {
+    proxy.$modal.msgError("无效的缓存键名格式");
+    subLoading.value = false;
+    console.groupEnd();
+    return;
+  }
+
+  getCacheValue(nowCacheName.value, simpleKey).then(response => {
     console.log('API响应:', response);
-    console.log('原始内容数据:', response.data);
-    cacheForm.value = response.data;
+
+    // 处理不同类型的缓存值
+    let cacheValue = response.data?.cacheValue || response.data;
+
+    // 如果是对象或数组，转换为格式化JSON字符串
+    if (cacheValue && typeof cacheValue === 'object') {
+      try {
+        cacheValue = JSON.stringify(cacheValue, null, 2);
+      } catch (e) {
+        console.warn('JSON序列化失败:', e);
+      }
+    }
+
+    // 更新表单数据
+    cacheForm.value = {
+      cacheName: nowCacheName.value,
+      cacheKey: cacheKey,
+      cacheValue: cacheValue
+    };
+
     console.log('处理后内容数据:', cacheForm.value);
+    proxy.$modal.msgSuccess("获取缓存内容成功");
   }).catch(error => {
     console.error('获取缓存内容失败:', error);
-    proxy.$modal.msgError("获取缓存内容失败");
+    proxy.$modal.msgError(`获取缓存内容失败: ${error.message || '未知错误'}`);
+
+    // 清空表单显示错误状态
+    cacheForm.value = {
+      cacheName: nowCacheName.value,
+      cacheKey: cacheKey,
+      cacheValue: '获取缓存内容失败'
+    };
   }).finally(() => {
+    subLoading.value = false;
     console.groupEnd();
   });
 }
