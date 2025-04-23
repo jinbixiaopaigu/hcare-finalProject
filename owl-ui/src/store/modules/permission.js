@@ -36,6 +36,15 @@ const usePermissionStore = defineStore(
         return new Promise(resolve => {
           // 向后端请求路由数据
           getRouters().then(res => {
+            console.log('Backend routes data:', JSON.stringify(res.data, null, 2))  // 更详细的调试信息
+            // 特别检查用户管理路由配置
+            const userRoute = res.data.find(r => r.path === '/system');
+            if (userRoute && userRoute.children) {
+              const userIndex = userRoute.children.findIndex(c => c.path === 'user');
+              if (userIndex !== -1) {
+                console.log('User management route config:', userRoute.children[userIndex]);
+              }
+            }
             const sdata = JSON.parse(JSON.stringify(res.data))
             const rdata = JSON.parse(JSON.stringify(res.data))
             const defaultData = JSON.parse(JSON.stringify(res.data))
@@ -62,7 +71,7 @@ function filterAsyncRouter(asyncRouterMap, lastRouter = false, type = false) {
       route.children = filterChildren(route.children)
     }
     if (route.component) {
-      // Layout ParentView 组件特殊处理
+      // 只转换组件字符串为实际组件，不自动添加任何组件
       if (route.component === 'Layout') {
         route.component = Layout
       } else if (route.component === 'ParentView') {

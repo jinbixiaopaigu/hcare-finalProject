@@ -12,6 +12,8 @@ const useTagsViewStore = defineStore(
         this.addCachedView(view)
       },
       addIframeView(view) {
+        // 只处理http/https开头的链接
+        if (!view.meta?.link?.startsWith('http')) return
         if (this.iframeViews.some(v => v.path === view.path)) return
         this.iframeViews.push(
           Object.assign({}, view, {
