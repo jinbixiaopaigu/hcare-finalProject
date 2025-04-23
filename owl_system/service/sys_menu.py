@@ -167,9 +167,9 @@ class SysMenuService:
                 rv_child.component = UserConstants.INNER_LINK
                 rv_child.name = menu.path.capitalize()
                 rv_child.meta = RouterMetaVo(
-                    title=menu.menu_name, 
-                    icon=menu.icon, 
-                    link=menu.path
+                    title=menu.menu_name,
+                    icon=menu.icon,
+                    link=menu.path if cls.is_inner_link(menu) else None
                 )
                 rv_children = [rv_child]
                 rv.children = rv_children
