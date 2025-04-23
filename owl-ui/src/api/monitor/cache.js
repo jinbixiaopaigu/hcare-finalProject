@@ -10,19 +10,26 @@ export function getCache() {
 
 // 查询缓存名称列表
 export function listCacheName() {
+  console.log('请求缓存数据...')
   return request({
     url: '/monitor/cache',
     method: 'get'
   }).then(response => {
+    console.log('缓存接口响应:', response)
     // 从完整缓存数据中提取名称列表
-    return response.data ? Object.keys(response.data) : []
+    const names = response.data ? Object.keys(response.data) : []
+    console.log('提取的缓存名称列表:', names)
+    return names
+  }).catch(error => {
+    console.error('获取缓存名称列表失败:', error)
+    throw error
   })
 }
 
 // 查询缓存键名列表
 export function listCacheKey(cacheName) {
   return request({
-    url: '/monitor/cache/getKeys/' + cacheName,
+    url: '/monitor/cache/keys/' + cacheName,
     method: 'get'
   })
 }
