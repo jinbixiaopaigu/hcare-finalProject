@@ -185,9 +185,10 @@ function getCacheKeys(row) {
       return formattedItem;
     });
 
-    // 简化数据结构，只保留表格需要的cacheKey字段
+    // 简化数据结构，保留cacheKey和keyValue字段
     const simplifiedKeys = newCacheKeys.map(item => ({
-      cacheKey: item.cacheKey
+      cacheKey: item.cacheKey,
+      keyValue: item.keyValue
     }));
 
     // 整体替换数组确保响应式更新
@@ -223,7 +224,7 @@ function nameFormatter(row) {
   return row.cacheName.replace(":", "");
 }
 
-/** 键名前缀去除 */
+/** 键名格式化处理 */
 function keyFormatter(row, column, cellValue, index) {
   // 从正确参数位置获取键名
   const key = row?.cacheKey || cellValue;
@@ -233,8 +234,16 @@ function keyFormatter(row, column, cellValue, index) {
   const keyStr = String(key);
   const cacheName = nowCacheName.value;
 
-  // 安全地替换缓存名称前缀
-  return keyStr.replace(new RegExp(`^${cacheName}`), '');
+  // 1. 先去除缓存名称前缀
+  let formattedKey = keyStr.replace(new RegExp(`^${cacheName}`), '');
+
+  // 2. 处理键名中的键值部分（分隔符可能是":"或"="）
+  const keyParts = formattedKey.split(/[:=]/);
+  if (keyParts.length > 1) {
+    formattedKey = keyParts[0].trim();
+  }
+
+  return formattedKey;
 }
 
 /** 查询缓存内容详细 */
