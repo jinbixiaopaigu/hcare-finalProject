@@ -16,8 +16,13 @@ export function listCacheName() {
     method: 'get'
   }).then(response => {
     console.log('缓存接口响应:', response)
-    // 从完整缓存数据中提取名称列表
-    const names = response.data ? Object.keys(response.data) : []
+    // 处理不同类型的返回数据
+    let names = []
+    if (Array.isArray(response.data)) {
+      names = response.data
+    } else if (response.data && typeof response.data === 'object') {
+      names = Object.keys(response.data)
+    }
     console.log('提取的缓存名称列表:', names)
     return names
   }).catch(error => {

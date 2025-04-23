@@ -163,15 +163,25 @@ function getCacheKeys(row) {
   }
   subLoading.value = true;
   listCacheKey(cacheName).then(response => {
+    // 处理不同类型的返回数据
+    let keys = [];
+    if (Array.isArray(response.data)) {
+      keys = response.data;
+    } else if (response.data && typeof response.data === 'object') {
+      keys = Object.keys(response.data);
+    }
+
     // 转换数据结构为表格需要的格式
-    cacheKeys.value = response.data.map(key => ({
+    cacheKeys.value = keys.map(key => ({
       cacheKey: key,
       keyType: typeof key
     }));
+
     nowCacheName.value = cacheName;
   }).catch(error => {
     proxy.$modal.msgError("获取键名列表失败");
     console.error("获取键名列表失败:", error);
+    cacheKeys.value = [];
   }).finally(() => {
     subLoading.value = false;
   });
@@ -197,8 +207,17 @@ function nameFormatter(row) {
 }
 
 /** 键名前缀去除 */
-function keyFormatter(cacheKey) {
-  return cacheKey.replace(nowCacheName.value, "");
+function keyFormatter(row, column, cellValue, index) {
+  // 从正确参数位置获取键名
+  const key = row?.cacheKey || cellValue;
+  if (!key) return '';
+
+  // 确保处理字符串
+  const keyStr = String(key);
+  const cacheName = nowCacheName.value;
+
+  // 安全地替换缓存名称前缀
+  return keyStr.replace(new RegExp(`^${cacheName}`), '');
 }
 
 /** 查询缓存内容详细 */
