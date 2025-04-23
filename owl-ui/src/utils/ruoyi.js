@@ -1,5 +1,3 @@
-
-
 /**
  * 通用js方法封装处理
  * Copyright (c) 2019 ruoyi
@@ -68,7 +66,7 @@ export function addDateRange(params, dateRange, propName) {
   return search;
 }
 
-// 回显数据字典 
+// 回显数据字典
 export function selectDictLabel(datas, value) {
   if (value === undefined) {
     return "";
@@ -86,10 +84,13 @@ export function selectDictLabel(datas, value) {
   return actions.join('');
 }
 
-// 回显数据字典（字符串数组）
+// 回显数据字典（字符串、数组）
 export function selectDictLabels(datas, value, separator) {
-  if (value === undefined) {
+  if (value === undefined || value.length ===0) {
     return "";
+  }
+  if (Array.isArray(value)) {
+    value = value.join(",");
   }
   var actions = [];
   var currentSeparator = undefined === separator ? "," : separator;
@@ -162,37 +163,22 @@ export function handleTree(data, id, parentId, children) {
   };
 
   var childrenListMap = {};
-  var nodeIds = {};
   var tree = [];
-
   for (let d of data) {
-    let parentId = d[config.parentId];
-    if (childrenListMap[parentId] == null) {
-      childrenListMap[parentId] = [];
+    let id = d[config.id];
+    childrenListMap[id] = d;
+    if (!d[config.childrenList]) {
+      d[config.childrenList] = [];
     }
-    nodeIds[d[config.id]] = d;
-    childrenListMap[parentId].push(d);
   }
 
   for (let d of data) {
-    let parentId = d[config.parentId];
-    if (nodeIds[parentId] == null) {
+    let parentId = d[config.parentId]
+    let parentObj = childrenListMap[parentId]
+    if (!parentObj) {
       tree.push(d);
-    }
-  }
-
-  for (let t of tree) {
-    adaptToChildrenList(t);
-  }
-
-  function adaptToChildrenList(o) {
-    if (childrenListMap[o[config.id]] !== null) {
-      o[config.childrenList] = childrenListMap[o[config.id]];
-    }
-    if (o[config.childrenList]) {
-      for (let c of o[config.childrenList]) {
-        adaptToChildrenList(c);
-      }
+    } else {
+      parentObj[config.childrenList].push(d)
     }
   }
   return tree;
@@ -207,10 +193,10 @@ export function tansParams(params) {
   for (const propName of Object.keys(params)) {
     const value = params[propName];
     var part = encodeURIComponent(propName) + "=";
-    if (value !== null && typeof (value) !== "undefined") {
+    if (value !== null && value !== "" && typeof (value) !== "undefined") {
       if (typeof value === 'object') {
         for (const key of Object.keys(value)) {
-          if (value[key] !== null && typeof (value[key]) !== 'undefined') {
+          if (value[key] !== null && value[key] !== "" && typeof (value[key]) !== 'undefined') {
             let params = propName + '[' + key + ']';
             var subPart = encodeURIComponent(params) + "=";
             result += subPart + encodeURIComponent(value[key]) + "&";
@@ -224,13 +210,19 @@ export function tansParams(params) {
   return result
 }
 
-// 验证是否为blob格式
-export async function blobValidate(data) {
-  try {
-    const text = await data.text();
-    JSON.parse(text);
-    return false;
-  } catch (error) {
-    return true;
+// 返回项目路径
+export function getNormalPath(p) {
+  if (p.length === 0 || !p || p == 'undefined') {
+    return p
+  };
+  let res = p.replace('//', '/')
+  if (res[res.length - 1] === '/') {
+    return res.slice(0, res.length - 1)
   }
+  return res
+}
+
+// 验证是否为blob格式
+export function blobValidate(data) {
+  return data.type !== 'application/json'
 }

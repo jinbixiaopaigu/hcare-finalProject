@@ -1,12 +1,14 @@
-@import './variables.scss';
+@import './variables.module.scss';
 @import './mixin.scss';
 @import './transition.scss';
 @import './element-ui.scss';
 @import './sidebar.scss';
 @import './btn.scss';
+@import './ruoyi.scss';
 
 body {
   height: 100%;
+  margin: 0;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
@@ -129,10 +131,6 @@ aside {
   position: relative;
 }
 
-.pagination-container {
-  margin-top: 30px;
-}
-
 .text-center {
   text-align: center
 }
@@ -179,13 +177,4 @@ aside {
     vertical-align: middle;
     margin-bottom: 10px;
   }
-}
-
-//refine vue-multiselect plugin
-.multiselect {
-  line-height: 16px;
-}
-
-.multiselect--active {
-  z-index: 1000 !important;
 }
