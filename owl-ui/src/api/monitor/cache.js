@@ -36,6 +36,61 @@ export function listCacheKey(cacheName) {
   return request({
     url: '/monitor/cache/keys/' + cacheName,
     method: 'get'
+  }).then(response => {
+    console.log('缓存键名原始数据:', response.data)
+    
+    // 处理不同类型的返回数据
+    let processedData = [];
+    if (Array.isArray(response.data)) {
+      processedData = response.data.map(item => {
+        // 尝试拆分键值对
+        const [key, ...valueParts] = item.cacheKey.split(': ')
+        const value = valueParts.join(': ').trim()
+        
+        return {
+          cacheKey: key,
+          keyValue: value,
+          original: item.cacheKey // 保留原始数据用于调试
+        }
+      });
+    } else if (response.data && typeof response.data === 'object') {
+      // 检查是否是Redis info命令返回的数据
+      if (response.config?.url?.includes('cache/info')) {
+        // 按行分割info数据
+        const infoLines = response.data.split('\r\n');
+        processedData = infoLines
+          .filter(line => line && !line.startsWith('#'))
+          .map(line => {
+            const [key, ...valueParts] = line.split(':');
+            const value = valueParts.join(':').trim();
+            return {
+              cacheKey: key.trim(),
+              keyValue: value,
+              original: line
+            };
+          });
+      } else {
+        // 普通对象数据
+        processedData = Object.entries(response.data).map(([key, value]) => {
+          return {
+            cacheKey: key,
+            keyValue: JSON.stringify(value),
+            original: key
+          }
+        });
+      }
+    }
+    
+    console.log('转换后的缓存键名数据:', processedData)
+    return {
+      code: response.code,
+      msg: response.msg,
+      data: response.data, // 保留原始数据
+      processedData: processedData // 明确返回处理后的数据
+    }
+  }).catch(error => {
+    console.error('获取缓存键名失败:', error)
+    throw error
   })
 }
 

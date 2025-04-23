@@ -171,11 +171,28 @@ function getCacheKeys(row) {
       keys = Object.keys(response.data);
     }
 
-    // 转换数据结构为表格需要的格式
-    cacheKeys.value = keys.map(key => ({
-      cacheKey: key,
-      keyType: typeof key
+    // 创建新的数组避免响应式问题
+    const newCacheKeys = keys.map(item => {
+      // 处理不同类型的键名数据
+      const key = item?.cacheKey || item;
+      const formattedItem = {
+        cacheKey: key,
+        keyValue: item?.keyValue || '',
+        keyType: typeof key,
+        original: item
+      };
+      console.log('格式化后的键名项:', formattedItem);
+      return formattedItem;
+    });
+
+    // 简化数据结构，只保留表格需要的cacheKey字段
+    const simplifiedKeys = newCacheKeys.map(item => ({
+      cacheKey: item.cacheKey
     }));
+
+    // 整体替换数组确保响应式更新
+    cacheKeys.value = simplifiedKeys;
+    console.log('简化后的键名列表数据:', JSON.parse(JSON.stringify(cacheKeys.value)));
 
     nowCacheName.value = cacheName;
   }).catch(error => {
