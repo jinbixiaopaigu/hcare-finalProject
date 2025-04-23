@@ -11,8 +11,11 @@ export function getCache() {
 // 查询缓存名称列表
 export function listCacheName() {
   return request({
-    url: '/monitor/cache/getNames',
+    url: '/monitor/cache',
     method: 'get'
+  }).then(response => {
+    // 从完整缓存数据中提取名称列表
+    return response.data ? Object.keys(response.data) : []
   })
 }
 
