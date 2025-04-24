@@ -92,9 +92,25 @@ def system_role_update(dto:SysRole):
     SysRoleService.check_role_data_scope(dto.role_id)
     if UserConstants.NOT_UNIQUE == SysRoleService.check_role_name_unique(dto):
         return AjaxResponse.from_error(f"修改角色'{dto.role_name}'失败，角色名称已存在")
-    elif UserConstants.NOT_UNIQUE == \
-        SysRoleService.check_role_key_unique(dto):
-        return AjaxResponse.from_error(f"修改角色'{dto.role_name}'失败，角色权限已存在")
+    elif UserConstants.NOT_UNIQUE == SysRoleService.check_role_key_unique(dto):
+        return AjaxResponse.from_error(f"修改角色'{dto.role_name}'失败，角色标识已存在")
+    
+    # 检查权限冲突
+    current_perms = sorted(getattr(dto, 'menu_ids', []) or getattr(dto, 'menuIds', []))
+    conflict_role = SysRoleService.get_conflict_role(dto)
+    if conflict_role:
+        conflict_perms = sorted(getattr(conflict_role, 'menu_ids', []) or getattr(conflict_role, 'menuIds', []))
+        print("【权限冲突调试】")
+        print(f"当前角色ID: {dto.role_id}, 名称: {dto.role_name}")
+        print(f"当前权限: {current_perms}")
+        print(f"冲突角色ID: {conflict_role.role_id}")
+        print(f"冲突角色权限: {conflict_perms}")
+        
+        if current_perms == conflict_perms:
+            return AjaxResponse.from_error(
+                f"修改角色'{dto.role_name}'失败，权限集合已存在\n"
+                f"冲突角色: {conflict_role.role_name}(ID:{conflict_role.role_id})"
+            )
     dto.update_by_user(SecurityUtil.get_username())
     SysRoleService.update_role(dto)
     return AjaxResponse.from_success()

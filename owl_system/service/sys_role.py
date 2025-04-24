@@ -141,9 +141,15 @@ class SysRoleService:
         Returns:
             Literal['0', '1'] : 唯一性校验结果, 0:唯一, 1:不唯一
         """
+        print(f"【角色键唯一性检查】")
+        print(f"检查角色键: {role.role_key} (当前角色ID: {role.role_id})")
         eo:SysRole = SysRoleMapper.check_role_key_unique(role.role_key)
-        if eo and eo.role_id == role.role_id:
-            return UserConstants.NOT_UNIQUE
+        if eo:
+            print(f"查询到角色: ID={eo.role_id}, 键={eo.role_key}")
+            if eo.role_id != role.role_id:
+                print(f"发现冲突角色: ID={eo.role_id}")
+                return UserConstants.NOT_UNIQUE
+        print("角色键唯一")
         return UserConstants.UNIQUE
 
     @classmethod
@@ -377,5 +383,23 @@ class SysRoleService:
         num = SysUserRoleMapper.batch_user_role(user_roles)
         return num > 0
     
+    @classmethod
+    def get_conflict_role(cls, role: SysRole) -> Optional[SysRole]:
+        """
+        获取与当前角色权限冲突的角色
+
+        Args:
+            role(SysRole): 角色信息
+
+        Returns:
+            Optional[SysRole]: 冲突的角色对象，如果没有冲突则返回None
+        """
+        if not role.role_key:
+            return None
+            
+        eo = SysRoleMapper.check_role_key_unique(role.role_key)
+        if eo and eo.role_id != role.role_id:
+            return eo
+        return None
 
     
