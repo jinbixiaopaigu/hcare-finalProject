@@ -106,7 +106,19 @@ const queryParams = ref({
 function getList() {
    loading.value = true;
    list(proxy.addDateRange(queryParams.value, dateRange.value)).then(response => {
-      logininforList.value = response.rows;
+      let rows = response.rows;
+
+      // 本地排序实现
+      if (queryParams.value.orderByColumn) {
+         const order = queryParams.value.isAsc === 'asc' ? 1 : -1;
+         rows = rows.sort((a, b) => {
+            const valA = a[queryParams.value.orderByColumn];
+            const valB = b[queryParams.value.orderByColumn];
+            return (valA > valB ? 1 : -1) * order;
+         });
+      }
+
+      logininforList.value = rows;
       total.value = response.total;
       loading.value = false;
    });
@@ -123,9 +135,11 @@ function resetQuery() {
    dateRange.value = [];
    proxy.resetForm("queryRef");
    queryParams.value.pageNum = 1;
-   queryParams.value.orderByColumn = "login_time";  // 使用字符串格式的后端字段名
-   queryParams.value.isAsc = "desc";  // 使用合法的排序方向值
-   proxy.$refs["logininforRef"].sort("loginTime", "desc");  // 保持UI一致
+   // 移除排序参数设置，避免触发后端验证
+   delete queryParams.value.orderByColumn;
+   delete queryParams.value.isAsc;
+   // 保持UI默认排序状态
+   proxy.$refs["logininforRef"].sort("loginTime", "desc");
 }
 
 /** 多选框选中数据 */
@@ -140,8 +154,9 @@ function handleSelectionChange(selection) {
 function handleSortChange(column) {
    if (!column.prop || !column.order) return;
 
-   // 字段名映射并转换为逗号分隔的字符串
+   // 字段名映射
    const fieldName = column.prop === "loginTime" ? "login_time" : column.prop;
+   // 转换为逗号分隔的字符串
    queryParams.value.orderByColumn = fieldName;
    // 排序方向转换
    queryParams.value.isAsc = column.order === "ascending" ? "asc" : "desc";

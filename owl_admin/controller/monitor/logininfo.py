@@ -107,6 +107,14 @@ def monitor_logininfo_list(dto:SysLogininfor):
         print(f"最终查询条件: {dto}", file=sys.stderr)
         print(f"g.criterian_meta: {g.criterian_meta.__dict__ if hasattr(g, 'criterian_meta') else None}", file=sys.stderr)
         
+        # 确保时间范围参数应用到查询条件
+        if hasattr(g, 'criterian_meta') and hasattr(g.criterian_meta, '_extra'):
+            extra = g.criterian_meta._extra
+            if hasattr(extra, 'begin_time') and hasattr(extra, 'end_time'):
+                # 使用正确的字段名设置时间范围
+                dto.login_time = f"{extra.begin_time}~{extra.end_time}"
+            print(f"应用时间范围后的查询条件: {dto}", file=sys.stderr)
+        
         rows = SysLogininforService.select_logininfor_list(dto)
         print(f"查询返回结果数量: {len(rows)}", file=sys.stderr)
         return TableResponse(rows=rows)
