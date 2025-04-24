@@ -175,13 +175,27 @@ class ValidatorViewFunction(AbcValidatorFunction):
             raise Exception("请在flask请求上下文中调用")
         try:
             if self._data_parser:
+                # 添加调试日志
+                import sys
+                import traceback
+                from flask import request
+                print("\n=== QueryValidator 参数验证调试 ===", file=sys.stderr)
+                print(f"原始请求URL: {request.url}", file=sys.stderr)
+                print(f"请求参数: {request.args.to_dict()}", file=sys.stderr)
+                
                 self._data_parser.prepare()
+                print(f"解析后的参数: {self._data_parser.data()}", file=sys.stderr)
+                
                 self.bound_data(self.args, self.kwargs)
+                print(f"绑定后的参数: {self.kwargs}", file=sys.stderr)
         except ValidationError as e:
+            print(f"参数验证失败: {str(e)}\n{traceback.format_exc()}", file=sys.stderr)
             return BadRequest(description=str(e))
         except TypeError as e:
+            print(f"参数类型错误: {str(e)}\n{traceback.format_exc()}", file=sys.stderr)
             return BadRequest(description=str(e))
         except Exception as e:
+            print(f"参数处理异常: {str(e)}\n{traceback.format_exc()}", file=sys.stderr)
             return InternalServerError(description=str(e))
         else:
             return self.func(*self.args, **self.kwargs)

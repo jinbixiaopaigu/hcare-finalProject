@@ -69,9 +69,9 @@ class SysLogininforMapper:
             criterions.append(SysLogininforPo.user_name.like(f"%{info.user_name}%"))
         if "criterian_meta" in g and g.criterian_meta.extra:
             extra:ExtraModel = g.criterian_meta.extra
-            if extra.start_time and extra.end_time:
-                criterions.append(SysLogininforPo.create_time >= extra.start_time)
-                criterions.append(SysLogininforPo.create_time <= extra.end_time)
+            if extra.begin_time and extra.end_time:
+                criterions.append(SysLogininforPo.login_time >= extra.begin_time)
+                criterions.append(SysLogininforPo.login_time <= extra.end_time)
         stmt = select(*cls.default_columns) \
             .where(*criterions)
         if "criterian_meta" in g and g.criterian_meta.page:
