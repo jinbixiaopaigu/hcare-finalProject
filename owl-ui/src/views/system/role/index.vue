@@ -361,22 +361,22 @@ function handleUpdate(row) {
     open.value = true;
     nextTick(() => {
       roleMenu.then((res) => {
-        console.log('【调试】后端返回的权限数据:', res);
+        // console.log('【调试】后端返回的权限数据:', res);
         let checkedKeys = res?.checked_keys || [];  // 修正字段名匹配后端返回
-        console.log('【调试】处理后的权限ID数组:', checkedKeys);
+        // console.log('【调试】处理后的权限ID数组:', checkedKeys);
 
         if (Array.isArray(checkedKeys)) {
-          console.log('【调试】权限树组件引用:', menuRef.value);
+          // console.log('【调试】权限树组件引用:', menuRef.value);
           checkedKeys.forEach((v) => {
             nextTick(() => {
-              console.log('【调试】设置权限选中:', v);
+              // console.log('【调试】设置权限选中:', v);
               menuRef.value.setChecked(v, true, true);
-              console.log('【调试】设置后检查状态:', menuRef.value.getCheckedKeys());
+              // console.log('【调试】设置后检查状态:', menuRef.value.getCheckedKeys());
             });
           });
         }
       }).catch(err => {
-        console.error('【调试】获取权限数据出错:', err);
+        // console.error('【调试】获取权限数据出错:', err);
       });
     });
   });
