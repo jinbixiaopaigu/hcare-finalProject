@@ -91,10 +91,10 @@ def system_role_update(dto:SysRole):
     SysRoleService.check_role_allowed(dto)
     SysRoleService.check_role_data_scope(dto.role_id)
     if UserConstants.NOT_UNIQUE == SysRoleService.check_role_name_unique(dto):
-        return AjaxResponse.from_error(f"新增角色'{dto.role_name}'失败，角色名称已存在")
+        return AjaxResponse.from_error(f"修改角色'{dto.role_name}'失败，角色名称已存在")
     elif UserConstants.NOT_UNIQUE == \
         SysRoleService.check_role_key_unique(dto):
-        return AjaxResponse.from_error(f"新增角色'{dto.role_name}'失败，角色权限已存在")
+        return AjaxResponse.from_error(f"修改角色'{dto.role_name}'失败，角色权限已存在")
     dto.update_by_user(SecurityUtil.get_username())
     SysRoleService.update_role(dto)
     return AjaxResponse.from_success()
@@ -229,4 +229,3 @@ def system_role_user_select_all(
         user_ids=user_ids
         )
     return AjaxResponse.from_success() if flag else AjaxResponse.from_error()
-

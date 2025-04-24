@@ -1,12 +1,12 @@
 // base color
-$blue: #324157;
-$light-blue: #333c46;
+$blue: #1e88e5;
+$light-blue: #64b5f6;
 $red: #C03639;
 $pink: #E65D6E;
-$green: #30B08F;
+$green: #4caf50;
 $tiffany: #4AB7BD;
 $yellow: #FEC171;
-$panGreen: #30B08F;
+$panGreen: #4caf50;
 
 // 默认主题变量
 $menuText: #bfcbd9;
@@ -32,8 +32,8 @@ $base-sub-menu-background: #1f2d3d;
 $base-sub-menu-hover: #001528;
 
 // 组件变量
-$--color-primary: #409EFF;
-$--color-success: #67C23A;
+$--color-primary: #1e88e5;
+$--color-success: #4caf50;
 $--color-warning: #E6A23C;
 $--color-danger: #F56C6C;
 $--color-info: #909399;
@@ -218,4 +218,3 @@ html.dark {
   }
 
 }
-
