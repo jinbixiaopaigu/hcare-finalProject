@@ -122,9 +122,76 @@ def get_cache_value():
                 'data': None
             }), 400
             
-        # 处理特殊缓存名称
+        # 处理不同类型的缓存请求
         if cache_name == "info":
             logger.info("处理Redis info命令请求")
+            try:
+                info_data = redis_cache.info()
+                return jsonify({
+                    'code': 200,
+                    'msg': '操作成功',
+                    'data': info_data
+                })
+            except Exception as e:
+                logger.error(f"获取Redis信息失败: {str(e)}")
+                return jsonify({
+                    'code': 500,
+                    'msg': f'获取Redis信息失败: {str(e)}',
+                    'data': None
+                }), 500
+                
+        elif cache_name == "dbSize":
+            logger.info("处理Redis dbSize请求")
+            try:
+                db_index = int(cache_key.replace('db', ''))
+                keyspace = redis_cache.info('keyspace')
+                
+                # 处理不同类型返回值
+                if isinstance(keyspace, bytes):
+                    keyspace = json.loads(keyspace.decode('utf-8'))
+                elif isinstance(keyspace, str):
+                    keyspace = json.loads(keyspace)
+                
+                # 查找对应数据库信息
+                db_key = f'db{db_index}'
+                db_info = keyspace.get(db_key, {})
+                
+                # 提取keys数量
+                keys_count = db_info.get('keys', 0) if db_info else 0
+                
+                return jsonify({
+                    'code': 200,
+                    'msg': '操作成功',
+                    'data': {
+                        'db_index': db_index,
+                        'keys_count': keys_count,
+                        'db_info': db_info
+                    }
+                })
+            except Exception as e:
+                logger.error(f"获取数据库信息失败: {str(e)}", exc_info=True)
+                return jsonify({
+                    'code': 500,
+                    'msg': f'获取数据库信息失败: {str(e)}',
+                    'data': None
+                }), 500
+                
+        elif cache_name == "commandStats":
+            logger.info("处理Redis命令统计请求")
+            try:
+                stats = redis_cache.info('commandstats')
+                return jsonify({
+                    'code': 200,
+                    'msg': '操作成功',
+                    'data': stats
+                })
+            except Exception as e:
+                logger.error(f"获取命令统计失败: {str(e)}")
+                return jsonify({
+                    'code': 500,
+                    'msg': f'获取命令统计失败: {str(e)}',
+                    'data': None
+                }), 500
         
         # 处理特殊缓存名称
         if cache_name == "info":
