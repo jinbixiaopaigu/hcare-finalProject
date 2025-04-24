@@ -8,7 +8,7 @@ from typing_extensions import Annotated
 from owl_common.base.transformer import ids_to_list
 from owl_common.base.model import AjaxResponse, TableResponse
 from owl_common.descriptor.serializer import BaseSerializer, JsonSerializer
-from owl_common.descriptor.validator import QueryValidator, PathValidator
+from owl_common.descriptor.validator import QueryValidator, PathValidator, VoValidatorContext
 from owl_common.domain.enum import BusinessType
 from owl_system.domain.entity import SysLogininfor
 from owl_system.service.sys_logininfo import SysLogininforService
@@ -18,7 +18,10 @@ from ... import reg
 
 
 @reg.api.route('/monitor/logininfor/list',methods=['GET'])
-@QueryValidator(is_page=True)
+@QueryValidator(
+    is_page=True, 
+    include={"login_time", "createTime", "infoId", "userName", "ipaddr", "status"}
+)
 @PreAuthorize(HasPerm("monitor:logininfor:list"))
 @JsonSerializer()
 def monitor_logininfo_list(dto:SysLogininfor):
@@ -26,6 +29,7 @@ def monitor_logininfo_list(dto:SysLogininfor):
         查询登录日志列表
     '''
     from flask import request, g
+    from datetime import datetime
     from owl_common.base.transformer import to_datetime
     from owl_common.base.model import ExtraModel, CriterianMeta
     import sys
@@ -44,23 +48,35 @@ def monitor_logininfo_list(dto:SysLogininfor):
         all_args = request.args.to_dict()
         print(f"所有参数字典: {all_args}", file=sys.stderr)
         
-        # 检查是否存在params[beginTime]格式的参数
-        begin_time = all_args.get('params[beginTime]')
-        end_time = all_args.get('params[endTime]')
+        from urllib.parse import unquote
         
-        if begin_time or end_time:
-            print(f"找到params[beginTime]格式的参数: beginTime={begin_time}, endTime={end_time}", file=sys.stderr)
-        else:
-            # 尝试解析params参数
-            params_str = request.args.get('params', '{}')
+        # 获取原始时间参数
+        begin_time_str = all_args.get('beginTime')
+        end_time_str = all_args.get('endTime')
+        
+        # 验证时间格式
+        def validate_time_format(time_str):
+            if not time_str:
+                return None
             try:
-                params = json.loads(params_str)
-                print(f"解析JSON格式的params参数: {params}", file=sys.stderr)
-                begin_time = params.get('beginTime')
-                end_time = params.get('endTime')
-            except Exception as e:
-                print(f"解析params参数失败: {e}", file=sys.stderr)
-                params = {}
+                # URL解码并清理字符串
+                decoded_str = unquote(time_str).replace('%20', ' ').strip()
+                # 解析为datetime对象
+                return datetime.strptime(decoded_str, "%Y-%m-%d %H:%M:%S")
+            except ValueError as e:
+                print(f"时间参数解析错误: {str(e)}", file=sys.stderr)
+                raise ValueError(
+                    f"时间格式错误: '{time_str}'，请使用YYYY-MM-DD HH:MM:SS格式。"
+                    f"示例: 2025-01-01 00:00:00"
+                )
+        
+        try:
+            begin_time = validate_time_format(begin_time_str)
+            end_time = validate_time_format(end_time_str)
+            print(f"处理后的时间参数: beginTime={begin_time}, endTime={end_time}", file=sys.stderr)
+        except ValueError as e:
+            print(f"时间参数验证失败: {str(e)}", file=sys.stderr)
+            raise
         
         print(f"最终解析到的时间参数 - beginTime: {begin_time}, endTime: {end_time}", file=sys.stderr)
         
@@ -74,30 +90,12 @@ def monitor_logininfo_list(dto:SysLogininfor):
                 # 创建ExtraModel实例
                 extra_model = ExtraModel()
                 if begin_time:
-                    # 解码URL编码的时间字符串
-                    begin_time = unquote(begin_time)
-                    print(f"解码后的beginTime: {begin_time}", file=sys.stderr)
-                    try:
-                        # 打印原始时间字符串和解析结果
-                        print(f"尝试解析beginTime: {begin_time}", file=sys.stderr)
-                        extra_model.start_time = to_datetime()(begin_time)
-                        print(f"成功解析beginTime为: {extra_model.start_time}", file=sys.stderr)
-                    except Exception as e:
-                        print(f"解析beginTime失败: {e}\n{traceback.format_exc()}", file=sys.stderr)
-                        return AjaxResponse.from_error(f"开始时间格式错误: {begin_time}，请使用YYYY-MM-DD HH:MM:SS格式")
+                    extra_model.begin_time = begin_time
+                    print(f"设置ExtraModel.begin_time: {begin_time}", file=sys.stderr)
                 
                 if end_time:
-                    # 解码URL编码的时间字符串
-                    end_time = unquote(end_time)
-                    print(f"解码后的endTime: {end_time}", file=sys.stderr)
-                    try:
-                        # 打印原始时间字符串和解析结果
-                        print(f"尝试解析endTime: {end_time}", file=sys.stderr)
-                        extra_model.end_time = to_datetime()(end_time)
-                        print(f"成功解析endTime为: {extra_model.end_time}", file=sys.stderr)
-                    except Exception as e:
-                        print(f"解析endTime失败: {e}\n{traceback.format_exc()}", file=sys.stderr)
-                        return AjaxResponse.from_error(f"结束时间格式错误: {end_time}，请使用YYYY-MM-DD HH:MM:SS格式")
+                    extra_model.end_time = end_time
+                    print(f"设置ExtraModel.end_time: {end_time}", file=sys.stderr)
                 
                 print(f"创建的ExtraModel: {extra_model}", file=sys.stderr)
                 g.criterian_meta._extra = extra_model

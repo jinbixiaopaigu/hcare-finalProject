@@ -61,7 +61,7 @@
             </template>
          </el-table-column>
          <el-table-column label="描述" align="center" prop="msg" :show-overflow-tooltip="true" />
-         <el-table-column label="访问时间" align="center" prop="loginTime" sortable="custom"
+         <el-table-column label="访问时间" align="center" prop="login_time" sortable="custom"
             :sort-orders="['descending', 'ascending']" width="180">
             <template #default="scope">
                <span>{{ parseTime(scope.row.loginTime) }}</span>
@@ -89,7 +89,7 @@ const multiple = ref(true);
 const selectName = ref("");
 const total = ref(0);
 const dateRange = ref([]);
-const defaultSort = ref({ prop: "loginTime", order: "descending" });
+const defaultSort = ref({ prop: "login_time", order: "desc" });
 
 // 查询参数
 const queryParams = ref({
@@ -123,7 +123,9 @@ function resetQuery() {
    dateRange.value = [];
    proxy.resetForm("queryRef");
    queryParams.value.pageNum = 1;
-   proxy.$refs["logininforRef"].sort(defaultSort.value.prop, defaultSort.value.order);
+   queryParams.value.orderByColumn = "login_time";  // 使用字符串格式的后端字段名
+   queryParams.value.isAsc = "desc";  // 使用合法的排序方向值
+   proxy.$refs["logininforRef"].sort("loginTime", "desc");  // 保持UI一致
 }
 
 /** 多选框选中数据 */
@@ -135,9 +137,14 @@ function handleSelectionChange(selection) {
 }
 
 /** 排序触发事件 */
-function handleSortChange(column, prop, order) {
-   queryParams.value.orderByColumn = column.prop;
-   queryParams.value.isAsc = column.order;
+function handleSortChange(column) {
+   if (!column.prop || !column.order) return;
+
+   // 字段名映射并转换为逗号分隔的字符串
+   const fieldName = column.prop === "loginTime" ? "login_time" : column.prop;
+   queryParams.value.orderByColumn = fieldName;
+   // 排序方向转换
+   queryParams.value.isAsc = column.order === "ascending" ? "asc" : "desc";
    getList();
 }
 
