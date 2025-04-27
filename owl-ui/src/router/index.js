@@ -71,6 +71,21 @@ export const constantRoutes = [
     ]
   },
   {
+    path: '/medical',
+    component: Layout,
+    redirect: 'noredirect',
+    name: 'Medical',
+    meta: { title: '医护管理', icon: 'medical-box' },
+    children: [
+      {
+        path: 'patient/condition',
+        component: () => import('@/views/medical/patient/condition'),
+        name: 'PatientCondition',
+        meta: { title: '病人状况', icon: 'user' }
+      }
+    ]
+  },
+  {
     path: '/user',
     component: Layout,
     hidden: true,
