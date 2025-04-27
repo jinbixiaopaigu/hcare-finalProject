@@ -53,3 +53,7 @@ selenium-debug.log
 
 package-lock.json
 yarn.lock
+
+# SQL files
+sql/*
+!sql/hcare-final.sql
