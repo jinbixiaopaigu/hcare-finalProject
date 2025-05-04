@@ -2,22 +2,8 @@
   <div class="app-container">
     <el-row :gutter="20">
       <splitpanes :horizontal="appStore.device === 'mobile'" class="default-theme">
-        <!--部门数据-->
-        <pane size="16">
-          <el-col>
-            <div class="head-container">
-              <el-input v-model="deptName" placeholder="请输入部门名称" clearable prefix-icon="Search"
-                style="margin-bottom: 20px" />
-            </div>
-            <div class="head-container">
-              <el-tree :data="deptOptions" :props="{ label: 'label', children: 'children' }"
-                :expand-on-click-node="false" :filter-node-method="filterNode" ref="deptTreeRef" node-key="id"
-                highlight-current default-expand-all @node-click="handleNodeClick" />
-            </div>
-          </el-col>
-        </pane>
         <!--用户数据-->
-        <pane size="84">
+        <pane size="100">
           <el-col>
             <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" label-width="68px">
               <el-form-item label="用户名称" prop="userName">
@@ -172,7 +158,7 @@
             <el-form-item label="状态">
               <el-radio-group v-model="form.status">
                 <el-radio v-for="dict in sys_normal_disable" :key="dict.value" :value="dict.value">{{ dict.label
-                  }}</el-radio>
+                }}</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
@@ -294,7 +280,7 @@ const columns = ref([
   { key: 0, label: `用户编号`, visible: true },
   { key: 1, label: `用户名称`, visible: true },
   { key: 2, label: `用户昵称`, visible: true },
-  { key: 3, label: `部门`, visible: true },
+  { key: 3, label: `部门`, visible: false },
   { key: 4, label: `手机号码`, visible: true },
   { key: 5, label: `状态`, visible: true },
   { key: 6, label: `创建时间`, visible: true }
@@ -566,6 +552,5 @@ function submitForm() {
   });
 };
 
-getDeptTree();
 getList();
 </script>
