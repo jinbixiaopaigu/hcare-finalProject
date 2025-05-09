@@ -15,3 +15,12 @@
 - [ ]  3.配合硬件数据结构修改数据库
 - [ ]  4.修复因接口缺失/不匹配的搜索bug(如各种页面点击搜索后的500错误，点击表头后无法排序等)
 - [ ]  5.修改logo
+- [ ]  6.从华为research sdk中获取项目信息
+
+
+华为research sdk初始化脚本使用方法：根目录新建config.ini
+格式为：
+[credentials]
+access_key = <your_access_key>
+secret_key = <your_secret_key>
+然后根目录执行python bridge_client_init.py
