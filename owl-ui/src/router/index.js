@@ -84,6 +84,19 @@ export const constantRoutes = [
         meta: { title: '个人中心', icon: 'user' }
       }
     ]
+  },
+  {
+    path: '/medical/patient',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: 'condition',
+        component: () => import('@/views/medical/patient/condition'),
+        name: 'PatientCondition',
+        meta: { title: '患者状况' }
+      }
+    ]
   }
 ]
 
@@ -156,6 +169,19 @@ export const dynamicRoutes = [
         component: () => import('@/views/tool/gen/editTable'),
         name: 'GenEdit',
         meta: { title: '修改生成配置', activeMenu: '/tool/gen' }
+      }
+    ]
+  },
+  {
+    path: '/medical/atrialFibrillation',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/medical/atrialFibrillation'),
+        name: 'AtrialFibrillation',
+        meta: { title: '房颤检测结果', icon: 'monitor' }
       }
     ]
   }

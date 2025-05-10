@@ -19,14 +19,35 @@ def create_app() -> Flask:
     from owl_common.base.signal import app_completed
 
     app = Flask(__name__,static_folder=None)
-        
+    
+    # 数据库配置
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:q1w2e3r4@localhost/hcare-final'
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    
+    # 优先初始化数据库
+    print("初始化数据库...")
+    db.init_app(app)
+    with app.app_context():
+        db.create_all()
+    
+    # 初始化其他插件
+    print("初始化核心插件...")
     owl.init_app(app,PROJECT_ROOT)
     cors.init_app(app)
-    fredis.init_app(app)
-    db.init_app(app)
+    fredis.init_app(app) 
     lm.init_app(app)
     
+    # 强制注册医疗模块
+    from owl_system.modules.medical import register_medical_module
+    register_medical_module(app)
+    
     app_completed.send(app)
+    
+    # 打印所有注册的路由
+    print("\nRegistered routes:")
+    for rule in app.url_map.iter_rules():
+        print(f"{rule.methods}: {rule}")
+    
     return app
 
 
