@@ -13,8 +13,12 @@ def list_blood_oxygen():
         per_page = request.args.get('per_page', 10, type=int)
         user_id = request.args.get('user_id')
         measurement_type = request.args.get('measurement_type')
-        begin_time = request.args.get('begin_time')
-        end_time = request.args.get('end_time')
+        # 获取请求参数，兼容JSON和查询字符串
+        request_data = request.get_json(silent=True) or {}
+        begin_data_time = request_data.get('begin_data_time') or request.args.get('begin_data_time')
+        end_data_time = request_data.get('end_data_time') or request.args.get('end_data_time')
+        
+        logger.info(f"Received params - begin_data_time: {begin_data_time}, end_data_time: {end_data_time}")
 
         query = BloodOxygenSaturation.query
 
@@ -22,8 +26,10 @@ def list_blood_oxygen():
             query = query.filter(BloodOxygenSaturation.user_id == user_id)
         if measurement_type:
             query = query.filter(BloodOxygenSaturation.measurement_type == measurement_type)
-        if begin_time and end_time:
-            query = query.filter(BloodOxygenSaturation.data_time.between(begin_time, end_time))
+        if begin_data_time and end_data_time:
+            logger.info(f"Applying date filter: {begin_data_time} to {end_data_time}")
+            logger.info(f"SQL to be executed: {str(query.filter(BloodOxygenSaturation.data_time.between(begin_data_time, end_data_time)))}")
+            query = query.filter(BloodOxygenSaturation.data_time.between(begin_data_time, end_data_time))
 
         pagination = query.paginate(page=page, per_page=per_page, error_out=False)
         items = [item.to_dict() for item in pagination.items]

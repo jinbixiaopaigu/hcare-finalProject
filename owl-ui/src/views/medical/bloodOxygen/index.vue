@@ -2,19 +2,19 @@
     <div class="app-container">
         <!-- 查询表单 -->
         <el-form :model="queryParams" ref="queryForm" :inline="true" v-show="showSearch">
-            <el-form-item label="用户ID" prop="userId">
-                <el-input v-model="queryParams.userId" placeholder="请输入用户ID" clearable size="small"
+            <el-form-item label="用户ID" prop="user_id">
+                <el-input v-model="queryParams.user_id" placeholder="请输入用户ID" clearable size="small"
                     @keyup.enter.native="handleQuery" />
             </el-form-item>
-            <el-form-item label="测量类型" prop="measurementType">
-                <el-select v-model="queryParams.measurementType" placeholder="请选择测量类型" clearable size="small">
+            <el-form-item label="测量类型" prop="measurement_type">
+                <el-select v-model="queryParams.measurement_type" placeholder="请选择测量类型" clearable size="small">
                     <el-option v-for="dict in measurementTypeOptions" :key="dict.value" :label="dict.label"
                         :value="dict.value" />
                 </el-select>
             </el-form-item>
-            <el-form-item label="数据时间" prop="dataTimeRange">
+            <el-form-item label="时间范围">
                 <el-date-picker v-model="dataTimeRange" type="daterange" range-separator="至" start-placeholder="开始日期"
-                    end-placeholder="结束日期" value-format="yyyy-MM-dd" size="small"></el-date-picker>
+                    end-placeholder="结束日期" value-format="YYYY-MM-DD" format="YYYY-MM-DD" @change="handleDateChange" />
             </el-form-item>
             <el-form-item>
                 <el-button type="primary" icon="el-icon-search" size="small" @click="handleQuery">搜索</el-button>
@@ -69,8 +69,8 @@
         </el-table>
 
         <!-- 分页组件 -->
-        <pagination v-show="total > 0" :total="total" v-model:page="queryParams.pageNum"
-            v-model:limit="queryParams.pageSize" @pagination="getList" />
+        <pagination v-show="total > 0" :total="total" v-model:page="queryParams.page_num"
+            v-model:limit="queryParams.page_size" @pagination="getList" />
 
         <!-- 详情对话框 -->
         <el-dialog ref="dialog" :title="title" v-model="open" width="700px" append-to-body
@@ -166,12 +166,12 @@ export default {
             open: false,
             // 查询参数
             queryParams: {
-                pageNum: 1,
-                pageSize: 10,
-                userId: null,
-                measurementType: null,
-                beginDataTime: null,
-                endDataTime: null
+                page_num: 1,
+                page_size: 10,
+                user_id: undefined,
+                measurement_type: undefined,
+                begin_data_time: undefined,
+                end_data_time: undefined
             },
             // 表单参数
             form: {},
@@ -202,17 +202,20 @@ export default {
         /** 查询血氧数据列表 */
         getList() {
             this.loading = true;
-            if (this.dataTimeRange && this.dataTimeRange.length === 2) {
-                this.queryParams.beginDataTime = this.dataTimeRange[0];
-                this.queryParams.endDataTime = this.dataTimeRange[1];
-            } else {
-                this.queryParams.beginDataTime = null;
-                this.queryParams.endDataTime = null;
-            }
 
-            console.log('发送请求，参数:', JSON.stringify(this.queryParams, null, 2));
+            // 创建干净的请求参数对象
+            const params = {
+                page_num: this.queryParams.page_num,
+                page_size: this.queryParams.page_size,
+                user_id: this.queryParams.user_id,
+                measurement_type: this.queryParams.measurement_type,
+                begin_data_time: this.queryParams.begin_data_time,
+                end_data_time: this.queryParams.end_data_time
+            };
 
-            listBo(this.queryParams).then(response => {
+            console.log('发送请求，参数:', JSON.stringify(params, null, 2));
+
+            listBo(params).then(response => {
                 console.log('收到响应:', response);
                 console.log('响应数据:', JSON.stringify(response.data, null, 2));
 
@@ -286,9 +289,31 @@ export default {
             };
             this.resetForm("form");
         },
+        /** 日期范围变化 */
+        handleDateChange(range) {
+            console.log('日期变化事件触发，range:', range);
+            this.dataTimeRange = range || [];
+            console.log('dataTimeRange更新后:', this.dataTimeRange);
+
+            if (range && range.length === 2) {
+                this.queryParams.begin_data_time = range[0] + ' 00:00:00';
+                this.queryParams.end_data_time = range[1] + ' 23:59:59';
+            } else {
+                this.queryParams.begin_data_time = undefined;
+                this.queryParams.end_data_time = undefined;
+            }
+
+            console.log('queryParams更新后:', JSON.stringify(this.queryParams, null, 2));
+            console.log('当前组件状态:', {
+                dataTimeRange: this.dataTimeRange,
+                queryParams: this.queryParams
+            });
+        },
+
         /** 搜索按钮操作 */
         handleQuery() {
-            this.queryParams.pageNum = 1;
+            console.log('搜索参数:', JSON.stringify(this.queryParams, null, 2));
+            this.queryParams.page_num = 1;
             this.getList();
         },
         /** 重置按钮操作 */
