@@ -32,7 +32,15 @@ def list_blood_oxygen():
             query = query.filter(BloodOxygenSaturation.data_time.between(begin_data_time, end_data_time))
 
         pagination = query.paginate(page=page, per_page=per_page, error_out=False)
-        items = [item.to_dict() for item in pagination.items]
+        items = [{
+            'id': item.id,
+            'user_id': item.user_id,
+            'spo2_value': item.spo2_value,
+            'measurement_type': item.measurement_type,
+            'data_time': item.data_time,
+            'upload_time': item.upload_time,
+            'user_notes': item.user_notes
+        } for item in pagination.items]
 
         return success(data={
             'items': items,

@@ -34,8 +34,8 @@
         <!-- 数据表格 -->
         <el-table v-loading="loading" :data="boList" @selection-change="handleSelectionChange">
             <el-table-column type="selection" width="55" align="center" />
-            <el-table-column label="ID" align="center" prop="id" width="120" />
             <el-table-column label="用户ID" align="center" prop="user_id" width="120" />
+
             <el-table-column label="血氧饱和度" align="center" prop="spo2_value" width="120">
                 <template #default="{ row }">
                     {{ row.spo2_value }}%
@@ -56,13 +56,19 @@
                     <span>{{ parseTime(row.upload_time) }}</span>
                 </template>
             </el-table-column>
+            <!-- 暂时隐藏备注列，因为列表API不返回备注数据 -->
+            <el-table-column label="备注" align="center" prop="user_notes" width="150">
+                <template #default="{ row }">
+                    {{ row.user_notes || '-' }}
+                </template>
+            </el-table-column>
             <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
                 <template #default="{ row }">
-                    <el-button size="mini" type="text" icon="el-icon-view" @click="handleDetail(row)"
+                    <el-button size="small" type="text" icon="el-icon-view" @click="handleDetail(row)"
                         v-hasPermi="['medical:bo:query']">详情</el-button>
-                    <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(row)"
+                    <el-button size="small" type="text" icon="el-icon-edit" @click="handleUpdate(row)"
                         v-hasPermi="['medical:bo:edit']">修改</el-button>
-                    <el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(row)"
+                    <el-button size="small" type="text" icon="el-icon-delete" @click="handleDelete(row)"
                         v-hasPermi="['medical:bo:remove']">删除</el-button>
                 </template>
             </el-table-column>
@@ -135,6 +141,20 @@
         </el-dialog>
     </div>
 </template>
+
+<style scoped>
+/* 保持text按钮样式与link一致 */
+.el-button--text {
+    color: var(--el-color-primary);
+    background: transparent;
+    border: none;
+    padding: 0;
+}
+
+.el-button--text:hover {
+    color: var(--el-color-primary-light-3);
+}
+</style>
 
 <script>
 import { listBo, getBo, delBo, addBo, updateBo } from "@/api/medical/bo";
@@ -230,7 +250,7 @@ export default {
                     measurement_type: item.measurement_type,
                     data_time: item.data_time,
                     upload_time: item.upload_time,
-                    // 其他字段...
+                    user_notes: item.user_notes || item.userNotes || null
                 }));
                 console.log('新数组:', JSON.parse(JSON.stringify(newList)));
 
@@ -414,6 +434,7 @@ export default {
                     measurementType: response.data.measurement_type,
                     dataTime: response.data.data_time,
                     uploadTime: response.data.upload_time,
+                    userNotes: response.data.user_notes || response.data.userNotes || ''
                 };
                 this.open = true;
                 this.title = "血氧数据详情";
