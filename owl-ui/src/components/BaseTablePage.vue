@@ -4,7 +4,14 @@
         <el-form :model="queryParams" ref="queryForm" :inline="true" v-show="showSearch">
             <template v-for="(field, index) in config.searchFields" :key="index">
                 <el-form-item :label="field.label" :prop="field.prop">
-                    <component :is="getComponentType(field.type)" v-model="queryParams[field.prop]"
+                    <template v-if="field.type === 'select'">
+                        <el-select v-model="queryParams[field.prop]" v-bind="field.props || {}"
+                            @keyup.enter.native="handleQuery">
+                            <el-option v-for="item in field.props.options" :key="item.value" :label="item.label"
+                                :value="item.value" />
+                        </el-select>
+                    </template>
+                    <component v-else :is="getComponentType(field.type)" v-model="queryParams[field.prop]"
                         v-bind="field.props || {}" @keyup.enter.native="handleQuery" />
                 </el-form-item>
             </template>
