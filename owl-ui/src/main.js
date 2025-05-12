@@ -11,7 +11,7 @@ import '@/assets/styles/index.scss' // global css
 
 import App from './App'
 import store from './store'
-import router from './router'
+import router from '@/router/index.js'
 import directive from './directive' // directive
 
 // 注册指令
