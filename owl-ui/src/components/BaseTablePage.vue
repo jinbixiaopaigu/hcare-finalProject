@@ -126,6 +126,38 @@ export default {
         this.getList();
     },
     methods: {
+        handleAdd() {
+            this.reset();
+            this.open = true;
+            this.title = `添加${this.config.title}`;
+        },
+
+        getQueryParams() {
+            const params = {};
+            this.config.searchFields.forEach(field => {
+                if (this.queryParams[field.prop] !== undefined && this.queryParams[field.prop] !== '') {
+                    params[field.prop] = this.queryParams[field.prop];
+                }
+            });
+            return params;
+        },
+
+        handleSelectionChange(selection) {
+            this.ids = selection.map(item => item.id);
+            this.single = selection.length !== 1;
+            this.multiple = !selection.length;
+        },
+
+        handleQuery() {
+            this.queryParams.page_num = 1;
+            this.getList();
+        },
+
+        resetQuery() {
+            this.resetForm("queryForm");
+            this.handleQuery();
+        },
+
         getList() {
             this.loading = true;
             try {

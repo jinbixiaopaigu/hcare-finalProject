@@ -27,6 +27,7 @@ import './permission' // permission control
 
 import { useDict } from '@/utils/dict'
 import { parseTime, resetForm, addDateRange, handleTree, selectDictLabel, selectDictLabels } from '@/utils/ruoyi'
+import api from '@/api'
 
 // 分页组件
 import Pagination from '@/components/Pagination'
@@ -63,6 +64,9 @@ app.component('ImageUpload', ImageUpload)
 app.component('ImagePreview', ImagePreview)
 app.component('RightToolbar', RightToolbar)
 app.component('Editor', Editor)
+
+// 注入API服务
+app.config.globalProperties.$api = api
 
 app.use(router)
 app.use(store)
