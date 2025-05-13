@@ -28,7 +28,7 @@ def create_app() -> Flask:
     app = Flask(__name__,static_folder=None)
     
     # 数据库配置
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:q1w2e3r4@localhost/hcare-final'
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://flask:flaskpass@db/flaskdb'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     
     # 优先初始化数据库

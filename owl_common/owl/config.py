@@ -80,8 +80,8 @@ class OwlConfigLoader(object):
         """
         config = self._raw_data.get("flask",{})
         owl_config = self._raw_data.get("owl",{})
-        host = owl_config.get("host","127.0.0.1")
-        port = owl_config.get("port",9000)
+        host = owl_config.get("host","app")
+        port = owl_config.get("port",8000)
         config.update({"SERVER_NAME":f"{host}:{port}"})
         config = DictUtil.upper_key(config)
         app.config.update(config)

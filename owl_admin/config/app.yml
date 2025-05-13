@@ -2,8 +2,8 @@ owl:
   name: 'ruoyi-vue-flask'
   version: '1.0.0'
   author: 'shaw'
-  host: 'localhost'
-  port: 9000
+  host: 'app'
+  port: 8000
   api:
     version: '/'
   env: 'dev'
