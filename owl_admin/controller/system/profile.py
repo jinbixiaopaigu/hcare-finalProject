@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # @Author  : shaw-lee
 
-from typing import Annotated
+from typing_extensions import Annotated
 from flask_login import login_required
 from pydantic import Field, SecretStr
 

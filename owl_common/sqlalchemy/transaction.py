@@ -3,6 +3,7 @@ from typing import Any
 from enum import Enum
 from sqlalchemy.orm.scoping import scoped_session
 from sqlalchemy.orm.session import Session
+from typing import Union
 
 
 class Propagation(Enum):
@@ -55,64 +56,69 @@ class Transactional:
 
 class TransactionWrapper:
     
-    def __init__(self,func ,session:scoped_session | Session, propagation:Propagation=Propagation.REQUIRED):
-        self.func = func
-        self.session:Session = session._proxied \
-            if isinstance(session, scoped_session) else session
-        self.propagation = propagation
+        def __init__(
+        self,
+        func,  # 如果 func 需要类型注解，可补充（如 Callable）
+        session: Union[scoped_session, Session],  # 联合类型
+        propagation: Propagation = Propagation.REQUIRED
+        ) -> None:
+            self.func = func
+            self.session:Session = session._proxied \
+                if isinstance(session, scoped_session) else session
+            self.propagation = propagation
     
-    def top_transaction(self) -> bool:
-        '''
-        判断当前事务是否为顶层事务
+        def top_transaction(self) -> bool:
+            '''
+            判断当前事务是否为顶层事务
+            
+            :return: bool
+            '''
+            return self.session.get_transaction() is self.session._transaction
         
-        :return: bool
-        '''
-        return self.session.get_transaction() is self.session._transaction
-    
-    def prepare_transaction(self):
-        '''
-        准备工作：提前关闭顶层查询事务
-        '''
-        if self.session.in_transaction() and self.top_transaction():
-            if self.session._trans_context_manager is None:
-                self.session.close()
-    
-    def __call__(self, *args, **kwargs) -> Any:
-        if self.propagation == Propagation.REQUIRED:
-            self.prepare_transaction()
-            if self.session.in_transaction():
-                rv = self.func(*args, **kwargs)
-            else:
-                with self.session.begin():
+        def prepare_transaction(self):
+            '''
+            准备工作：提前关闭顶层查询事务
+            '''
+            if self.session.in_transaction() and self.top_transaction():
+                if self.session._trans_context_manager is None:
+                    self.session.close()
+        
+        def __call__(self, *args, **kwargs) -> Any:
+            if self.propagation == Propagation.REQUIRED:
+                self.prepare_transaction()
+                if self.session.in_transaction():
                     rv = self.func(*args, **kwargs)
-        elif self.propagation == Propagation.REQUIRES_NEW:
-            if self.session.in_transaction():
+                else:
+                    with self.session.begin():
+                        rv = self.func(*args, **kwargs)
+            elif self.propagation == Propagation.REQUIRES_NEW:
+                if self.session.in_transaction():
+                    with self.session.begin_nested():
+                        rv = self.func(*args, **kwargs)
+                else:
+                    with self.session.begin():
+                        rv = self.func(*args, **kwargs)
+            elif self.propagation == Propagation.NESTED:
                 with self.session.begin_nested():
                     rv = self.func(*args, **kwargs)
-            else:
-                with self.session.begin():
+            elif self.propagation == Propagation.SUPPORTS:
+                if self.session.in_transaction():
                     rv = self.func(*args, **kwargs)
-        elif self.propagation == Propagation.NESTED:
-            with self.session.begin_nested():
+                else:
+                    rv = self.func(*args, **kwargs)
+            elif self.propagation == Propagation.NOT_SUPPORTED:
+                if self.session.in_transaction():
+                    self.session.commit()  # Or handle appropriately
                 rv = self.func(*args, **kwargs)
-        elif self.propagation == Propagation.SUPPORTS:
-            if self.session.in_transaction():
-                rv = self.func(*args, **kwargs)
+            elif self.propagation == Propagation.MANDATORY:
+                if self.session.in_transaction():
+                    rv = self.func(*args, **kwargs)
+                else:
+                    raise Exception("No existing transaction found")
+            elif self.propagation == Propagation.NEVER:
+                if self.session.in_transaction():
+                    raise Exception("Existing transaction found")
+                rv = self.func(None, *args, **kwargs)
             else:
-                rv = self.func(*args, **kwargs)
-        elif self.propagation == Propagation.NOT_SUPPORTED:
-            if self.session.in_transaction():
-                self.session.commit()  # Or handle appropriately
-            rv = self.func(*args, **kwargs)
-        elif self.propagation == Propagation.MANDATORY:
-            if self.session.in_transaction():
-                rv = self.func(*args, **kwargs)
-            else:
-                raise Exception("No existing transaction found")
-        elif self.propagation == Propagation.NEVER:
-            if self.session.in_transaction():
-                raise Exception("Existing transaction found")
-            rv = self.func(None, *args, **kwargs)
-        else:
-            raise ValueError(f"Unknown propagation level: {self.propagation}")            
-        return rv
+                raise ValueError(f"Unknown propagation level: {self.propagation}")            
+            return rv

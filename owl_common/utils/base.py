@@ -622,19 +622,19 @@ class MimeTypeUtil:
         Returns:
             str: 文件扩展名
         '''
-        match mime_type:
-            case cls.IMAGE_PNG:
-                return "png"
-            case cls.IMAGE_JPG:
-                return "jpg"
-            case cls.IMAGE_JPEG:
-                return "jpeg"
-            case cls.IMAGE_BMP:
-                return "bmp"
-            case cls.IMAGE_GIF:
-                return "gif"
-            case _:
-                return ""
+        
+        if mime_type == cls.IMAGE_PNG:
+            return "png"
+        elif mime_type == cls.IMAGE_JPG:
+            return "jpg"
+        elif mime_type == cls.IMAGE_JPEG:
+            return "jpeg"
+        elif mime_type == cls.IMAGE_BMP:
+            return "bmp"
+        elif mime_type == cls.IMAGE_GIF:
+            return "gif"
+        elif mime_type == _:
+            return ""
         
         
 class DateUtil:

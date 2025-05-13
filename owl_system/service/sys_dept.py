@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 # @Author  : shaw-lee
 
-from types import NoneType
+# from types import None
 from typing import Any, List, Literal
+from typing import Optional
 
 from owl_common.sqlalchemy.transaction import Transactional
 from owl_common.utils import security_util as SecurityUtil
@@ -96,7 +97,7 @@ class SysDeptService:
         )
 
     @classmethod
-    def select_dept_by_id(cls, dept_id:int) -> SysDept|NoneType:
+    def select_dept_by_id(cls, dept_id: int) -> Optional["SysDept"]:
         """
         根据部门ID，查询部门信息
         
@@ -104,7 +105,7 @@ class SysDeptService:
             dept_id (int): 部门ID
 
         Returns:
-            SysDept|NoneType: 部门信息
+            SysDept|None: 部门信息
         """
         return SysDeptMapper.select_dept_by_id(dept_id)        
 

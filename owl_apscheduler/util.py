@@ -3,7 +3,7 @@
 
 import importlib
 import re
-from types import NoneType
+# from types import None
 from typing import Callable, Dict, List, Optional, Tuple
 from apscheduler.schedulers.base import BaseScheduler
 from apscheduler.triggers.cron import CronTrigger as _CronTrigger

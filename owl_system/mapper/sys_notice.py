@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # @Author  : shaw-lee
 
-from types import NoneType
+# from types import None
 from typing import List, Optional
 from flask import g
 from sqlalchemy import delete, insert, select, update
@@ -42,12 +42,12 @@ class SysNoticeMapper:
         return cls.default_columns.cast(row,SysNotice) if row else None
 
     @classmethod
-    def select_notice_list(cls, notice: SysNotice|NoneType) -> List[SysNotice]:
+    def select_notice_list(cls, notice: Optional["SysNotice"]) -> List["SysNotice"]:
         """
         根据条件，查询公告列表
 
         Args:
-            notice (SysNotice|NoneType): 公告信息
+            notice (SysNotice|None): 公告信息
 
         Returns:
             List[SysNotice]: 公告列表

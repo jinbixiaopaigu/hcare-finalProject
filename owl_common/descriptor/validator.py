@@ -3,7 +3,7 @@ import inspect
 from abc import ABC, abstractmethod
 from functools import wraps
 from dataclasses import dataclass, field
-from typing import Annotated, Any, Callable,  Dict, Tuple, Type, ClassVar, \
+from typing_extensions import Annotated, Any, Callable,  Dict, Tuple, Type, ClassVar, \
     Optional, Set
 from werkzeug.exceptions import BadRequest, InternalServerError
 from flask import has_request_context

@@ -5,6 +5,7 @@ import functools
 from typing import Any, Callable
 from flask import Response, make_response
 from werkzeug.exceptions import HTTPException, InternalServerError
+from typing import Optional, List
 
 from owl_common.base.model import BaseEntity,VoSerializerContext
 from owl_common.base.signal import log_signal
@@ -75,7 +76,7 @@ class JsonSerializer(BaseSerializer):
     
     def __init__(self, 
         exclude_fields: list=[], 
-        include_fields: list|None=None, 
+        include_fields: Optional[List] = None,
         exclude_none: bool=False, 
         exclude_unset: bool=False, 
         exclude_default: bool=False,

@@ -28,7 +28,7 @@ class SysOperLogService:
         查询系统操作日志列表
         
         Args:
-            query (SysOperLog|NoneType): 包含查询条件的传输对象
+            query (SysOperLog|None): 包含查询条件的传输对象
         
         Returns:
             List[SysOperLog]: 操作日志列表
@@ -36,12 +36,12 @@ class SysOperLogService:
         return SysOperLogMapper.select_operlog_list(query)
     
     @classmethod
-    def delete_operlog_by_ids(cls, ids: list[int]) -> int:
+    def delete_operlog_by_ids(cls, ids: List[int]) -> int:
         '''
         批量删除系统操作日志
         
         Args:
-            ids (list[int]): 操作日志id列表
+            ids (List[int]): 操作日志id列表
         
         Returns:
             int: 删除的行数

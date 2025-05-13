@@ -2,7 +2,7 @@
 # @Author  : shaw-lee
 
 from functools import wraps
-from typing import Callable
+from typing import Union, Callable
 from flask_login import UserMixin
 
 from owl_common.domain.entity import LoginUser
@@ -229,7 +229,7 @@ class AnyRole(AuthorityCaller):
 
 class PreAuthorize:
     
-    def __init__(self, auth:AuthorityCaller|Callable):
+    def __init__(self, auth: Union[AuthorityCaller, Callable]):
         self._auth = auth
     
     def __call__(self, func) -> Callable:

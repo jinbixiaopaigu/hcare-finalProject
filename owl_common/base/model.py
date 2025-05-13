@@ -4,8 +4,9 @@
 from datetime import datetime
 from io import BytesIO
 from threading import Lock
-from types import NoneType
+# from types import None
 from typing import Any, Dict, Generator, Iterator, List, Literal, Optional, Set, Tuple, Union
+
 from flask import g
 from typing_extensions import Annotated
 from dataclasses import dataclass, field, replace
@@ -266,33 +267,26 @@ class BaseEntity(BaseModel):
 class AuditEntity(BaseEntity):
     
     # 创建者
-    create_by: Annotated[
-        str | int | NoneType,
-        Field(default=None,vo=VoAccess(body=False,query=False))
-    ]
+    create_by: Annotated[Union[str, int, None], Field(default=None, vo=VoAccess(body=False, query=False))]
     
     # 创建时间
-    create_time: Annotated[
-        Optional[datetime],
-        BeforeValidator(to_datetime()),
-        Field(default=None,vo=VoAccess(body=False,query=False))
-    ]
+    create_time: Annotated[Union[datetime, None], BeforeValidator(to_datetime()), Field(default=None, vo=VoAccess(body=False, query=False))]
     
     # 更新者
     update_by: Annotated[
-        str | int | NoneType,
-        Field(default=None,vo=VoAccess(body=False,query=False))
+        Union[str, int, None],
+        Field(default=None, vo=VoAccess(body=False, query=False))
     ]
-    
+
     # 更新时间
     update_time: Annotated[
         Optional[datetime],
         BeforeValidator(to_datetime()),
-        Field(default=None,vo=VoAccess(body=False,query=False))
+        Field(default=None, vo=VoAccess(body=False, query=False))
     ]
-    
+
     # 备注
-    remark: str | NoneType = None
+    remark: Optional[str] = None
     
 
 class AjaxResponse(BaseEntity):
@@ -330,7 +324,12 @@ class TableResponse(BaseEntity):
     msg: Annotated[str, Field(default='查询成功')]
     
     # 数据
-    rows: Annotated[List, BeforeValidator(lambda x: list(x) if isinstance(x, Iterator | map) else x)]
+    rows: Annotated[
+            List[Any],  # 建议补充泛型类型
+            BeforeValidator(
+                lambda x: list(x) if isinstance(x, Union[Iterator, map]) else x
+            )
+            ]
     
     __pydantic_extra__: Dict[str, Any] = Field(init=False)
     
@@ -361,13 +360,12 @@ class TreeEntity(AuditEntity):
     children: Annotated[List["TreeEntity"], Field(default=None)]
 
 
-class MultiFile(ImmutableMultiDict[str, FileStorage]):
-
+class MultiFile(ImmutableMultiDict):
     def one(self) -> FileStorage:
         return next(self.values())
 
     @classmethod
-    def from_obj(cls,obj:ImmutableMultiDict):
+    def from_obj(cls, obj: ImmutableMultiDict) -> 'MultiFile':
         return cls(**obj.to_dict())
 
 

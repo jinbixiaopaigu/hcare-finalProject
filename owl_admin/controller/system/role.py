@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # @Author  : shaw-lee
 
-from typing import Annotated, List
+from typing_extensions import Annotated, List
 from pydantic import BeforeValidator, Field
 
 from owl_common.constant import UserConstants

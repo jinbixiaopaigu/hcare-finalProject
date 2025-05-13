@@ -1,4 +1,3 @@
-
 from collections import UserList
 from math import ceil
 from typing import List, Set, Type, TypeVar
@@ -11,25 +10,25 @@ from sqlalchemy.orm.attributes import InstrumentedAttribute
 
 from owl_common.base.model import BaseEntity, DbValidatorContext
 
-
 T = TypeVar('T', bound=BaseEntity)
 
 
-class ColumnEntityList(UserList[Column]):
+class ColumnEntityList(UserList):
     """
     字段名称列表类
     """
     
     context_key = "db_columns_alias"
     
-    def __init__(self, clz:type[Model], names:Set, alia_prefix:bool=True):
+    def __init__(self, clz: Type[Model], names: Set, alia_prefix: bool = True):
         self._clz = clz
         self._names = names
         self._alia_prefix = alia_prefix
         
+        # 这里将 _columns() 返回的列表传递给父类
         super(ColumnEntityList, self).__init__(self._columns())
 
-    def _columns(self)-> List[Column]:
+    def _columns(self) -> List[Column]:
         """
         获取字段列表
         
@@ -42,7 +41,7 @@ class ColumnEntityList(UserList[Column]):
                 raise AttributeError(
                     f"column {name} not found in {self._clz.__name__}"
                 )
-            column:InstrumentedAttribute = getattr(self._clz, name)
+            column: InstrumentedAttribute = getattr(self._clz, name)
             if not isinstance(column, InstrumentedAttribute):
                 raise AttributeError(
                     f"column {name} is not a column in {self._clz.__name__}"
@@ -55,7 +54,7 @@ class ColumnEntityList(UserList[Column]):
             
         return columns
     
-    def to_label(self, name:str) -> str:
+    def to_label(self, name: str) -> str:
         """
         给字段列表添加别名前缀，生成标签名
         
@@ -67,7 +66,7 @@ class ColumnEntityList(UserList[Column]):
         """
         return "{}_{}".format(self._clz.__name__, name)
     
-    def to_field(self, label:str) -> str:
+    def to_field(self, label: str) -> str:
         """
         从标签名删除别名前缀，还原字段名
         
@@ -80,7 +79,7 @@ class ColumnEntityList(UserList[Column]):
         alias_prefix = self._clz.__name__ + "_"
         return label[len(alias_prefix):]
     
-    def check_prefix(self, label:str) -> bool:
+    def check_prefix(self, label: str) -> bool:
         """
         检查标签名是否以表名开头
         
@@ -111,7 +110,7 @@ class ColumnEntityList(UserList[Column]):
         )
         return data
     
-    def append_scalar(self, scalar:ScalarSelect):
+    def append_scalar(self, scalar: ScalarSelect):
         """
         追加一个标量字段
         
@@ -123,5 +122,3 @@ class ColumnEntityList(UserList[Column]):
         else:
             self._names.add(scalar.name)
         self.append(scalar)
-        
-  

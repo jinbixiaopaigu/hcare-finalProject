@@ -3,17 +3,17 @@
 
 import uuid
 from datetime import datetime
-from types import NoneType
+# from types import NoneType
 from typing_extensions import Annotated
 from flask_login import UserMixin
 from pydantic import BaseModel, BeforeValidator, Field, Strict, computed_field
-from typing import List, Optional
 from pydantic.types import UUID4
 
 from owl_common.base.model import AuditEntity, VoAccess, strict_base_config
 from owl_common.base.schema_excel import ExcelAccess, ExcelField, ExcelFields
 from owl_common.base.schema_vo import VoField
 from owl_common.base.transformer import int_to_str, to_datetime, str_to_int
+from typing import List, Optional, Union
 
 
 class LoginUser(BaseModel, UserMixin):
@@ -301,9 +301,9 @@ class SysMenu(AuditEntity):
     icon: Optional[str] = None
     
     children: Annotated[
-        List["SysMenu"] | NoneType,
-        Field(default=[],exclude=True,vo=VoAccess(body=False))
-    ]
+        Optional[List["SysMenu"]],  # 类型部分
+        Field(default=[], exclude=True, vo=VoAccess(body=False))  # 元数据部分
+    ] = None  # 字段默认值
     
 
 class SysDictType(AuditEntity):

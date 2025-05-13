@@ -2,6 +2,7 @@
 
 import datetime
 from flask import  Request, request
+from typing import Tuple
 
 from owl_common.constant import Constants
 from owl_common.domain.vo import LoginBody
@@ -196,7 +197,7 @@ class LoginService:
 
 
 @lm.unauthorized_handler
-def unauthorized_handler() -> tuple[str, int]:
+def unauthorized_handler() -> Tuple[str, int]:
     """
     未授权处理
 

@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 # @Author  : shaw-lee
 
-from types import NoneType
-from typing import List
+# from types import None
+
 from flask import Flask
+from typing import Optional, List
 
 from owl_common.base.signal import app_completed
 from owl_common.utils import StringUtil
@@ -25,7 +26,7 @@ class SysConfigService:
         cls.loading_config_cache()
 
     @classmethod
-    def select_config_by_id(cls, id: int) -> SysConfig|NoneType:
+    def select_config_by_id(cls, id: int) -> Optional["SysConfig"]:
         """
         根据id查询配置信息
 
@@ -33,14 +34,14 @@ class SysConfigService:
             id (int): 配置ID
 
         Returns:
-            SysConfig|NoneType: 配置信息
+            SysConfig|None: 配置信息
         """
         config = SysConfig(config_id=id)
         eo = SysConfigMapper.select_config(config)
         return eo
 
     @classmethod
-    def select_config_by_key(cls, key: str) -> str|NoneType:
+    def select_config_by_key(cls, key: str) -> Optional[str]:
         """
         根据key查询配置值
 
@@ -48,7 +49,7 @@ class SysConfigService:
             key (str): 配置键
 
         Returns:
-            str|NoneType: 配置值
+            str|None: 配置值
         """
         config = SysConfig(config_key=key)
         value:bytes = redis_cache.get(cls.get_cache_key(key))
@@ -74,12 +75,12 @@ class SysConfigService:
         return StringUtil.to_bool(captcha_on_off)
 
     @classmethod
-    def select_config_list(cls, config: SysConfig|NoneType) -> List[SysConfig]:
+    def select_config_list(cls, config: Optional["SysConfig"]) -> List["SysConfig"]:
         """
         查询配置列表
 
         Args:
-            config (SysConfig|NoneType): 包含查询条件的传输对象
+            config (SysConfig|None): 包含查询条件的传输对象
 
         Returns:
             List[SysConfig]: 配置列表

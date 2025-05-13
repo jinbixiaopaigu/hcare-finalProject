@@ -2,10 +2,14 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import ClassVar, Dict
+from typing import List, Any, Union, Iterator
+from typing_extensions import Annotated  # Python 3.8 需要
+from pydantic import BeforeValidator
 from flask import g, request
 from pydantic import BaseModel
 from werkzeug.datastructures import ImmutableMultiDict
 from werkzeug.exceptions import BadRequest,UnsupportedMediaType
+from typing import Optional
 
 from owl_common.base.model import BaseEntity, CriterianMeta, ExtraModel, \
     BaseEntity, OrderModel, PageModel, VoValidatorContext
@@ -124,7 +128,7 @@ class BodyReqParser(BaseReqParser):
         content_type = request.headers.get("Content-Type", "").lower()
         minetype = content_type.split(";")[0]
         if minetype == self.minetype:
-            body: dict | list = request.get_json()
+            body: Union[dict, list, None] = request.get_json()
             if not body:
                 raise BadRequest(
                     description="在{}, body数据不能为空".format(content_type),
@@ -181,7 +185,7 @@ class FormReqParser(BaseReqParser):
         self, 
         is_form:bool=True,
         is_query:bool=False,
-        is_file:bool|None=None,
+        is_file: Optional[bool] = None
         ):
         self.is_form = is_form
         self.is_query = is_query

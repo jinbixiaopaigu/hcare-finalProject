@@ -2,8 +2,8 @@
 # @Author  : shaw-lee
 
 from datetime import datetime
-from types import NoneType
-from typing import Optional
+# from types import None
+from typing import Union, Optional
 from pydantic import BeforeValidator, Field, PlainSerializer
 from pydantic_core import to_json
 from typing_extensions import Annotated
@@ -240,7 +240,7 @@ class SysNotice(AuditEntity):
     status: Optional[str] = None
     
     create_by: Annotated[
-        str | int | NoneType,
+        Optional[Union[str, int]],
         Field(default=None,vo=VoAccess(body=False,query=True))
     ]
     

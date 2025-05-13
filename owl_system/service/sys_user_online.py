@@ -84,7 +84,7 @@ class SysUserOnlineService:
         Returns:
             List[SysUserOnline]: 登录信息列表
         """
-        keys:list[bytes] = redis_cache.keys(Constants.LOGIN_TOKEN_KEY + "*");
+        keys:List[bytes] = redis_cache.keys(Constants.LOGIN_TOKEN_KEY + "*");
         online_users = []
         for key in keys:
             key_decoded = key.decode("utf-8")

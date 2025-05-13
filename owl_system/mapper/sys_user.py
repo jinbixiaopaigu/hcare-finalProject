@@ -2,6 +2,7 @@
 # @Author  : shaw-lee
 
 from typing import List, Optional 
+from typing import Union
 from flask import g
 from sqlalchemy import and_, or_, func, insert, select, update
 
@@ -187,10 +188,10 @@ class SysUserMapper:
     
     @classmethod
     def select_user_by_unique_map(
-        cls, 
-        key: str, 
-        value: int|str
-        ) -> Optional[SysUser]:
+        cls,
+        key: str,
+        value: Union[int, str]  # 修改联合类型语法
+    ) -> Optional["SysUser"]:  # 处理前向引用（假设 SysUser 类在后续定义）
         """
         通过含有唯一键的条件，查询用户
 

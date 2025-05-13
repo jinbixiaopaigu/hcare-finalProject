@@ -5,6 +5,7 @@ import dataclasses
 from datetime import date
 import decimal
 import uuid
+from typing import Optional, Dict, List, Tuple, Any  # 必要导入
 import typing as t
 from flask import Response
 from flask.json.provider import DefaultJSONProvider
@@ -13,7 +14,8 @@ from werkzeug.http import http_date
 
 from owl_common.base.model import AjaxResponse
 
-WSGIEnvironment: t.TypeAlias = dict[str, t.Any]
+# WSGIEnvironment: t.TypeAlias = Dict[str, t.Any]
+WSGIEnvironment: Dict[str, t.Any] = {}  # 或者定义为空字典，或者适合你的默认值
 
 
 def _update_exceptions():
@@ -35,13 +37,13 @@ del _update_exceptions
 
 class HttpException(HTTPException):
 
-    code: int | None = None
-    description: str | None = None
+    code: Optional[int] = None
+    description: Optional[str] = None
 
     def __init__(
         self,
-        description: str | None = None,
-        response: Response | None = None,
+        description: Optional[str] = None,
+        response: Optional["Response"] = None,  # 注意类名前向引用的字符串写法
     ) -> None:
         super().__init__()
         if description is not None:
@@ -77,15 +79,15 @@ class HttpException(HTTPException):
 
     def get_description(
         self,
-        environ: WSGIEnvironment | None = None,
-        scope: dict[str, t.Any] | None = None,
+        environ: Optional["WSGIEnvironment"] = None,  # 字符串形式避免前向引用问题
+        scope: Optional[Dict[str, Any]] = None,
     ) -> str:
         """
         异常描述
         
         Args:
             environ (WSGIEnvironment, optional): 环境变量. Defaults to None.
-            scope (dict[str, t.Any], optional): 作用域. Defaults to None.
+            scope (Dict[str, t.Any], optional): 作用域. Defaults to None.
 
         Returns:
             str: 异常描述
@@ -94,15 +96,15 @@ class HttpException(HTTPException):
 
     def get_body(
         self,
-        environ: WSGIEnvironment | None = None,
-        scope: dict[str, t.Any] | None = None,
+        environ: Optional["WSGIEnvironment"] = None,
+        scope: Optional[Dict[str, Any]] = None,
     ) -> str:
         """
         异常响应体
         
         Args:
             environ (WSGIEnvironment, optional): 环境变量. Defaults to None.
-            scope (dict[str, t.Any], optional): 作用域. Defaults to None.
+            scope (Dict[str, t.Any], optional): 作用域. Defaults to None.
 
         Returns:
             str: 异常响应体
@@ -116,15 +118,15 @@ class HttpException(HTTPException):
 
     def get_headers(
         self,
-        environ: WSGIEnvironment | None = None,
-        scope: dict[str, t.Any] | None = None,
-    ) -> list[tuple[str, str]]:
+        environ: Optional["WSGIEnvironment"] = None,
+        scope: Optional[Dict[str, Any]] = None,
+    ) -> List[Tuple[str, str]]:
         """
         异常请求头
         
         Args:
             environ (WSGIEnvironment, optional): 环境变量. Defaults to None.
-            scope (dict[str, t.Any], optional): 作用域. Defaults to None.
+            scope (Dict[str, t.Any], optional): 作用域. Defaults to None.
 
         Returns:
             list[tuple[str, str]]: 异常请求头

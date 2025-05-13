@@ -7,6 +7,7 @@ from typing import Any, Callable
 from werkzeug.exceptions import HTTPException
 from flask import Response, request
 from pydantic import BaseModel
+from typing import Union
 
 from owl_common.domain.entity import LoginUser
 from owl_common.domain.enum import BusinessStatus, BusinessType,OperatorType
@@ -107,7 +108,7 @@ class Log:
             self._oper_log.method = "{}.{}".format(func.__module__, func.__name__)
             self._oper_log.oper_time = datetime.now()
                         
-    def handle_response(self, response:Response|BaseModel):
+    def handle_response(self, response: Union[Response, BaseModel]) -> None:
         '''
         处理响应参数
         

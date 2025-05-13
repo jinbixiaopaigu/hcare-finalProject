@@ -2,10 +2,11 @@
 # @Author  : shaw-lee
 
 from itertools import groupby
-from types import NoneType
+# from types import None
 from typing import List
 from flask import Flask
 from pydantic_core import to_json
+from typing import Optional
 
 from owl_common.constant import Constants, UserConstants
 from owl_common.base.signal import app_completed
@@ -85,7 +86,7 @@ class SysDictTypeService:
         return eos
     
     @classmethod
-    def select_dict_type_by_id(cls, dict_id:int) -> SysDictType | NoneType:
+    def select_dict_type_by_id(cls, dict_id: int) -> Optional["SysDictType"]:
         '''
         根据字典id，查询字典类型
         
@@ -93,7 +94,7 @@ class SysDictTypeService:
             dict_id(int): 字典id
         
         Returns:
-            SysDictType | NoneType: 字典类型
+            SysDictType | None: 字典类型
         '''
         return SysDictTypeMapper.select_dict_type_by_id(dict_id)
     
