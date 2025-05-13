@@ -24,3 +24,6 @@
 access_key = <your_access_key>
 secret_key = <your_secret_key>
 然后根目录执行python bridge_client_init.py
+
+
+docker首次启动方法:根目录执行docker-compose up --build
