@@ -2,7 +2,14 @@
 # @Author  : shaw-lee
 
 import os,sys
-from flask import Flask 
+from flask import Flask
+# 在文件顶部添加项目根目录到Python路径
+import sys
+from pathlib import Path
+sys.path.append(str(Path(__file__).parent.parent))
+
+from owl_system.logging_config import configure_logging
+configure_logging()
 
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(PROJECT_ROOT)

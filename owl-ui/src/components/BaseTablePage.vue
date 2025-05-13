@@ -243,9 +243,27 @@ export default {
                         //     console.warn('警告：请求页码与响应页码不一致！');
                         // }
 
-                        this.tableData = response.data?.items || [];
-                        this.total = response.data?.total || 0;
+                        console.group('[BaseTablePage] 数据加载');
+                        console.log('完整响应:', response);
+                        console.log('items字段:', response.data?.items);
+                        console.log('rows字段:', response.data?.rows);
+
+                        // 兼容两种数据格式
+                        const data = response.data || {};
+                        this.tableData = data.items || data.rows || [];
+                        this.total = data.total || 0;
+
+                        console.log('绑定到表格的数据:', this.tableData);
+                        console.log('总记录数:', this.total);
+                        console.groupEnd();
+
                         this.loading = false;
+
+                        // 检查表格渲染状态
+                        this.$nextTick(() => {
+                            console.log('表格渲染完成, 可见行数:',
+                                this.$el.querySelectorAll('.el-table__body-wrapper tr').length);
+                        });
                     })
                     .catch(error => {
                         console.error('获取数据失败:', error);

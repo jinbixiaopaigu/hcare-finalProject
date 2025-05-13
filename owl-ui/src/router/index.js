@@ -184,6 +184,19 @@ export const dynamicRoutes = [
         meta: { title: '房颤检测结果', icon: 'monitor' }
       }
     ]
+  },
+  {
+    path: '/medical/continuousBloodOxygen',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/medical/continuousBloodOxygen/index.vue'),
+        name: 'ContinuousBloodOxygen',
+        meta: { title: '连续血氧数据', icon: 'monitor' }
+      }
+    ]
   }
 ]
 
