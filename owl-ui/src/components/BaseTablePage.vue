@@ -340,21 +340,29 @@ export default {
 
         // 格式化字段值显示
         formatFieldValue(field, value) {
-            if (value === null || value === undefined) {
-                return '-';
-            }
+            try {
+                if (value === null || value === undefined) {
+                    return '-';
+                }
 
-            // 根据字段类型格式化值
-            if (field.type === 'date' || field.type === 'datetime') {
-                // 使用导入的parseTime函数格式化日期
-                return parseTime(value);
-            } else if (field.type === 'select' && field.props && field.props.options) {
-                // 对于下拉选择框，显示选项标签而不是值
-                const option = field.props.options.find(opt => opt.value === value);
-                return option ? option.label : value;
-            }
+                // 根据字段类型格式化值
+                if (field.type === 'date' || field.type === 'datetime') {
+                    // 使用导入的parseTime函数格式化日期
+                    return parseTime(value);
+                } else if (field.type === 'select' && field.props) {
+                    // 对于下拉选择框，显示选项标签而不是值
+                    const options = Array.isArray(field.props.options)
+                        ? field.props.options
+                        : [];
+                    const option = options.find(opt => opt.value === value);
+                    return option ? option.label : value;
+                }
 
-            return value;
+                return value;
+            } catch (error) {
+                console.error('formatFieldValue error:', error);
+                return value || '-';
+            }
         },
 
         // 处理组件属性

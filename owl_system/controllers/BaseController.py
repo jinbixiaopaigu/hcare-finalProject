@@ -1,5 +1,5 @@
 from flask import request
-from owl_system.utils import table_has_column
+from owl_system.utils.base_api_utils import table_has_column
 from owl_system.utils.pagination import Pagination
 from owl_system.utils.response import Response
 from owl_system.utils.decorators import validate_required_fields

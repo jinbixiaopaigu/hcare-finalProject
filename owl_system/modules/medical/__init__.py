@@ -17,6 +17,13 @@ from .controller.ContinuousBloodOxygenController import (
     update_continuous_blood_oxygen,
     delete_continuous_blood_oxygen
 )
+from .controller.ContinuousBodyTemperatureController import (
+    list_continuous_body_temperature,
+    get_continuous_body_temperature_detail,
+    add_continuous_body_temperature,
+    update_continuous_body_temperature,
+    delete_continuous_body_temperature
+)
 
 def register_medical_module(app):
     """注册医疗模块"""
@@ -43,12 +50,50 @@ def register_medical_module(app):
         cbo_bp.route('', methods=['POST'], endpoint='cbo_add')(add_continuous_blood_oxygen)
         cbo_bp.route('', methods=['PUT'], endpoint='cbo_update')(update_continuous_blood_oxygen)
         cbo_bp.route('/<string:id>', methods=['DELETE'], endpoint='cbo_delete')(delete_continuous_blood_oxygen)
-        
+
+        cbt_bp = Blueprint('medical_cbt', __name__, url_prefix='/medical/cbt')
+        cbt_bp.route('/list', methods=['GET', 'POST'], endpoint='cbt_list')(list_continuous_body_temperature)
+        cbt_bp.route('/<string:id>', methods=['GET'], endpoint='cbt_detail')(get_continuous_body_temperature_detail)
+        cbt_bp.route('', methods=['POST'], endpoint='cbt_add')(add_continuous_body_temperature)
+        cbt_bp.route('', methods=['PUT'], endpoint='cbt_update')(update_continuous_body_temperature)
+        cbt_bp.route('/<string:id>', methods=['DELETE'], endpoint='cbt_delete')(delete_continuous_body_temperature)
+        # # 创建蓝图
+        # af_bp = Blueprint('atrial_fibrillation', __name__, url_prefix='/medical/atrialFibrillation')
+        # bo_bp = Blueprint('blood_oxygen', __name__, url_prefix='/medical/bloodOxygen')
+        # cbo_bp = Blueprint('continuous_blood_oxygen', __name__, url_prefix='/medical/continuousBloodOxygen')
+        # cbt_bp = Blueprint('continuous_body_temperature', __name__, url_prefix='/medical/continuousBodyTemperature')
+
+        # # 注册路由
+        # af_bp.add_url_rule('/list', view_func=list_atrial_fibrillation, methods=['GET'])
+        # af_bp.add_url_rule('/<int:id>', view_func=get_atrial_fibrillation_detail, methods=['GET'])
+        # af_bp.add_url_rule('', view_func=add_atrial_fibrillation, methods=['POST'])
+        # af_bp.add_url_rule('', view_func=update_atrial_fibrillation, methods=['PUT'])
+        # af_bp.add_url_rule('/<int:id>', view_func=delete_atrial_fibrillation, methods=['DELETE'])
+
+        # bo_bp.add_url_rule('/list', view_func=list_blood_oxygen, methods=['GET'])
+        # bo_bp.add_url_rule('/<int:id>', view_func=get_blood_oxygen_detail, methods=['GET'])
+        # bo_bp.add_url_rule('', view_func=add_blood_oxygen, methods=['POST'])
+        # bo_bp.add_url_rule('', view_func=update_blood_oxygen, methods=['PUT'])
+        # bo_bp.add_url_rule('/<int:id>', view_func=delete_blood_oxygen, methods=['DELETE'])
+
+        # cbo_bp.add_url_rule('/list', view_func=list_continuous_blood_oxygen, methods=['GET'])
+        # cbo_bp.add_url_rule('/<int:id>', view_func=get_continuous_blood_oxygen_detail, methods=['GET'])
+        # cbo_bp.add_url_rule('', view_func=add_continuous_blood_oxygen, methods=['POST'])
+        # cbo_bp.add_url_rule('', view_func=update_continuous_blood_oxygen, methods=['PUT'])
+        # cbo_bp.add_url_rule('/<int:id>', view_func=delete_continuous_blood_oxygen, methods=['DELETE'])
+
+        # cbt_bp.add_url_rule('/list', view_func=list_continuous_body_temperature, methods=['GET'])
+        # cbt_bp.add_url_rule('/<int:id>', view_func=get_continuous_body_temperature_detail, methods=['GET'])
+        # cbt_bp.add_url_rule('', view_func=add_continuous_body_temperature, methods=['POST'])
+        # cbt_bp.add_url_rule('', view_func=update_continuous_body_temperature, methods=['PUT'])
+        # cbt_bp.add_url_rule('/<int:id>', view_func=delete_continuous_body_temperature, methods=['DELETE'])
+
         # 注册蓝图
         try:
             app.register_blueprint(af_bp)
             app.register_blueprint(bo_bp)
             app.register_blueprint(cbo_bp)
+            app.register_blueprint(cbt_bp)
             print("医疗模块蓝图注册成功")
         except Exception as e:
             print(f"医疗模块蓝图注册失败: {str(e)}")
