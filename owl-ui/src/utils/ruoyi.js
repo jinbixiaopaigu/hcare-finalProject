@@ -6,7 +6,7 @@
 // 日期格式化
 export function parseTime(time, pattern) {
   if (arguments.length === 0 || !time) {
-    return null
+    return 'N/A'
   }
   const format = pattern || '{y}-{m}-{d} {h}:{i}:{s}'
   let date
@@ -16,12 +16,24 @@ export function parseTime(time, pattern) {
     if ((typeof time === 'string') && (/^[0-9]+$/.test(time))) {
       time = parseInt(time)
     } else if (typeof time === 'string') {
-      time = time.replace(new RegExp(/-/gm), '/').replace('T', ' ').replace(new RegExp(/\.[\d]{3}/gm), '');
+      // 尝试解析RFC 2822格式 (如 "Sat, 03 May 2025 20:30:51 GMT")
+      if (/^[A-Za-z]{3},\s\d{2}\s[A-Za-z]{3}\s\d{4}\s\d{2}:\d{2}:\d{2}\sGMT$/.test(time)) {
+        date = new Date(time)
+      } else {
+        time = time.replace(new RegExp(/-/gm), '/').replace('T', ' ').replace(new RegExp(/\.[\d]{3}/gm), '');
+      }
     }
     if ((typeof time === 'number') && (time.toString().length === 10)) {
       time = time * 1000
     }
-    date = new Date(time)
+    if (!date) {
+      date = new Date(time)
+    }
+  }
+  
+  // 检查是否为有效日期
+  if (isNaN(date.getTime())) {
+    return 'N/A'
   }
   const formatObj = {
     y: date.getFullYear(),

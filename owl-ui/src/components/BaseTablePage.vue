@@ -6,13 +6,18 @@
                 <el-form-item :label="field.label" :prop="field.prop">
                     <template v-if="field.type === 'select'">
                         <el-select v-model="queryParams[field.prop]" v-bind="field.props || {}"
-                            @keyup.enter.native="handleQuery">
+                            @keyup.enter.native="handleQuery" style="width: 200px">
                             <el-option v-for="item in field.props.options" :key="item.value" :label="item.label"
                                 :value="item.value" />
                         </el-select>
                     </template>
+                    <template v-else-if="field.type === 'daterange'">
+                        <el-date-picker v-model="queryParams[field.prop]" type="daterange" range-separator="至"
+                            start-placeholder="开始日期" end-placeholder="结束日期" value-format="YYYY-MM-DD"
+                            style="width: 240px" @keyup.enter.native="handleQuery" v-bind="field.props || {}" />
+                    </template>
                     <component v-else :is="getComponentType(field.type)" v-model="queryParams[field.prop]"
-                        v-bind="field.props || {}" @keyup.enter.native="handleQuery" />
+                        v-hasPermi="[`${config.permissionPrefix}:add`]">新增</component>
                 </el-form-item>
             </template>
             <el-form-item>
@@ -62,23 +67,40 @@
         </el-table>
 
         <!-- 分页组件 -->
-        <pagination v-show="total > 0" :total="total" v-model:page="queryParams.page_num"
-            v-model:limit="queryParams.page_size" @pagination="getList" />
+        <pagination v-show="total > 0" :total="total" :page.sync="queryParams.page_num"
+            :limit.sync="queryParams.page_size" @pagination="handlePaginationChange" />
 
         <!-- 详情/编辑对话框 -->
         <el-dialog :title="title" v-model="open" width="700px" append-to-body>
-            <el-form ref="form" :model="form" :rules="rules" label-width="120px">
-                <el-row>
-                    <template v-for="(field, index) in config.formFields" :key="index">
-                        <el-col :span="field.span || 12">
-                            <el-form-item :label="field.label" :prop="field.prop">
+            <el-row>
+                <template v-for="(field, index) in config.formFields" :key="index">
+                    <el-col :span="field.span || 12">
+                        <el-form-item :label="field.label" :prop="field.prop">
+                            <!-- 详情模式下显示纯文本 -->
+                            <template v-if="title.includes('详情')">
+                                <div class="form-text-display">{{ formatFieldValue(field, form[field.prop]) }}</div>
+                            </template>
+                            <!-- 修改模式下，只有特定字段可编辑，其他显示纯文本 -->
+                            <template v-else-if="!isEditableField(field.prop)">
+                                <div class="form-text-display">{{ formatFieldValue(field, form[field.prop]) }}</div>
+                            </template>
+                            <!-- 可编辑字段使用组件 -->
+                            <template v-else>
                                 <component :is="getComponentType(field.type)" v-model="form[field.prop]"
-                                    v-bind="field.props || {}" :disabled="title.includes('详情')" />
-                            </el-form-item>
-                        </el-col>
-                    </template>
-                </el-row>
-            </el-form>
+                                    v-bind="getComponentProps(field)">
+                                    <!-- 如果是select类型，渲染选项 -->
+                                    <template v-if="field.type === 'select' && field.props && field.props.options">
+                                        <el-option v-for="option in field.props.options" :key="option.value"
+                                            :label="option.label" :value="option.value">
+                                        </el-option>
+                                    </template>
+                                </component>
+                            </template>
+                        </el-form-item>
+                    </el-col>
+                </template>
+            </el-row>
+
             <div slot="footer" class="dialog-footer">
                 <el-button @click="open = false">关 闭</el-button>
                 <el-button type="primary" @click="submitForm" v-if="!title.includes('详情')">确 定</el-button>
@@ -88,7 +110,7 @@
 </template>
 
 <script>
-import { parseTime } from "@/utils/ruoyi";
+import { parseTime } from '@/utils/ruoyi';
 
 export default {
     name: "BaseTablePage",
@@ -160,6 +182,33 @@ export default {
             this.getList();
         },
 
+        transformResponse(data) {
+            // 将后端snake_case字段名转换为前端camelCase
+            const transformed = {};
+            for (const key in data) {
+                const camelKey = key.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
+                transformed[camelKey] = data[key];
+            }
+            return transformed;
+        },
+
+        handleDetail(row) {
+            this.form = this.transformResponse(row);
+            this.title = `${this.config.title}详情`;
+            this.open = true;
+        },
+
+        handleUpdate(row) {
+            this.form = this.transformResponse(row);
+            this.title = `修改${this.config.title}`;
+            this.open = true;
+        },
+
+        reset() {
+            this.form = {};
+            this.$refs.formRef?.resetFields();
+        },
+
         resetQuery() {
             this.resetForm("queryForm");
             this.handleQuery();
@@ -168,13 +217,16 @@ export default {
         getList() {
             this.loading = true;
             try {
+                // 转换参数名适配后端API
                 const params = {
-                    page_num: this.queryParams.page_num,
-                    page_size: this.queryParams.page_size,
+                    page: this.queryParams.page_num,  // 后端可能使用page而不是page_num
+                    pageSize: this.queryParams.page_size, // 后端可能使用pageSize而不是page_size
                     ...this.getQueryParams()
                 };
 
-                console.log('API请求参数:', params);
+                console.log('转换后的请求参数:', params);
+
+                console.log('API请求参数:', JSON.stringify(params, null, 2));
 
                 const apiPath = this.resolveApiPath();
                 if (!apiPath) {
@@ -184,6 +236,13 @@ export default {
 
                 apiPath.list(params)
                     .then(response => {
+                        // console.log('API完整响应:', JSON.stringify(response.data, null, 2));
+                        // console.log('请求页码:', params.page_num, '响应页码:', response.data.current_page);
+
+                        // if (params.page_num !== response.data.current_page) {
+                        //     console.warn('警告：请求页码与响应页码不一致！');
+                        // }
+
                         this.tableData = response.data?.items || [];
                         this.total = response.data?.total || 0;
                         this.loading = false;
@@ -201,6 +260,13 @@ export default {
         },
 
         // 其他方法保持不变...
+        handlePaginationChange({ page, limit }) {
+            console.log('分页变化:', { page, limit });
+            this.queryParams.page_num = page;
+            this.queryParams.page_size = limit;
+            this.getList();
+        },
+
         resolveApiPath() {
             if (!this.$api) {
                 console.error('$api未注入到Vue实例');
@@ -248,6 +314,48 @@ export default {
             return componentMap[type] || 'el-input';
         },
 
+        // 判断字段是否可编辑（在修改模式下）
+        isEditableField(prop) {
+            // 只有userNotes和measurementType字段可编辑
+            return ['userNotes', 'measurementType'].includes(prop);
+        },
+
+        // 格式化字段值显示
+        formatFieldValue(field, value) {
+            if (value === null || value === undefined) {
+                return '-';
+            }
+
+            // 根据字段类型格式化值
+            if (field.type === 'date' || field.type === 'datetime') {
+                // 使用导入的parseTime函数格式化日期
+                return parseTime(value);
+            } else if (field.type === 'select' && field.props && field.props.options) {
+                // 对于下拉选择框，显示选项标签而不是值
+                const option = field.props.options.find(opt => opt.value === value);
+                return option ? option.label : value;
+            }
+
+            return value;
+        },
+
+        // 处理组件属性
+        getComponentProps(field) {
+            // 获取字段的props配置
+            const props = { ...(field.props || {}) };
+
+            // 如果是可编辑字段（在修改模式下），不使用disabled属性
+            if (!this.title.includes('详情') && this.isEditableField(field.prop)) {
+                delete props.disabled;
+            }
+            // 否则，如果props中有disabled函数，执行它获取实际的disabled值
+            else if (typeof props.disabled === 'function') {
+                props.disabled = props.disabled(this.config);
+            }
+
+            return props;
+        },
+
         // 其他辅助方法...
     }
 }
@@ -256,5 +364,12 @@ export default {
 <style scoped>
 .app-container {
     padding: 20px;
+}
+
+.form-text-display {
+    min-height: 32px;
+    line-height: 32px;
+    color: #606266;
+    word-break: break-all;
 }
 </style>
