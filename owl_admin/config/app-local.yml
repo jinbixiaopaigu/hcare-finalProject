@@ -3,12 +3,12 @@ flask:
   debug: false
   testing: true
   CORS_ORIGINS: '*'
-  SQLALCHEMY_DATABASE_URI: 'mysql+pymysql://flask:flaskpass@db/flaskdb'
+  SQLALCHEMY_DATABASE_URI: 'mysql+pymysql://root:q1w2e3r4@127.0.0.1/hcare-final'
   SQLALCHEMY_ECHO: false
   SQLALCHEMY_POOL_SIZE: 5
   SQLALCHEMY_POOL_TIMEOUT: 10
   SQLALCHEMY_POOL_RECYCLE: 500
-  REDIS_URL: "redis://redis?db=1&password=Shaw@0234"
+  REDIS_URL: "redis://127.0.0.1?db=1&password=Shaw@0234"
 
 log:
   level: DEBUG
