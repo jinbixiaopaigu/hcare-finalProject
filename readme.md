@@ -1,7 +1,8 @@
 启动项目方法：
 1.启动redis
-2.启动后端：根目录下执行python owl_admin/app.py
-3.启动前端：owl-ui目录下执行npm run dev
+2.启动虚拟环境：根目录下执行.\venv38\Scripts\activate
+3.启动后端：根目录下执行python owl_admin/app.py
+4.启动前端：owl-ui目录下执行npm run dev
 
 如果一切正常就应当能输入验证码直接登录了。另外代码生成属于该版若依未完成功能，建议在菜单管理中和若依官网一起改成停用
 
