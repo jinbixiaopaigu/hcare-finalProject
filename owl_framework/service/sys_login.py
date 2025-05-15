@@ -109,6 +109,14 @@ class LoginService:
             ServiceException: 验证码无效
             ServiceException: 验证码过期
         """
+        # 测试阶段，固定验证码为1234
+        if code != "1234":
+            # 测试阶段，直接记录日志
+            print(f"[ERROR] 验证码错误: {username}, {code}, {uuid}")
+            raise ServiceException("验证码错误")
+            
+        # 原始代码
+        """
         verify_key = Constants.CAPTCHA_CODE_KEY + str(uuid)
         captcha:bytes = redis_cache.get(verify_key)
         if not captcha:
@@ -128,6 +136,7 @@ class LoginService:
             )
             TaskManager.execute(record_logininfor,logininfor)
             raise ServiceException("验证码错误")
+        """
     
     @classmethod
     def record_sysuser(cls, id: int):

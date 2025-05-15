@@ -21,3 +21,5 @@ def import_hook(module:ModuleType, registry:OwlModuleRegistry):
     """
     global reg
     reg = registry
+
+"""项目核心模块初始化"""

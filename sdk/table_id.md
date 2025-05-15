@@ -1,0 +1,23 @@
+| 名称                          | Table ID                                  | 描述                                      | 关联元数据                   | 创建时间               | 更新时间               |
+|-------------------------------|-------------------------------------------|------------------------------------------|-----------------------------|------------------------|------------------------|
+| SleepEpisode                  | t_mnhqsfbc_sleepepisode_system           | 睡眠结果数据，采集时间间隔：1天           | SleepEpisode                | 2025-05-05 16:18:40   | 2025-05-05 16:18:40   |
+| AtrialFibrillationMeasureResult | t_mnhqsfbc_atrialfibrillationmeasureresult_system | 房颤检测结果                              | AtrialFibrillationMeasureResult | 2025-05-02 18:50:32   | 2025-05-02 18:50:32   |
+| ContinuousBodyTemperature     | t_mnhqsfbc_continuousbodytemperature_system | 连续体温                                  | ContinuousBodyTemperature   | 2025-04-06 21:45:29   | 2025-04-06 21:45:29   |
+| DailyBloodOxygenSaturation    | t_mnhqsfbc_dailybloodoxygensaturation_system | 每日血氧统计                              | DailyBloodOxygenSaturation  | 2025-04-06 21:45:29   | 2025-04-06 21:45:29   |
+| BloodOxygenSaturation         | t_mnhqsfbc_bloodoxygensaturation_system  | 主动测量的血氧，采集时间间隔：1秒          | BloodOxygenSaturation       | 2025-04-06 08:50:09   | 2025-04-06 08:50:09   |
+| SingleWorkoutProcessDetail    | t_mnhqsfbc_singleworkoutprocessdetail_system | 6分钟行走，采集时间间隔：1秒              | SingleWorkoutProcessDetail | 2025-04-05 11:29:19   | 2025-04-05 11:29:19   |
+| ContinuousBloodOxygenSaturation | t_mnhqsfbc_continuousbloodoxygensaturation_system | 24小时连续血氧，采集时间间隔：1分钟        | ContinuousBloodOxygenSaturation | 2025-04-05 01:22:32   | 2025-04-05 01:22:32   |
+| Motion                        | t_mnhqsfbc_motion_system                 | 动作元数据                                | Motion                      | 2025-04-05 01:20:52   | 2025-04-05 01:20:52   |
+| ECG                           | t_mnhqsfbc_ecg_system                    | ECG                                     | ECG                         | 2025-04-05 01:19:40   | 2025-04-05 01:19:40   |
+| RRI                           | t_mnhqsfbc_rri_system                    | RRI数据                                  | RRI                         | 2025-04-05 01:13:51   | 2025-04-05 01:13:51   |
+| HeartRate                     | t_mnhqsfbc_heartrate_system              | 主动测量的心率，采集时间间隔：5秒          | HeartRate                   | 2025-04-02 13:50:45   | 2025-04-02 19:11:34   |
+| ContinuousRRI                 | t_mnhqsfbc_continuousrri_system          | RRI数据，自动测量：采集时间间隔：1min，一组RRI | ContinuousRRI               | 2025-04-02 13:44:59   | 2025-04-02 13:44:59   |
+| PPG                           | t_mnhqsfbc_ppg_system                    | PPG                                     | PPG                         | 2025-04-02 13:44:49   | 2025-04-02 13:44:49   |
+| Acceleration                  | t_mnhqsfbc_acceleration_system           | 加速度元数据                              | Acceleration                | 2025-04-02 13:44:46   | 2025-04-02 13:44:46   |
+| DailyWorkoutDetail            | t_mnhqsfbc_dailyworkoutdetail_system     | 每日运动量详情，采集时间间隔：1分钟        | DailyWorkoutDetail          | 2025-03-10 12:16:49   | 2025-03-10 12:16:49   |
+| DailyWorkout                  | t_mnhqsfbc_dailyworkout_system           | 每日运动统计数据，采集时间间隔：1天        | DailyWorkout                | 2025-03-10 12:16:43   | 2025-03-10 12:16:43   |
+| DailyHeartRate                | t_mnhqsfbc_dailyheartrate_system         | 每日心率统计                              | DailyHeartRate              | 2025-03-10 12:16:43   | 2025-03-10 12:16:43   |
+| ContinuousHeartRate           | t_mnhqsfbc_continuousheartrate_system    | 24小时连续心率，采集时间间隔：5秒          | ContinuousHeartRate         | 2025-03-10 12:16:43   | 2025-03-10 12:16:43   |
+| Audio                         | t_mnhqsfbc_audio_system                  | 音频元数据                                | Audio                       | 2025-03-09 10:34:16   | 2025-03-09 10:34:16   |
+| UserFeedback                  | t_mnhqsfbc_userfeedback_system          | 用户反馈                                  | UserFeedback                | 2025-03-09 02:23:42   | 2025-03-09 02:23:42   |
+| UserBasicInfo                 | t_mnhqsfbc_userbasicinfo_system          | 用户基本信息                              | UserBasicInfo               | 2025-03-09 02:14:39   | 2025-03-09 02:14:39   |

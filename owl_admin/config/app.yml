@@ -2,14 +2,25 @@ owl:
   name: 'ruoyi-vue-flask'
   version: '1.0.0'
   author: 'shaw'
-  host: 'localhost'
+  host: "localhost"
   port: 8000
   api:
     version: '/'
-  env: 'dev'
-  profile: D:/owl/uploadPath
+  profile: 'uploads'
 
 token:
-    header: 'Authorization'
-    secret: 'abcdefghijklmnopqrstuvwxyz'
-    expireTime: 30
+  header: 'Authorization'
+  secret: 'abcdefghijklmnopqrstuvwxyz'
+  expireTime: 30
+
+# 数据库配置示例（保持原有格式，实际值由环境变量注入）
+# database:
+#   uri: "mysql+pymysql://${DB_USER:-flask}:${DB_PASS:-flaskpass}@${DB_HOST:-localhost}/${DB_NAME:-flaskdb}"
+#   track_modifications: ${SQLALCHEMY_TRACK_MODIFICATIONS:-false}
+#   echo: ${SQLALCHEMY_ECHO:-false}
+#   pool_size: ${SQLALCHEMY_POOL_SIZE:-5}
+#   pool_timeout: ${SQLALCHEMY_POOL_TIMEOUT:-10}
+#   pool_recycle: ${SQLALCHEMY_POOL_RECYCLE:-500}
+
+# Redis配置示例
+# redis_url: "redis://${REDIS_HOST:-localhost}?db=${REDIS_DB:-1}&password=${REDIS_PASSWORD:-Shaw@0234}"

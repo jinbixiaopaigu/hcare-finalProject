@@ -3,53 +3,29 @@ version: '3.8'
 services:
   app:
     build: .
-    depends_on:
-      - db
-      - redis
-    environment:
-      MYSQL_HOST: db
-      MYSQL_USER: flask
-      MYSQL_PASSWORD: flaskpass
-      MYSQL_DB: flaskdb
-      REDIS_URL: redis://redis:6379/0
     ports:
       - "8000:8000"
-    restart: unless-stopped
-    entrypoint: ["./scripts/wait-for-it.sh", "redis:6379","--timeout=0", "--", "./scripts/wait-for-it.sh", "db:3306","--timeout=0", "--", "gunicorn", "--bind", "0.0.0.0:8000", "wsgi:app"]
-
-  frontend:
-    build:
-      context: .  # 确保上下文路径正确
-      dockerfile: Dockerfile  # 也可以指定具体的 Dockerfile
-    working_dir: /app/owl-ui  # 设置为前端代码目录
-    ports:
-      - "5173:5173"  # 映射端口 5173 用于访问前端
+    environment:
+      - FLASK_SQLALCHEMY_DATABASE_URI=mysql+pymysql://root:q1w2e3r4@db/hcare-final
+      - FLASK_SQLALCHEMY_TRACK_MODIFICATIONS=false
+      - FLASK_REDIS_URL=redis://redis?db=1&password=Shaw@0234
+    volumes:
+      - .:/app
     depends_on:
       - db
       - redis
-    restart: unless-stopped
-    entrypoint: ["sh", "-c", "../scripts/wait-for-it.sh redis:6379 --timeout=0 && ../scripts/wait-for-it.sh db:3306 --timeout=0 && npm run dev"]
-
 
   db:
-    image: mysql:8.3
+    image: mysql:8.0
     environment:
-      MYSQL_ROOT_PASSWORD: rootpass
-      MYSQL_DATABASE: flaskdb
-      MYSQL_USER: flask
-      MYSQL_PASSWORD: flaskpass
-      TZ: Asia/Shanghai
-    volumes:
-      - dbdata:/var/lib/mysql
-      - ./sql/hcare-final.sql:/docker-entrypoint-initdb.d/hcare-final.sql  # 挂载 SQL 文件
-    restart: unless-stopped
+      MYSQL_ROOT_PASSWORD: q1w2e3r4
+      MYSQL_DATABASE: hcare-final
+    ports:
+      - "3306:3306"
 
   redis:
-    image: redis:7
-    volumes:
-      - redisdata:/data
-    restart: unless-stopped
-
-volumes:
-  dbdata:
-  redisdata:
+    image: redis:alpine
+    environment:
+      REDIS_PASSWORD: Shaw@0234
+    ports:
+      - "6379:6379"

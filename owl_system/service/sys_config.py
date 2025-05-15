@@ -51,6 +51,14 @@ class SysConfigService:
         Returns:
             str|None: 配置值
         """
+        # 测试阶段，直接从数据库查询
+        config = SysConfig(config_key=key)
+        eo = SysConfigMapper.select_config(config)
+        if eo is None:
+            return None
+        return eo.config_value
+        
+        '''
         config = SysConfig(config_key=key)
         value:bytes = redis_cache.get(cls.get_cache_key(key))
         if value:
@@ -60,6 +68,7 @@ class SysConfigService:
             return None
         redis_cache.set(cls.get_cache_key(key), eo.config_value.encode("utf-8"))
         return eo.config_value
+        '''
 
     @classmethod
     def select_captcha_on_off(cls) -> bool:
@@ -69,10 +78,15 @@ class SysConfigService:
         Returns:
             bool: 验证码开关
         """
+        # 测试阶段，直接开启验证码
+        return True
+        
+        '''
         captcha_on_off = cls.select_config_by_key("sys.account.captchaOnOff")
         if captcha_on_off is not None and captcha_on_off.lower() != "false":
             return True
         return StringUtil.to_bool(captcha_on_off)
+        '''
 
     @classmethod
     def select_config_list(cls, config: Optional["SysConfig"]) -> List["SysConfig"]:
@@ -154,9 +168,15 @@ class SysConfigService:
         """
         加载配置缓存
         """
+        print("Skip loading config cache because redis is not available")
+        # 暂时禁用redis缓存，直接返回
+        return
+        
+        '''
         configsList: List[SysConfig] = cls.select_config_list(None)
         for config in configsList:
             redis_cache.set(cls.get_cache_key(config.config_key), config.config_value)
+        '''
 
     @classmethod
     def clear_config_cache(cls):

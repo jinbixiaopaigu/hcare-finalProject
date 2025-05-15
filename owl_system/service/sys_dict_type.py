@@ -32,13 +32,19 @@ class SysDictTypeService:
         '''
         加载字典缓存
         '''
+        print("Skip loading dict cache because redis is not available")
+        # 测试阶段跳过redis缓存
+        return
+        
+        '''
         dict_data: SysDictData = SysDictData(status="0")
         dict_data_list = SysDictDataMapper.select_dict_data_list(dict_data)
         dict_data_list.sort(key=lambda x: x.dict_type)
         dict_data_map = groupby(dict_data_list, lambda x: x.dict_type)
         for key, group in dict_data_map:
             DictCacheUtil.set_dict_cache(key, list(group))
-        
+        '''
+    
     @classmethod
     def clear_dict_cache(cls):
         '''

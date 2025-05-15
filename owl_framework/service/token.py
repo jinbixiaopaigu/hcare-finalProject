@@ -11,6 +11,8 @@ from owl_common.domain.entity import LoginUser
 from owl_framework.config import TokenConfig
 from owl_admin.ext import redis_cache
 
+# 内存缓存，临时模拟Redis功能
+memory_cache = {}
 
 class TokenService:
     
@@ -71,7 +73,15 @@ class TokenService:
         user.expire_time = user.login_time + TokenConfig.expire_time()
         usertoken_key = cls.get_token_key(user.token.hex)
         user_json = user.model_dump_json()
-        redis_cache.set(usertoken_key, user_json, TokenConfig.expire_time() * 60)
+        
+        # 使用内存缓存代替Redis
+        try:
+            # 尝试使用redis缓存，如果可用
+            redis_cache.set(usertoken_key, user_json, TokenConfig.expire_time() * 60)
+        except Exception as e:
+            print(f"Redis缓存不可用，使用内存缓存: {str(e)}")
+            # 使用内存缓存
+            memory_cache[usertoken_key] = user_json
         
     @classmethod
     def set_useragent(cls, user:LoginUser):
@@ -116,9 +126,20 @@ class TokenService:
             claims = cls.parse_token(token)
             token_uuid = claims.get(Constants.LOGIN_USER_KEY)
             usertoken_key = cls.get_token_key(token_uuid)
-            jsoned_user = redis_cache.get(usertoken_key)
+            
+            # 首先从内存缓存获取，再尝试从Redis获取
+            jsoned_user = None
+            if usertoken_key in memory_cache:
+                jsoned_user = memory_cache[usertoken_key]
+            else:
+                try:
+                    jsoned_user = redis_cache.get(usertoken_key)
+                except Exception:
+                    pass
+                
             if not jsoned_user:
                 return None
+                
             login_user = LoginUser.model_validate_json(jsoned_user)
             if login_user:
                 return login_user
@@ -176,4 +197,11 @@ class TokenService:
         '''
         if token:
             user_key:str = cls.get_token_key(token)
-            redis_cache.delete(user_key)
+            # 从两处缓存中删除
+            try:
+                redis_cache.delete(user_key)
+            except Exception:
+                pass
+                
+            if user_key in memory_cache:
+                del memory_cache[user_key]

@@ -2,6 +2,9 @@ import { defineConfig, loadEnv } from 'vite'
 import path from 'path'
 import createVitePlugins from './vite/plugins'
 
+// 从环境变量读取代理配置
+const proxyTarget = process.env.VITE_PROXY_TARGET || 'http://localhost:8000';
+
 // https://vitejs.dev/config/
 export default defineConfig(({ mode, command }) => {
   const env = loadEnv(mode, process.cwd())
@@ -46,23 +49,12 @@ export default defineConfig(({ mode, command }) => {
       proxy: {
         // https://cn.vitejs.dev/config/#server-proxy
         '/dev-api': {
-          target: 'http://localhost:8000',
+          target: proxyTarget,
           changeOrigin: true,
           rewrite: (p) => p.replace(/^\/dev-api/, ''),
           ws: true,
           secure: false,
-          timeout: 30000,
-          configure: (proxy, options) => {
-            proxy.on('error', (err, req, res) => {
-              console.log('proxy error', err);
-            });
-            proxy.on('proxyReq', (proxyReq, req, res) => {
-              console.log('Sending Request:', req.method, req.url);
-            });
-            proxy.on('proxyRes', (proxyRes, req, res) => {
-              console.log('Received Response:', proxyRes.statusCode);
-            });
-          }
+          timeout: 30000
         }
       }
     },
