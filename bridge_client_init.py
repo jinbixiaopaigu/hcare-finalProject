@@ -2,7 +2,41 @@ import configparser
 import json
 from huaweiresearchsdk.bridge import BridgeClient 
 from huaweiresearchsdk.config import BridgeConfig, HttpClientConfig 
-from huaweiresearchsdk.model import AuthRequest
+from huaweiresearchsdk.model.table import SearchTableDataRequest, FilterOperatorType
+
+class SimpleFilter:
+    """用于模拟过滤器对象的简单类"""
+    def __init__(self, field, operator, value):
+        self.field = field
+        self.operator = operator
+        self.value = value
+
+def process_query_result(rows, total_cnt):
+    """具备防御性检查的回调函数"""
+    # 类型安全检查
+    if not isinstance(rows, list):
+        print("错误：预期list类型，但得到：", type(rows))
+        return
+
+    print(f"共 {total_cnt} 条记录")
+    
+    # 处理空结果集
+    if not rows:
+        print("提示：查询返回空结果集")
+        return
+
+    # 安全处理记录（增加边界检查）
+    try:
+        max_display = min(len(rows), 5)
+        for i in range(max_display):
+            row = rows[i]
+            if isinstance(row, dict):
+                print(f"\n记录 {i+1}:", json.dumps(row, ensure_ascii=False))
+            else:
+                print(f"\n记录 {i+1} 格式异常")
+    except Exception as e:
+        print(f"处理记录时发生错误: {str(e)}")
+
 try:
     # 读取配置文件
     config = configparser.ConfigParser()
@@ -75,6 +109,49 @@ try:
                 print(f"ProjectId: {project.get('projectId', '无')}")
                 print(f"ProjectCode: {project.get('projectCode', '无')}")
                 print(f"项目名称: {project.get('projectName', '无')}")
+    
+    # 在项目列表获取后添加数据表查询
+    if projects:
+        first_project = projects[0]
+        project_id = first_project.get('projectId')
+        if project_id:
+            print(f"\n正在查询项目 {project_id} 的 t_mnhqsfbc_atrialfibrillationmeasureresult_system 表数据...")
+            
+            # 使用SDK标准接口构造查询请求（加强空值处理）
+            req = SearchTableDataRequest(
+                index_name='t_mnhqsfbc_atrialfibrillationmeasureresult_system',
+                project_id=project_id,
+                desired_size=100,
+                giveup_when_more_than=1000,
+                filters=[
+                    SimpleFilter(field="healthid", operator=FilterOperatorType.EXISTS, value=True)  # 添加安全过滤条件
+                ]
+            )
+            
+            # 通过SDK标准接口执行查询
+            provider = bridgeclient.get_bridgedata_provider()
+            
+            # 添加完整的响应验证装饰器
+            def safe_callback(rows, total):
+                """完整的结果验证装饰器"""
+                if not isinstance(total, (int, float)):
+                    print("警告：total参数类型异常", type(total))
+                    return
+                
+                if not isinstance(rows, list):
+                    print("警告：rows参数类型异常", type(rows))
+                    return
+                
+                if not rows:
+                    print("API返回空结果集（无数据）")
+                    return
+                
+                process_query_result(rows, total)
+
+            provider.query_table_data(req, callback=safe_callback)
+            
+        else:
+            print("项目ID为空，无法查询数据表")
     
 except configparser.Error as e:
     print(f"配置文件读取错误: {e}")
