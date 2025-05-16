@@ -65,3 +65,12 @@ export function exportCbt(params) {
     responseType: 'blob'
   })
 }
+
+// 同步连续体温数据
+export function syncCbt() {
+  console.log('[API] syncCbt called')
+  return request({
+    url: apiPath + '/sync',
+    method: 'post'
+  })
+}

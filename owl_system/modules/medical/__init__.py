@@ -22,12 +22,14 @@ from .controller.ContinuousBodyTemperatureController import (
     get_continuous_body_temperature_detail,
     add_continuous_body_temperature,
     update_continuous_body_temperature,
-    delete_continuous_body_temperature
+    delete_continuous_body_temperature,
+    sync_continuous_body_temperature
 )
 
 # 导入同步控制器
 from owl_admin.controller.medical.atrialFibrillation import sync_atrial_fibrillation
 from owl_admin.controller.medical.bloodOxygen import sync_blood_oxygen
+from owl_admin.controller.medical.continuousBloodOxygen import sync_continuous_blood_oxygen
 
 def register_medical_module(app):
     """注册医疗模块"""
@@ -58,6 +60,8 @@ def register_medical_module(app):
         cbo_bp.route('', methods=['POST'], endpoint='cbo_add')(add_continuous_blood_oxygen)
         cbo_bp.route('', methods=['PUT'], endpoint='cbo_update')(update_continuous_blood_oxygen)
         cbo_bp.route('/<string:id>', methods=['DELETE'], endpoint='cbo_delete')(delete_continuous_blood_oxygen)
+        # 添加同步路由
+        cbo_bp.route('/sync', methods=['POST', 'OPTIONS'], endpoint='cbo_sync')(sync_continuous_blood_oxygen)
 
         cbt_bp = Blueprint('medical_cbt', __name__, url_prefix='/medical/cbt')
         cbt_bp.route('/list', methods=['GET', 'POST'], endpoint='cbt_list')(list_continuous_body_temperature)
@@ -65,36 +69,8 @@ def register_medical_module(app):
         cbt_bp.route('', methods=['POST'], endpoint='cbt_add')(add_continuous_body_temperature)
         cbt_bp.route('', methods=['PUT'], endpoint='cbt_update')(update_continuous_body_temperature)
         cbt_bp.route('/<string:id>', methods=['DELETE'], endpoint='cbt_delete')(delete_continuous_body_temperature)
-        # # 创建蓝图
-        # af_bp = Blueprint('atrial_fibrillation', __name__, url_prefix='/medical/atrialFibrillation')
-        # bo_bp = Blueprint('blood_oxygen', __name__, url_prefix='/medical/bloodOxygen')
-        # cbo_bp = Blueprint('continuous_blood_oxygen', __name__, url_prefix='/medical/continuousBloodOxygen')
-        # cbt_bp = Blueprint('continuous_body_temperature', __name__, url_prefix='/medical/continuousBodyTemperature')
-
-        # # 注册路由
-        # af_bp.add_url_rule('/list', view_func=list_atrial_fibrillation, methods=['GET'])
-        # af_bp.add_url_rule('/<int:id>', view_func=get_atrial_fibrillation_detail, methods=['GET'])
-        # af_bp.add_url_rule('', view_func=add_atrial_fibrillation, methods=['POST'])
-        # af_bp.add_url_rule('', view_func=update_atrial_fibrillation, methods=['PUT'])
-        # af_bp.add_url_rule('/<int:id>', view_func=delete_atrial_fibrillation, methods=['DELETE'])
-
-        # bo_bp.add_url_rule('/list', view_func=list_blood_oxygen, methods=['GET'])
-        # bo_bp.add_url_rule('/<int:id>', view_func=get_blood_oxygen_detail, methods=['GET'])
-        # bo_bp.add_url_rule('', view_func=add_blood_oxygen, methods=['POST'])
-        # bo_bp.add_url_rule('', view_func=update_blood_oxygen, methods=['PUT'])
-        # bo_bp.add_url_rule('/<int:id>', view_func=delete_blood_oxygen, methods=['DELETE'])
-
-        # cbo_bp.add_url_rule('/list', view_func=list_continuous_blood_oxygen, methods=['GET'])
-        # cbo_bp.add_url_rule('/<int:id>', view_func=get_continuous_blood_oxygen_detail, methods=['GET'])
-        # cbo_bp.add_url_rule('', view_func=add_continuous_blood_oxygen, methods=['POST'])
-        # cbo_bp.add_url_rule('', view_func=update_continuous_blood_oxygen, methods=['PUT'])
-        # cbo_bp.add_url_rule('/<int:id>', view_func=delete_continuous_blood_oxygen, methods=['DELETE'])
-
-        # cbt_bp.add_url_rule('/list', view_func=list_continuous_body_temperature, methods=['GET'])
-        # cbt_bp.add_url_rule('/<int:id>', view_func=get_continuous_body_temperature_detail, methods=['GET'])
-        # cbt_bp.add_url_rule('', view_func=add_continuous_body_temperature, methods=['POST'])
-        # cbt_bp.add_url_rule('', view_func=update_continuous_body_temperature, methods=['PUT'])
-        # cbt_bp.add_url_rule('/<int:id>', view_func=delete_continuous_body_temperature, methods=['DELETE'])
+        # 添加同步路由
+        cbt_bp.route('/sync', methods=['POST', 'OPTIONS'], endpoint='cbt_sync')(sync_continuous_body_temperature)
 
         # 注册蓝图
         try:
@@ -123,9 +99,16 @@ def register_medical_module(app):
         print(f"  /medical/bo/<id> (DELETE)")
         print(f"  /medical/cbo/list")
         print(f"  /medical/cbo/<id>")
+        print(f"  /medical/cbo/sync") # 添加连续血氧同步路由日志
         print(f"  /medical/cbo (POST)")
         print(f"  /medical/cbo (PUT)")
         print(f"  /medical/cbo/<id> (DELETE)")
+        print(f"  /medical/cbt/list")
+        print(f"  /medical/cbt/<id>")
+        print(f"  /medical/cbt/sync")  # 添加持续体温同步路由日志
+        print(f"  /medical/cbt (POST)")
+        print(f"  /medical/cbt (PUT)")
+        print(f"  /medical/cbt/<id> (DELETE)")
         
     except Exception as e:
         print(f"医疗模块注册失败: {str(e)}")  # 错误日志

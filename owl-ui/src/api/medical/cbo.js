@@ -1,22 +1,15 @@
 import request from '@/utils/request'
 
-// 获取连续血氧数据列表
-export function listCbo(params) {
-  console.log('发送连续血氧列表请求，参数:', params)
+// 查询连续血氧数据列表
+export function listCbo(query) {
   return request({
     url: '/medical/cbo/list',
     method: 'get',
-    params
-  }).then(response => {
-    console.log('收到连续血氧列表响应:', response)
-    return response
-  }).catch(error => {
-    console.error('连续血氧列表请求错误:', error)
-    throw error
+    params: query
   })
 }
 
-// 获取连续血氧数据详情
+// 查询连续血氧数据详细
 export function getCbo(id) {
   return request({
     url: `/medical/cbo/${id}`,
@@ -33,7 +26,7 @@ export function addCbo(data) {
   })
 }
 
-// 更新连续血氧数据
+// 修改连续血氧数据
 export function updateCbo(data) {
   return request({
     url: '/medical/cbo',
@@ -47,5 +40,13 @@ export function delCbo(id) {
   return request({
     url: `/medical/cbo/${id}`,
     method: 'delete'
+  })
+}
+
+// 同步连续血氧数据
+export function syncCbo() {
+  return request({
+    url: '/medical/cbo/sync',
+    method: 'post'
   })
 }

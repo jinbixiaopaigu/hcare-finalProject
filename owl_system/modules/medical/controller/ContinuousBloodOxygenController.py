@@ -58,8 +58,19 @@ def list_continuous_blood_oxygen():
                     'userId': item.user_id,
                     'spo2Value': float(item.spo2_value) if item.spo2_value is not None else None,
                     'spo2Unit': item.spo2_unit,
+                    'spo2AvgValue': float(item.spo2_avg_value) if item.spo2_avg_value is not None else None,
+                    'spo2AvgUnit': item.spo2_avg_unit,
+                    'spo2MinValue': float(item.spo2_min_value) if item.spo2_min_value is not None else None,
+                    'spo2MinUnit': item.spo2_min_unit,
+                    'spo2MaxValue': float(item.spo2_max_value) if item.spo2_max_value is not None else None,
+                    'spo2MaxUnit': item.spo2_max_unit,
+                    'spo2MeasurementCount': item.spo2_measurement_count,
+                    'spo2MeasurementDuration': item.spo2_measurement_duration,
+                    'spo2MeasurementDurationUnit': item.spo2_measurement_duration_unit,
+                    'measurementType': item.measurement_type,
                     'dataTime': item.data_time.strftime('%Y-%m-%d %H:%M:%S') if item.data_time else None,
-                    'uploadTime': item.upload_time.strftime('%Y-%m-%d %H:%M:%S') if item.upload_time else None
+                    'uploadTime': item.upload_time.strftime('%Y-%m-%d %H:%M:%S') if item.upload_time else None,
+                    'userNotes': item.user_notes
                 }
                 items.append(item_dict)
                 logger.debug(f"记录转换结果: {item_dict}")

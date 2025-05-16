@@ -39,6 +39,25 @@ export const continuousBodyTemperatureConfig = {
     }
   ],
   
+  // 工具栏按钮
+  toolbarButtons: [
+    {
+      icon: 'Plus',
+      label: '新增',
+      type: 'primary',
+      permission: 'add',
+      onClick: 'handleAdd'
+    },
+    {
+      icon: 'Refresh',
+      label: '同步',
+      type: 'success',
+      permission: 'sync',
+      onClick: 'syncData',
+      loading: 'syncLoading' // 关联加载状态
+    }
+  ],
+  
   tableColumns: [
     {
       prop: 'userId',
@@ -51,7 +70,7 @@ export const continuousBodyTemperatureConfig = {
       width: 120
     },
     {
-      prop: 'bodyTemperature',
+      prop: 'temperatureValue',
       label: '体温(℃)',
       width: 100
     },
@@ -94,7 +113,7 @@ export const continuousBodyTemperatureConfig = {
       }
     },
     {
-      prop: 'bodyTemperature',
+      prop: 'temperatureValue',
       label: '体温(℃)',
       type: 'input',
       span: 12,
@@ -128,7 +147,7 @@ export const continuousBodyTemperatureConfig = {
     measurementPart: [
       { required: true, message: '请选择测量部位' }
     ],
-    bodyTemperature: [
+    temperatureValue: [
       { required: true, message: '体温不能为空' },
       { type: 'number', message: '体温必须为数字值' }
     ]
@@ -136,12 +155,21 @@ export const continuousBodyTemperatureConfig = {
 
   // 数据转换方法
   transformRequest: (data) => {
+    // 将前端表单命名转换为后端需要的字段名
+    if (data.temperatureValue !== undefined) {
+      data.body_temperature = data.temperatureValue;
+      delete data.temperatureValue;
+    }
     return {
       ...data
     }
   },
 
   transformResponse: (data) => {
+    // 将后端返回的字段映射到前端需要的字段名
+    if (data.body_temperature !== undefined) {
+      data.temperatureValue = data.body_temperature;
+    }
     return {
       ...data
     }

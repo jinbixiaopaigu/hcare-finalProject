@@ -33,23 +33,18 @@
                 <el-button type="primary" plain icon="el-icon-plus" size="small" @click="handleAdd"
                     v-hasPermi="[`${config.permissionPrefix}:add`]">新增</el-button>
             </el-col>
-            
+
             <!-- 自定义工具栏按钮 -->
             <template v-if="config.toolbarButtons">
                 <el-col :span="1.5" v-for="(btn, index) in config.toolbarButtons" :key="index">
-                    <el-button 
-                        :type="btn.type || 'default'" 
-                        :plain="true"
-                        :icon="getIconClass(btn.icon)"
-                        :size="btn.size || 'small'"
-                        :loading="this[btn.loading]"
-                        @click="handleButtonClick(btn)"
+                    <el-button :type="btn.type || 'default'" :plain="true" :icon="getIconClass(btn.icon)"
+                        :size="btn.size || 'small'" :loading="this[btn.loading]" @click="handleButtonClick(btn)"
                         v-hasPermi="[`${config.permissionPrefix}:${btn.permission}`]">
                         {{ btn.label }}
                     </el-button>
                 </el-col>
             </template>
-            
+
             <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
         </el-row>
 
@@ -189,6 +184,14 @@ export default {
                 this[methodName]();
             } else {
                 console.error(`按钮定义了动作 ${methodName}，但没有找到对应的方法`);
+
+                // 尝试触发事件，事件名称为 kebab-case 格式的方法名
+                // 例如: syncData -> sync-data
+                const eventName = methodName.replace(/([A-Z])/g, '-$1').toLowerCase();
+                if (eventName) {
+                    console.log(`尝试触发事件: ${eventName}`);
+                    this.$emit(eventName);
+                }
             }
         },
 

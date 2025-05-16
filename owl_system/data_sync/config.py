@@ -174,4 +174,69 @@ class SyncConfig:
             primary_key="id"
         )
         
+        # 连续血氧数据表
+        self.tables['continuous_blood_oxygen_saturation'] = TableMapping(
+            research_table_id='t_mnhqsfbc_continuousbloodoxygensaturation_system',
+            mysql_table_name='continuous_blood_oxygen_saturation',
+            field_mappings={
+                "uniqueid": "id",
+                "healthid": "user_id",
+                "groupid": "record_group_id",
+                "uploadtime": "upload_time",
+                "recordtime": "data_time",
+                "externalid": "external_id",
+                "recordschema": "metadata_version",
+                # 处理嵌套字段 - 根据字段结构调整
+                "avgOxygenSaturation.oxygenSaturation.value": "spo2_value",
+                "avgOxygenSaturation.oxygenSaturation.unit": "spo2_unit",
+                "avgOxygenSaturation.timeFrame.timestamp": "measurement_time",
+                # 连续血氧数据可能包含的额外字段
+                "avgOxygenSaturation.minOxygenSaturation.value": "spo2_min_value",
+                "avgOxygenSaturation.minOxygenSaturation.unit": "spo2_min_unit", 
+                "avgOxygenSaturation.minOxygenSaturation.timestamp": "spo2_min_time",
+                "avgOxygenSaturation.maxOxygenSaturation.value": "spo2_max_value",
+                "avgOxygenSaturation.maxOxygenSaturation.unit": "spo2_max_unit",
+                "avgOxygenSaturation.maxOxygenSaturation.timestamp": "spo2_max_time",
+                # 这里直接使用oxygenSaturation而不是avgOxygenSaturation
+                "avgOxygenSaturation.oxygenSaturation.value": "spo2_avg_value",
+                "avgOxygenSaturation.oxygenSaturation.unit": "spo2_avg_unit",
+                "avgOxygenSaturation.measurementCount": "spo2_measurement_count",
+                "avgOxygenSaturation.measurementDuration": "spo2_measurement_duration",
+                "avgOxygenSaturation.measurementDuration.unit": "spo2_measurement_duration_unit",
+                "avgOxygenSaturation.measurementStatus": "spo2_measurement_status",
+                "avgOxygenSaturation.measurementStatusReason": "spo2_measurement_status_reason",
+                "avgOxygenSaturation.statisticalMethod": "statistical_method",
+                "avgOxygenSaturation.userNotes": "user_notes",
+                "avgOxygenSaturation.groupValues": "spo2_group_values",
+                "avgOxygenSaturation.measurementType": "measurement_type",
+                "avgOxygenSaturation.timeFrame.startTime": "measurement_start_time",
+                "avgOxygenSaturation.timeFrame.endTime": "measurement_end_time"
+            },
+            primary_key="id"
+        )
+        
+        # 连续体温数据表
+        self.tables['continuous_body_temperature'] = TableMapping(
+            research_table_id='t_mnhqsfbc_continuousbodytemperature_system',
+            mysql_table_name='continuous_body_temperature',
+            enabled=True,
+            field_mappings={
+                'uniqueid': 'id',
+                'healthid': 'user_id',
+                'groupid': 'record_group_id',
+                'uploadtime': 'upload_time',
+                'recordtime': 'data_time',
+                'externalid': 'external_id',
+                'recordschema': 'metadata_version',
+                'bodyTemperature.bodyTemperature.value': 'body_temperature',
+                'bodyTemperature.bodyTemperature.unit': 'body_temperature_unit',
+                'bodyTemperature.skinTemperature.value': 'skin_temperature',
+                'bodyTemperature.skinTemperature.unit': 'skin_temperature_unit',
+                'bodyTemperature.ambientTemperature.value': 'ambient_temperature',
+                'bodyTemperature.ambientTemperature.unit': 'ambient_temperature_unit',
+                'bodyTemperature.bodyLocation': 'measurement_part',
+                'bodyTemperature.confidence': 'confidence'
+            }
+        )
+        
         # 可以继续添加其他表的映射... 

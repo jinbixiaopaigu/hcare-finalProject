@@ -18,6 +18,4 @@
 | DailyWorkout                  | t_mnhqsfbc_dailyworkout_system           | 每日运动统计数据，采集时间间隔：1天        | DailyWorkout                | 2025-03-10 12:16:43   | 2025-03-10 12:16:43   |
 | DailyHeartRate                | t_mnhqsfbc_dailyheartrate_system         | 每日心率统计                              | DailyHeartRate              | 2025-03-10 12:16:43   | 2025-03-10 12:16:43   |
 | ContinuousHeartRate           | t_mnhqsfbc_continuousheartrate_system    | 24小时连续心率，采集时间间隔：5秒          | ContinuousHeartRate         | 2025-03-10 12:16:43   | 2025-03-10 12:16:43   |
-| Audio                         | t_mnhqsfbc_audio_system                  | 音频元数据                                | Audio                       | 2025-03-09 10:34:16   | 2025-03-09 10:34:16   |
-| UserFeedback                  | t_mnhqsfbc_userfeedback_system          | 用户反馈                                  | UserFeedback                | 2025-03-09 02:23:42   | 2025-03-09 02:23:42   |
 | UserBasicInfo                 | t_mnhqsfbc_userbasicinfo_system          | 用户基本信息                              | UserBasicInfo               | 2025-03-09 02:14:39   | 2025-03-09 02:14:39   |

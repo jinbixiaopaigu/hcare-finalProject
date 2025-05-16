@@ -42,9 +42,20 @@ class ContinuousBloodOxygenSaturation(db.Model):
                 'user_id': self.user_id,
                 'spo2_value': float(self.spo2_value) if self.spo2_value is not None else None,
                 'spo2_unit': str(self.spo2_unit) if self.spo2_unit is not None else None,
+                'spo2_min_value': float(self.spo2_min_value) if self.spo2_min_value is not None else None,
+                'spo2_min_unit': str(self.spo2_min_unit) if self.spo2_min_unit is not None else None,
+                'spo2_max_value': float(self.spo2_max_value) if self.spo2_max_value is not None else None,
+                'spo2_max_unit': str(self.spo2_max_unit) if self.spo2_max_unit is not None else None,
+                'spo2_avg_value': float(self.spo2_avg_value) if self.spo2_avg_value is not None else None,
+                'spo2_avg_unit': str(self.spo2_avg_unit) if self.spo2_avg_unit is not None else None,
+                'spo2_measurement_count': int(self.spo2_measurement_count) if self.spo2_measurement_count is not None else None,
+                'spo2_measurement_duration': self.spo2_measurement_duration,
+                'spo2_measurement_duration_unit': str(self.spo2_measurement_duration_unit) if self.spo2_measurement_duration_unit is not None else None,
+                'measurement_type': str(self.measurement_type) if self.measurement_type is not None else None,
                 'data_time': self.data_time.strftime('%Y-%m-%d %H:%M:%S') if self.data_time else None,
                 'upload_time': self.upload_time.strftime('%Y-%m-%d %H:%M:%S') if self.upload_time else None,
-                'record_group_id': str(self.record_group_id) if self.record_group_id else None
+                'record_group_id': str(self.record_group_id) if self.record_group_id else None,
+                'user_notes': str(self.user_notes) if self.user_notes else None
             }
         except Exception as e:
             import logging
