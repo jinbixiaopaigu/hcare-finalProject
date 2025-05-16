@@ -34,7 +34,7 @@ const useSettingsStore = defineStore(
       },
       // 设置网页标题
       setTitle(title) {
-        this.title = title
+        this.title = title || '智能康养系统'
         useDynamicTitle()
       },
       // 切换暗黑模式

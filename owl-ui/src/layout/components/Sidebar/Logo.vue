@@ -25,7 +25,8 @@ defineProps({
   }
 })
 
-const title = import.meta.env.VITE_APP_TITLE;
+// 直接定义标题
+const title = '智能康养系统';
 const settingsStore = useSettingsStore();
 const sideTheme = computed(() => settingsStore.sideTheme);
 

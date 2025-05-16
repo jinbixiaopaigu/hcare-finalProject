@@ -20,7 +20,13 @@ const isWhiteList = (path) => {
 router.beforeEach((to, from, next) => {
   NProgress.start()
   if (getToken()) {
-    to.meta.title && useSettingsStore().setTitle(to.meta.title)
+    // 设置标题
+    if (to.meta && to.meta.title) {
+      useSettingsStore().setTitle(to.meta.title)
+    } else if (to.name === 'AtrialFibrillation') {
+      useSettingsStore().setTitle('房颤检测结果')
+    }
+    
     /* has token*/
     if (to.path === '/login') {
       next({ path: '/' })

@@ -173,28 +173,26 @@ export const dynamicRoutes = [
     ]
   },
   {
-    path: '/medical/atrialFibrillation',
+    path: '/medical',
     component: Layout,
-    hidden: true,
+    hidden: false,
+    alwaysShow: true,
+    redirect: '/medical/atrialFibrillation',
+    name: 'Medical',
+    meta: { title: '医疗数据管理', icon: 'monitor' },
     children: [
       {
-        path: 'index',
-        component: () => import('@/views/medical/atrialFibrillation'),
+        path: 'atrialFibrillation',
+        component: () => import('@/views/medical/atrialFibrillation/index.vue'),
         name: 'AtrialFibrillation',
-        meta: { title: '房颤检测结果', icon: 'monitor' }
-      }
-    ]
-  },
-  {
-    path: '/medical/continuousBloodOxygen',
-    component: Layout,
-    hidden: true,
-    children: [
+        meta: { title: '房颤检测结果', icon: 'eye-open', fixed: true, noCache: true },
+        props: { title: '房颤检测结果' }
+      },
       {
-        path: 'index',
+        path: 'continuousBloodOxygen',
         component: () => import('@/views/medical/continuousBloodOxygen/index.vue'),
         name: 'ContinuousBloodOxygen',
-        meta: { title: '连续血氧数据', icon: 'monitor' }
+        meta: { title: '连续血氧数据', icon: 'tree', noCache: true }
       }
     ]
   }

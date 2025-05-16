@@ -14,7 +14,11 @@ from owl_common.sqlalchemy.extension import SQLAlchemy
     
 
 owl = FlaskOwl()
-cors = CORS()
+# 配置CORS以支持所有方法和请求头
+cors = CORS(
+    resources={r"/*": {"origins": "*", "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"], "allow_headers": "*"}},
+    supports_credentials=True
+)
 
 fredis = FlaskRedis()
 redis_cache:Redis = LocalProxy(

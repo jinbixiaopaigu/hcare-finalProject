@@ -23,9 +23,17 @@ const useTagsViewStore = defineStore(
       },
       addVisitedView(view) {
         if (this.visitedViews.some(v => v.path === view.path)) return
+        console.log('添加访问视图:', view.name, view.meta?.title, view.props?.title)
+        let title = view.meta?.title || view.props?.title || view.name;
+        
+        // 特殊处理房颤检测结果页面
+        if (view.name === 'AtrialFibrillation' && (!title || title === 'undefined')) {
+          title = '房颤检测结果';
+        }
+        
         this.visitedViews.push(
           Object.assign({}, view, {
-            title: view.meta.title || 'no-name'
+            title: title || '未知页面'
           })
         )
       },

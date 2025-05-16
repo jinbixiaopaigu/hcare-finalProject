@@ -14,6 +14,7 @@
                     <el-form-item>
                         <el-button type="primary" @click="handleQuery">查询</el-button>
                         <el-button @click="resetQuery">重置</el-button>
+                        <el-button type="success" @click="handleSync" :loading="syncing">同步数据</el-button>
                     </el-form-item>
                 </el-form>
             </div>
@@ -58,12 +59,23 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
-import { getAtrialFibrillationList } from '@/api/medical/atrialFibrillation'
+import { ref, reactive, onMounted, defineOptions } from 'vue'
+import { getAtrialFibrillationList, syncAtrialFibrillation } from '@/api/medical/atrialFibrillation'
 import { parseTime } from '@/utils/ruoyi'
 import Pagination from '@/components/Pagination'
+import { ElMessage } from 'element-plus'
+
+// 定义组件名
+defineOptions({
+    name: 'AtrialFibrillation',
+    title: '房颤检测结果'
+})
+
+// 定义页面标题，用于标签页显示
+const pageTitle = '房颤检测结果'
 
 const loading = ref(false)
+const syncing = ref(false)
 const list = ref([])
 const total = ref(0)
 const detailVisible = ref(false)
@@ -130,6 +142,27 @@ function handleDateChange(val) {
 function handleDetail(row) {
     currentRow.value = row
     detailVisible.value = true
+}
+
+// 同步数据
+async function handleSync() {
+    try {
+        syncing.value = true
+        const response = await syncAtrialFibrillation()
+
+        if (response.code === 200) {
+            ElMessage.success('数据同步成功')
+            // 刷新列表
+            getList()
+        } else {
+            ElMessage.error(response.msg || '数据同步失败')
+        }
+    } catch (error) {
+        console.error('同步出错:', error)
+        ElMessage.error('数据同步失败')
+    } finally {
+        syncing.value = false
+    }
 }
 
 onMounted(() => {

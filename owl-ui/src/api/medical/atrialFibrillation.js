@@ -1,11 +1,19 @@
 import request from '@/utils/request'
 
-// 获取房颤测量结果列表
-export function getAtrialFibrillationList(params) {
+// 查询房颤检测结果列表
+export function getAtrialFibrillationList(query) {
   return request({
-    url: '/medical/af/list',  // 与其他API保持一致的路径风格
+    url: '/medical/af/list',
     method: 'get',
-    params
+    params: query
+  })
+}
+
+// 同步房颤检测结果数据
+export function syncAtrialFibrillation() {
+  return request({
+    url: '/medical/af/sync',
+    method: 'post'
   })
 }
 

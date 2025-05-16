@@ -7,8 +7,14 @@ import useSettingsStore from '@/store/modules/settings'
  */
 export function useDynamicTitle() {
   const settingsStore = useSettingsStore();
+  const title = settingsStore.title || '房颤检测结果';
+  
   if (settingsStore.dynamicTitle) {
-    document.title = settingsStore.title + ' - ' + defaultSettings.title;
+    if (title && title !== 'undefined' && title !== 'null') {
+      document.title = title + ' - ' + defaultSettings.title;
+    } else {
+      document.title = defaultSettings.title;
+    }
   } else {
     document.title = defaultSettings.title;
   }

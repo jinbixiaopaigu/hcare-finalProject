@@ -39,3 +39,24 @@ VALUES (
     NOW(), 
     ''
 );
+
+-- 添加同步权限
+INSERT INTO sys_menu (menu_name, parent_id, order_num, path, component, is_frame, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark)
+VALUES (
+    '房颤检测结果同步', 
+    (SELECT menu_id FROM sys_menu WHERE menu_name = '房颤检测结果' LIMIT 1), 
+    2, 
+    '', 
+    '', 
+    1, 
+    'F', 
+    '0', 
+    '0', 
+    'medical:atrialFibrillation:sync', 
+    '#', 
+    'admin', 
+    NOW(), 
+    'admin', 
+    NOW(), 
+    ''
+);
