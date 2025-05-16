@@ -239,4 +239,59 @@ class SyncConfig:
             }
         )
         
+        # 连续心率数据同步配置
+        self.tables['continuousheartrate'] = TableMapping(
+            research_table_id='t_mnhqsfbc_continuousheartrate_system',
+            mysql_table_name='continuousheartrate',
+            field_mappings={
+                'uniqueid': 'id',
+                'healthid': 'user_id',
+                'groupid': 'record_group_id',
+                'uploadtime': 'upload_time',
+                'recordtime': 'data_time',
+                                'avgHeartRate.heartRate.value': 'heart_rate_value',                'avgHeartRate.heartRate.unit': 'heart_rate_unit',                'avgHeartRate.timeFrame.startTime': 'measurement_start_time',                'avgHeartRate.timeFrame.endTime': 'measurement_end_time',                'avgHeartRate.timeFrame.timestamp': 'measurement_time',                'avgHeartRate.statisticalMethod': 'statistical_method',                'avgHeartRate.userNotes': 'user_notes',                'avgHeartRate.groupValues': 'heart_rate_group_values',                'avgHeartRate.measurementType': 'measurement_type',                'externalid': 'external_id',                'recordschema': 'metadata_version',                'avgHeartRate.minHeartRate.value': 'heart_rate_min_value',                'avgHeartRate.minHeartRate.unit': 'heart_rate_min_unit',                'avgHeartRate.minHeartRate.timestamp': 'heart_rate_min_time',                'avgHeartRate.maxHeartRate.value': 'heart_rate_max_value',                'avgHeartRate.maxHeartRate.unit': 'heart_rate_max_unit',                'avgHeartRate.maxHeartRate.timestamp': 'heart_rate_max_time',                'avgHeartRate.avgHeartRate.value': 'heart_rate_avg_value',                'avgHeartRate.avgHeartRate.unit': 'heart_rate_avg_unit',                'avgHeartRate.measurementCount': 'heart_rate_measurement_count',                'avgHeartRate.measurementDuration': 'heart_rate_measurement_duration',                'avgHeartRate.measurementDuration.unit': 'heart_rate_measurement_duration_unit',                'avgHeartRate.measurementStatus': 'heart_rate_measurement_status',                'avgHeartRate.measurementStatusReason': 'heart_rate_measurement_status_reason'
+            },
+            primary_key='id',
+            enabled=True
+        )
+        
         # 可以继续添加其他表的映射... 
+
+# 连续心率数据同步配置
+CONTINUOUS_HEART_RATE_SYNC_CONFIG = {
+    'table_name': 'continuousheartrate',
+    'field_mappings': {
+        'id': 'id',
+        'user_id': 'userId',
+        'record_group_id': 'recordGroupId',
+        'upload_time': 'uploadTime',
+        'data_time': 'dataTime',
+        'heart_rate_value': 'heartRateValue',
+        'heart_rate_unit': 'heartRateUnit',
+        'measurement_start_time': 'measurementStartTime',
+        'measurement_end_time': 'measurementEndTime',
+        'measurement_time': 'measurementTime',
+        'statistical_method': 'statisticalMethod',
+        'user_notes': 'userNotes',
+        'heart_rate_group_values': 'heartRateGroupValues',
+        'measurement_type': 'measurementType',
+        'external_id': 'externalId',
+        'metadata_version': 'metadataVersion',
+        'heart_rate_min_value': 'heartRateMinValue',
+        'heart_rate_min_unit': 'heartRateMinUnit',
+        'heart_rate_min_time': 'heartRateMinTime',
+        'heart_rate_max_value': 'heartRateMaxValue',
+        'heart_rate_max_unit': 'heartRateMaxUnit',
+        'heart_rate_max_time': 'heartRateMaxTime',
+        'heart_rate_avg_value': 'heartRateAvgValue',
+        'heart_rate_avg_unit': 'heartRateAvgUnit',
+        'heart_rate_measurement_count': 'heartRateMeasurementCount',
+        'heart_rate_measurement_duration': 'heartRateMeasurementDuration',
+        'heart_rate_measurement_duration_unit': 'heartRateMeasurementDurationUnit',
+        'heart_rate_measurement_status': 'heartRateMeasurementStatus',
+        'heart_rate_measurement_status_reason': 'heartRateMeasurementStatusReason'
+    },
+    'required_fields': ['id', 'user_id', 'data_time'],
+    'unique_fields': ['id'],
+    'time_fields': ['upload_time', 'data_time', 'measurement_start_time', 'measurement_end_time', 'measurement_time', 'heart_rate_min_time', 'heart_rate_max_time']
+} 

@@ -184,4 +184,7 @@ mysql中的表结构能去sql\hcare-final-jiegou.sql进行查询。华为researc
 ---
 此实现是通用的，您可以对其他表使用相同的命令格式：python -m owl_system.data_sync sync <表名>，它将显示相应表的数据同步统计信息。
 
+---
+ui的api新增要改owl-ui\src\api\index.js文件
+
 ```

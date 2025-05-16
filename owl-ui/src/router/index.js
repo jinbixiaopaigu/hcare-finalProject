@@ -24,7 +24,7 @@ import Layout from '@/layout'
   }
  */
 
-// 公共路由
+// 公共路由（禁止修改）
 export const constantRoutes = [
   {
     path: '/redirect',
@@ -169,30 +169,6 @@ export const dynamicRoutes = [
         component: () => import('@/views/tool/gen/editTable'),
         name: 'GenEdit',
         meta: { title: '修改生成配置', activeMenu: '/tool/gen' }
-      }
-    ]
-  },
-  {
-    path: '/medical',
-    component: Layout,
-    hidden: false,
-    alwaysShow: true,
-    redirect: '/medical/atrialFibrillation',
-    name: 'Medical',
-    meta: { title: '医疗数据管理', icon: 'monitor' },
-    children: [
-      {
-        path: 'atrialFibrillation',
-        component: () => import('@/views/medical/atrialFibrillation/index.vue'),
-        name: 'AtrialFibrillation',
-        meta: { title: '房颤检测结果', icon: 'eye-open', fixed: true, noCache: true },
-        props: { title: '房颤检测结果' }
-      },
-      {
-        path: 'continuousBloodOxygen',
-        component: () => import('@/views/medical/continuousBloodOxygen/index.vue'),
-        name: 'ContinuousBloodOxygen',
-        meta: { title: '连续血氧数据', icon: 'tree', noCache: true }
       }
     ]
   }

@@ -1,6 +1,7 @@
 import { listBo, getBo, addBo, updateBo, delBo } from './medical/bo'
 import { listCbo, getCbo, addCbo, updateCbo, delCbo } from './medical/cbo'
 import { listCbt, getCbt, addCbt, updateCbt, delCbt } from './medical/cbt'
+import medical from './medical'
 
 export default {
   medical: {
@@ -25,5 +26,6 @@ export default {
       update: updateCbt,
       delete: delCbt
     }
-  }
+  },
+  medical
 }

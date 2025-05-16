@@ -25,6 +25,14 @@ from .controller.ContinuousBodyTemperatureController import (
     delete_continuous_body_temperature,
     sync_continuous_body_temperature
 )
+from .controller.ContinuousHeartRateController import (
+    list_continuous_heart_rate,
+    get_continuous_heart_rate_detail,
+    add_continuous_heart_rate,
+    update_continuous_heart_rate,
+    delete_continuous_heart_rate,
+    sync_continuous_heart_rate
+)
 
 # 导入同步控制器
 from owl_admin.controller.medical.atrialFibrillation import sync_atrial_fibrillation
@@ -72,12 +80,23 @@ def register_medical_module(app):
         # 添加同步路由
         cbt_bp.route('/sync', methods=['POST', 'OPTIONS'], endpoint='cbt_sync')(sync_continuous_body_temperature)
 
+        # 连续心率路由
+        chr_bp = Blueprint('medical_chr', __name__, url_prefix='/medical/chr')
+        chr_bp.route('/list', methods=['GET', 'POST'], endpoint='chr_list')(list_continuous_heart_rate)
+        chr_bp.route('/<string:id>', methods=['GET'], endpoint='chr_detail')(get_continuous_heart_rate_detail)
+        chr_bp.route('', methods=['POST'], endpoint='chr_add')(add_continuous_heart_rate)
+        chr_bp.route('', methods=['PUT'], endpoint='chr_update')(update_continuous_heart_rate)
+        chr_bp.route('/<string:id>', methods=['DELETE'], endpoint='chr_delete')(delete_continuous_heart_rate)
+        # 添加同步路由
+        chr_bp.route('/sync', methods=['POST', 'OPTIONS'], endpoint='chr_sync')(sync_continuous_heart_rate)
+
         # 注册蓝图
         try:
             app.register_blueprint(af_bp)
             app.register_blueprint(bo_bp)
             app.register_blueprint(cbo_bp)
             app.register_blueprint(cbt_bp)
+            app.register_blueprint(chr_bp)
             print("医疗模块蓝图注册成功")
         except Exception as e:
             print(f"医疗模块蓝图注册失败: {str(e)}")
@@ -109,6 +128,12 @@ def register_medical_module(app):
         print(f"  /medical/cbt (POST)")
         print(f"  /medical/cbt (PUT)")
         print(f"  /medical/cbt/<id> (DELETE)")
+        print(f"  /medical/chr/list")
+        print(f"  /medical/chr/<id>")
+        print(f"  /medical/chr/sync")
+        print(f"  /medical/chr (POST)")
+        print(f"  /medical/chr (PUT)")
+        print(f"  /medical/chr/<id> (DELETE)")
         
     except Exception as e:
         print(f"医疗模块注册失败: {str(e)}")  # 错误日志

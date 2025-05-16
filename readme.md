@@ -28,3 +28,5 @@ secret_key = <your_secret_key>
 
 
 docker首次启动方法:根目录执行docker-compose up --build
+
+项目数据必须要要在乐龄智伴中的统计页面下拉后才能同步到华为research库中
