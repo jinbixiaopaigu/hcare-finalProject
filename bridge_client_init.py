@@ -40,7 +40,7 @@ def process_query_result(rows, total_cnt):
 try:
     # 读取配置文件
     config = configparser.ConfigParser()
-    config.read('config.ini')
+    config.read('config.ini', encoding='utf-8')
     
     # 获取凭证信息
     access_key = config.get('credentials', 'access_key')
