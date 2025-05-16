@@ -85,39 +85,42 @@
 
         <!-- 详情/编辑对话框 -->
         <el-dialog :title="title" v-model="open" width="700px" append-to-body>
-            <el-row>
-                <template v-for="(field, index) in config.formFields" :key="index">
-                    <el-col :span="field.span || 12">
-                        <el-form-item :label="field.label" :prop="field.prop">
-                            <!-- 详情模式下显示纯文本 -->
-                            <template v-if="title.includes('详情')">
-                                <div class="form-text-display">{{ formatFieldValue(field, form[field.prop]) }}</div>
-                            </template>
-                            <!-- 修改模式下，只有特定字段可编辑，其他显示纯文本 -->
-                            <template v-else-if="!isEditableField(field.prop)">
-                                <div class="form-text-display">{{ formatFieldValue(field, form[field.prop]) }}</div>
-                            </template>
-                            <!-- 可编辑字段使用组件 -->
-                            <template v-else>
-                                <component :is="getComponentType(field.type)" v-model="form[field.prop]"
-                                    v-bind="getComponentProps(field)">
-                                    <!-- 如果是select类型，渲染选项 -->
-                                    <template v-if="field.type === 'select' && field.props && field.props.options">
-                                        <el-option v-for="option in field.props.options" :key="option.value"
-                                            :label="option.label" :value="option.value">
-                                        </el-option>
-                                    </template>
-                                </component>
-                            </template>
-                        </el-form-item>
-                    </el-col>
-                </template>
-            </el-row>
-
-            <div slot="footer" class="dialog-footer">
-                <el-button @click="open = false">关 闭</el-button>
-                <el-button type="primary" @click="submitForm" v-if="!title.includes('详情')">确 定</el-button>
-            </div>
+            <el-form ref="formRef" :model="form" :rules="rules" label-width="100px">
+                <el-row>
+                    <template v-for="(field, index) in config.formFields" :key="index">
+                        <el-col :span="field.span || 12">
+                            <el-form-item :label="field.label" :prop="field.prop">
+                                <!-- 详情模式下显示纯文本 -->
+                                <template v-if="title.includes('详情')">
+                                    <div class="form-text-display">{{ formatFieldValue(field, form[field.prop]) }}</div>
+                                </template>
+                                <!-- 修改模式下，只有特定字段可编辑，其他显示纯文本 -->
+                                <template v-else-if="!isEditableField(field.prop)">
+                                    <div class="form-text-display">{{ formatFieldValue(field, form[field.prop]) }}</div>
+                                </template>
+                                <!-- 可编辑字段使用组件 -->
+                                <template v-else>
+                                    <component :is="getComponentType(field.type)" v-model="form[field.prop]"
+                                        v-bind="getComponentProps(field)">
+                                        <!-- 如果是select类型，渲染选项 -->
+                                        <template v-if="field.type === 'select' && field.props && field.props.options">
+                                            <el-option v-for="option in field.props.options" :key="option.value"
+                                                :label="option.label" :value="option.value">
+                                            </el-option>
+                                        </template>
+                                    </component>
+                                </template>
+                            </el-form-item>
+                        </el-col>
+                    </template>
+                </el-row>
+            </el-form>
+            <template #footer>
+                <div class="dialog-footer">
+                    <el-button @click="open = false">取 消</el-button>
+                    <el-button type="primary" @click="submitForm" v-if="!title.includes('详情')">确 定</el-button>
+                </div>
+            </template>
         </el-dialog>
     </div>
 </template>
@@ -420,6 +423,38 @@ export default {
             }
 
             return props;
+        },
+
+        // 提交表单
+        submitForm() {
+            this.$refs.formRef.validate(valid => {
+                if (valid) {
+                    const apiPath = this.resolveApiPath();
+                    if (!apiPath) {
+                        return;
+                    }
+
+                    const submitData = {};
+                    // 转换表单数据为后端期望的格式
+                    Object.keys(this.form).forEach(key => {
+                        // 将驼峰命名转换为下划线命名
+                        const snakeKey = key.replace(/([A-Z])/g, '_$1').toLowerCase();
+                        submitData[snakeKey] = this.form[key];
+                    });
+
+                    const method = this.form.id ? apiPath.update : apiPath.add;
+                    const successMsg = this.form.id ? '修改成功' : '新增成功';
+
+                    method(submitData).then(response => {
+                        this.$modal.msgSuccess(successMsg);
+                        this.open = false;
+                        this.getList();
+                    }).catch(error => {
+                        console.error('提交失败:', error);
+                        this.$modal.msgError('提交失败：' + (error.message || '未知错误'));
+                    });
+                }
+            });
         },
 
         // 其他辅助方法...

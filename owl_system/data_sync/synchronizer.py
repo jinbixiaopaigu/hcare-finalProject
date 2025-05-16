@@ -38,6 +38,31 @@ class DataSynchronizer:
         """
         try:
             logger.info(f"开始同步表 {table_key}")
+            logger.info(f"可用的表配置: {list(self.config.tables.keys())}")
+            
+            if table_key not in self.config.tables:
+                error_msg = f"未找到表 {table_key} 的配置"
+                logger.error(error_msg)
+                return {
+                    'success': False,
+                    'message': error_msg,
+                    'inserted': 0,
+                    'updated': 0
+                }
+            
+            table_mapping = self.config.tables[table_key]
+            logger.info(f"获取到表映射配置: {table_mapping}")
+            
+            if not table_mapping.enabled:
+                message = f"表 {table_key} 已禁用同步"
+                logger.info(message)
+                return {
+                    'success': True,
+                    'message': message,
+                    'inserted': 0,
+                    'updated': 0
+                }
+            
             inserted, updated = self.synchronize_table(table_key)
             
             if inserted > 0 or updated > 0:
@@ -60,7 +85,7 @@ class DataSynchronizer:
                 }
         except Exception as e:
             error_msg = f"同步失败：{str(e)}"
-            logger.error(error_msg)
+            logger.error(error_msg, exc_info=True)
             return {
                 'success': False,
                 'message': error_msg,

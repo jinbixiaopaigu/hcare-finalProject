@@ -1,6 +1,6 @@
 from flask import request
 from owl_admin.ext import db
-from owl_system.models.medical.ContinuousHeartRate import ContinuousHeartRate
+from owl_system.models.medical.ContinuousRRI import ContinuousRRI
 from owl_system.utils.response_utils import success, error
 from owl_system.utils.base_api_utils import (
     validate_required_fields,
@@ -11,14 +11,14 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-def list_continuous_heart_rate():
-    """获取连续心率数据列表"""
+def list_continuous_rri():
+    """获取连续RRI数据列表"""
     try:
         page = request.args.get('page', 1, type=int)
         pageSize = request.args.get('pageSize', 10, type=int)
         request_data = request.get_json(silent=True) or {}
         
-        logger.info("\n收到连续心率数据列表请求")
+        logger.info("\n收到连续RRI数据列表请求")
         logger.info(f"请求参数: page={page}, pageSize={pageSize}")
         logger.debug(f"完整请求参数: {request_data}")
 
@@ -30,20 +30,20 @@ def list_continuous_heart_rate():
         logger.info(f"时间范围过滤: {begin_data_time} 至 {end_data_time}")
 
         # 构建查询
-        query = ContinuousHeartRate.query
+        query = ContinuousRRI.query
         
         # 应用基础过滤器
         if request_data.get('user_id'):
-            query = query.filter(ContinuousHeartRate.user_id == request_data['user_id'])
+            query = query.filter(ContinuousRRI.user_id == request_data['user_id'])
             logger.info(f"应用用户ID过滤: {request_data['user_id']}")
             
         # 应用时间范围过滤
         if begin_data_time and end_data_time:
-            query = query.filter(ContinuousHeartRate.data_time.between(begin_data_time, end_data_time))
+            query = query.filter(ContinuousRRI.data_time.between(begin_data_time, end_data_time))
             logger.info(f"应用时间范围过滤: {begin_data_time} 至 {end_data_time}")
 
         # 按时间倒序排序
-        query = query.order_by(ContinuousHeartRate.data_time.desc())
+        query = query.order_by(ContinuousRRI.data_time.desc())
 
         # 执行分页查询
         logger.info(f"执行查询: {str(query)}")
@@ -54,23 +54,8 @@ def list_continuous_heart_rate():
         items = []
         for item in pagination.items:
             try:
-                item_dict = {
-                    'id': item.id,
-                    'userId': item.user_id,
-                    'heartRateValue': item.heart_rate_value,
-                    'heartRateUnit': item.heart_rate_unit,
-                    'measurementStartTime': item.measurement_start_time.strftime('%Y-%m-%d %H:%M:%S') if item.measurement_start_time else None,
-                    'measurementEndTime': item.measurement_end_time.strftime('%Y-%m-%d %H:%M:%S') if item.measurement_end_time else None,
-                    'measurementTime': item.measurement_time.strftime('%Y-%m-%d %H:%M:%S') if item.measurement_time else None,
-                    'statisticalMethod': item.statistical_method,
-                    'userNotes': item.user_notes,
-                    'heartRateGroupValues': item.heart_rate_group_values,
-                    'measurementType': item.measurement_type,
-                    'dataTime': item.data_time.strftime('%Y-%m-%d %H:%M:%S') if item.data_time else None,
-                    'uploadTime': item.upload_time.strftime('%Y-%m-%d %H:%M:%S') if item.upload_time else None
-                }
-                items.append(item_dict)
-                logger.debug(f"记录转换结果: {item_dict}")
+                items.append(item.to_dict())
+                logger.debug(f"记录转换结果: {items[-1]}")
             except Exception as e:
                 logger.error(f"记录转换失败: {str(e)}")
                 continue
@@ -82,73 +67,61 @@ def list_continuous_heart_rate():
             'pageSize': pageSize
         })
     except Exception as e:
-        logger.error(f"获取连续心率数据列表失败: {str(e)}", exc_info=True)
+        logger.error(f"获取连续RRI数据列表失败: {str(e)}", exc_info=True)
         return error(message='服务器内部错误', code=500)
 
-def get_continuous_heart_rate_detail(id):
-    """获取连续心率数据详情"""
+def get_continuous_rri_detail(id):
+    """获取连续RRI数据详情"""
     try:
-        data = ContinuousHeartRate.query.get(id)
+        data = ContinuousRRI.query.get(id)
         if not data:
             return error(message='数据不存在', code=404)
 
         return success(data=data.to_dict())
     except Exception as e:
-        logger.error(f"获取连续心率数据详情失败: {str(e)}")
+        logger.error(f"获取连续RRI数据详情失败: {str(e)}")
         return error(message='服务器内部错误', code=500)
 
 @handle_db_operation
-def add_continuous_heart_rate():
-    """新增连续心率数据"""
+def add_continuous_rri():
+    """新增连续RRI数据"""
     data = request.get_json()
     if not data:
         return error(message='无效的请求数据', code=400)
 
-    required_fields = ['user_id', 'data_time']
+    required_fields = ['user_id', 'data_time', 'rri_data']
     validation_result = validate_required_fields(data, required_fields)
     if validation_result:
         return validation_result
 
-    new_data = ContinuousHeartRate(
+    new_data = ContinuousRRI(
         user_id=data['user_id'],
         data_time=data['data_time'],
-        heart_rate_value=data.get('heartRateValue'),
-        heart_rate_unit=data.get('heartRateUnit', 'bpm'),
-        measurement_start_time=data.get('measurementStartTime'),
-        measurement_end_time=data.get('measurementEndTime'),
-        measurement_time=data.get('measurementTime'),
-        statistical_method=data.get('statisticalMethod'),
-        user_notes=data.get('userNotes'),
-        heart_rate_group_values=data.get('heartRateGroupValues'),
-        measurement_type=data.get('measurementType'),
+        rri_data=data['rri_data'],
         record_group_id=data.get('recordGroupId'),
         upload_time=data.get('uploadTime'),
         external_id=data.get('externalId'),
-        metadata_version=data.get('metadataVersion')
+        metadata_version=data.get('metadataVersion', 1)
     )
 
     db.session.add(new_data)
-    logger.info(f"新增连续心率数据成功: {new_data.id}")
+    logger.info(f"新增连续RRI数据成功: {new_data.id}")
     return success(data=new_data.to_dict(), code=201)
 
 @handle_db_operation
-def update_continuous_heart_rate():
-    """更新连续心率数据"""
+def update_continuous_rri():
+    """更新连续RRI数据"""
     data = request.get_json()
     if not data or 'id' not in data:
         return error(message='无效的请求数据', code=400)
 
-    record = ContinuousHeartRate.query.get(data['id'])
+    record = ContinuousRRI.query.get(data['id'])
     if not record:
         return error(message='数据不存在', code=404)
 
     # 更新字段
     update_fields = [
-        'data_time', 'heart_rate_value', 'heart_rate_unit',
-        'measurement_start_time', 'measurement_end_time',
-        'measurement_time', 'statistical_method',
-        'user_notes', 'heart_rate_group_values',
-        'measurement_type', 'record_group_id',
+        'data_time', 'rri_data', 'record_group_id',
         'upload_time', 'external_id', 'metadata_version'
     ]
     
@@ -156,42 +129,42 @@ def update_continuous_heart_rate():
         if field in data:
             setattr(record, field, data[field])
 
-    logger.info(f"更新连续心率数据成功: {record.id}")
+    logger.info(f"更新连续RRI数据成功: {record.id}")
     return success(data=record.to_dict())
 
 @handle_db_operation
-def delete_continuous_heart_rate(id):
-    """删除连续心率数据"""
-    record = ContinuousHeartRate.query.get(id)
+def delete_continuous_rri(id):
+    """删除连续RRI数据"""
+    record = ContinuousRRI.query.get(id)
     if not record:
         return error(message='数据不存在', code=404)
 
     db.session.delete(record)
-    logger.info(f"删除连续心率数据成功: {id}")
+    logger.info(f"删除连续RRI数据成功: {id}")
     return success(message='删除成功')
 
 @handle_db_operation
-def sync_continuous_heart_rate():
-    """同步连续心率数据"""
+def sync_continuous_rri():
+    """同步连续RRI数据"""
     try:
-        logger.info("开始同步连续心率数据")
+        logger.info("开始同步连续RRI数据")
         logger.info("初始化数据同步器...")
         synchronizer = DataSynchronizer()
         
-        logger.info("调用同步方法，表键名: continuousheartrate")
-        result = synchronizer.sync_data('continuousheartrate')
+        logger.info("调用同步方法，表键名: continuousrri")
+        result = synchronizer.sync_data('continuousrri')
         
         logger.info(f"同步结果: {result}")
         
         if result.get('success'):
             inserted = result.get('inserted', 0)
             updated = result.get('updated', 0)
-            logger.info(f"同步连续心率数据成功: 新增 {inserted} 条，更新 {updated} 条")
+            logger.info(f"同步连续RRI数据成功: 新增 {inserted} 条，更新 {updated} 条")
             return success(data=result, message='同步成功')
         else:
             error_msg = result.get('message', '未知错误')
-            logger.error(f"同步连续心率数据失败: {error_msg}")
+            logger.error(f"同步连续RRI数据失败: {error_msg}")
             return error(message=error_msg, code=500)
     except Exception as e:
-        logger.error(f"同步连续心率数据时发生错误: {str(e)}", exc_info=True)
+        logger.error(f"同步连续RRI数据时发生错误: {str(e)}", exc_info=True)
         return error(message='同步失败：' + str(e), code=500) 

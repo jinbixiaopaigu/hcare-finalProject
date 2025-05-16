@@ -255,6 +255,22 @@ class SyncConfig:
             enabled=True
         )
         
+        # 连续RRI数据同步配置
+        self.tables['continuousrri'] = TableMapping(
+            research_table_id='t_mnhqsfbc_continuousrri_system',
+            mysql_table_name='continuousrri',
+            field_mappings={
+                'uniqueid': 'id',
+                'healthid': 'user_id',
+                'groupid': 'record_group_id',
+                'uploadtime': 'upload_time',
+                'recordtime': 'data_time',
+                'rriData': 'rri_data',
+                'externalid': 'external_id',
+                'recordschema': 'metadata_version'
+            }
+        )
+        
         # 可以继续添加其他表的映射... 
 
 # 连续心率数据同步配置
