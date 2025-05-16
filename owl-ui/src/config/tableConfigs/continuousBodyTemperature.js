@@ -173,5 +173,30 @@ export const continuousBodyTemperatureConfig = {
     return {
       ...data
     }
+  },
+
+  // 添加方法对象
+  methods: {
+    syncData(component) {
+      component.syncLoading = true;
+      component.$api.medical.cbt.sync()
+        .then(response => {
+          const { inserted, updated } = response.data || {};
+          component.$modal.msgSuccess(`同步完成！新增${inserted || 0}条记录，更新${updated || 0}条记录`);
+          // 刷新数据表格
+          if (component.tableRef && component.tableRef.getList) {
+            component.tableRef.getList();
+          } else {
+            component.getList();
+          }
+        })
+        .catch(error => {
+          console.error('同步体温数据失败:', error);
+          component.$modal.msgError('同步数据失败：' + (error.message || '未知错误'));
+        })
+        .finally(() => {
+          component.syncLoading = false;
+        });
+    }
   }
 }

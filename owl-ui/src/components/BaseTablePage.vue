@@ -179,7 +179,7 @@ export default {
         handleButtonClick(btn) {
             const methodName = btn.onClick;
             if (methodName && this.config.methods && this.config.methods[methodName]) {
-                this.config.methods[methodName]();
+                this.config.methods[methodName](this);
             } else if (methodName && typeof this[methodName] === 'function') {
                 this[methodName]();
             } else {

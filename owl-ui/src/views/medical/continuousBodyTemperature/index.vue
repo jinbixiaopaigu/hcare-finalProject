@@ -1,5 +1,5 @@
 <template>
-    <BaseTablePage :config="config" @table-mounted="onTableMounted" @form-mounted="onFormMounted"
+    <BaseTablePage ref="baseTable" :config="config" @table-mounted="onTableMounted" @form-mounted="onFormMounted"
         @sync-data="handleSyncData" />
 </template>
 
@@ -26,7 +26,6 @@ export default {
     methods: {
         onTableMounted(tableRef) {
             console.log('[ContinuousBodyTemperature] Table mounted:', tableRef)
-            this.tableRef = tableRef
             console.log('ContinuousBodyTemperature table initialized')
         },
         onFormMounted(formRef) {
@@ -41,10 +40,8 @@ export default {
                 const { inserted, updated } = res.data || {}
                 ElMessage.success(`同步完成！新增${inserted || 0}条记录，更新${updated || 0}条记录`)
 
-                // 刷新数据表格
-                if (this.tableRef && this.tableRef.getList) {
-                    this.tableRef.getList()
-                }
+                // 使用 baseTable ref 刷新数据表格
+                this.$refs.baseTable.getList()
             } catch (error) {
                 console.error('同步体温数据失败:', error)
                 ElMessage.error('同步数据失败：' + (error.message || '未知错误'))
