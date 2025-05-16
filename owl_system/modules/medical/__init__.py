@@ -27,6 +27,7 @@ from .controller.ContinuousBodyTemperatureController import (
 
 # 导入同步控制器
 from owl_admin.controller.medical.atrialFibrillation import sync_atrial_fibrillation
+from owl_admin.controller.medical.bloodOxygen import sync_blood_oxygen
 
 def register_medical_module(app):
     """注册医疗模块"""
@@ -47,6 +48,8 @@ def register_medical_module(app):
         bo_bp.route('', methods=['POST'], endpoint='bo_add')(add_blood_oxygen)
         bo_bp.route('', methods=['PUT'], endpoint='bo_update')(update_blood_oxygen)
         bo_bp.route('/<string:id>', methods=['DELETE'], endpoint='bo_delete')(delete_blood_oxygen)
+        # 添加同步路由
+        bo_bp.route('/sync', methods=['POST', 'OPTIONS'], endpoint='bo_sync')(sync_blood_oxygen)
         
         # 连续血氧饱和度路由(使用唯一端点名称)
         cbo_bp = Blueprint('medical_cbo', __name__, url_prefix='/medical/cbo')
@@ -114,6 +117,7 @@ def register_medical_module(app):
         print(f"  /medical/af/<id> (DELETE)")
         print(f"  /medical/bo/list")
         print(f"  /medical/bo/<id>")
+        print(f"  /medical/bo/sync") # 添加同步路由日志
         print(f"  /medical/bo (POST)")
         print(f"  /medical/bo (PUT)")
         print(f"  /medical/bo/<id> (DELETE)")

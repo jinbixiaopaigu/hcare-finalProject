@@ -27,6 +27,24 @@ class DataSynchronizer:
         self.research_client = ResearchClient(self.config)
         self.mysql_client = MySQLClient(self.config)
     
+    def _print_field_structure(self, record: Dict[str, Any], prefix: str = "", indent: str = "  "):
+        """递归打印记录的字段结构
+        
+        Args:
+            record: 数据记录
+            prefix: 字段前缀（用于嵌套字段）
+            indent: 缩进字符串
+        """
+        for key, value in record.items():
+            full_key = f"{prefix}.{key}" if prefix else key
+            value_type = type(value).__name__
+            
+            if isinstance(value, dict):
+                print(f"{indent}- {key} (嵌套对象, 类型: {value_type})")
+                self._print_field_structure(value, full_key, indent + "  ")
+            else:
+                print(f"{indent}- {key} (类型: {value_type})")
+                
     def synchronize_table(self, table_key: str) -> Tuple[int, int]:
         """同步指定表
         
@@ -59,6 +77,16 @@ class DataSynchronizer:
             logger.warning(f"没有从Research表 {table_mapping.research_table_id} 获取到数据，可能是限制或表为空")
             return 0, 0
         
+        # 打印数据统计信息
+        print(f"\n== 华为Research表 {table_mapping.research_table_id} 数据统计 ==")
+        print(f"获取记录数: {len(research_data)} 条")
+        
+        # 打印表字段结构
+        if research_data:
+            first_record = research_data[0]
+            print("\n字段结构:")
+            self._print_field_structure(first_record)
+        
         # 转换字段
         mysql_records = self.convert_records(research_data, table_mapping)
         
@@ -83,8 +111,42 @@ class DataSynchronizer:
         
         logger.info(f"表 {table_mapping.mysql_table_name} 同步完成: 插入 {inserted} 条，更新 {updated} 条")
         logger.info(f"从Research表 {table_mapping.research_table_id} 获取到 {len(research_data)} 条记录")
-        logger.info(f"第一条记录: {research_data[0]}")
+        
+        # 打印字段映射信息
+        print("\n字段映射关系:")
+        for research_field, mysql_field in table_mapping.field_mappings.items():
+            print(f"  - {research_field} => {mysql_field}")
+        
+        # 打印同步结果
+        print(f"\n同步结果: 插入 {inserted} 条，更新 {updated} 条记录\n")
+        
         return inserted, updated
+    
+    def get_nested_value(self, record: Dict[str, Any], field_path: str) -> Any:
+        """从嵌套字典中获取值
+        
+        Args:
+            record: 数据记录
+            field_path: 字段路径，例如 "oxygenSaturation.oxygenSaturation.value"
+            
+        Returns:
+            字段值或None（如果路径不存在）
+        """
+        if '.' not in field_path:
+            return record.get(field_path)
+        
+        parts = field_path.split('.')
+        current = record
+        
+        try:
+            for part in parts:
+                if isinstance(current, dict) and part in current:
+                    current = current[part]
+                else:
+                    return None
+            return current
+        except (KeyError, TypeError):
+            return None
     
     def convert_records(self, research_records: List[Dict[str, Any]], table_mapping: TableMapping) -> List[Dict[str, Any]]:
         """转换记录，将Research字段名映射为MySQL字段名
@@ -104,16 +166,29 @@ class DataSynchronizer:
             
             # 使用字段映射转换字段
             for research_field, mysql_field in field_mappings.items():
-                if research_field in record:
+                # 判断是否为嵌套字段
+                if '.' in research_field:
+                    value = self.get_nested_value(record, research_field)
+                elif research_field in record:
                     value = record[research_field]
-                    
+                else:
+                    continue
+                
+                # 如果值存在，进行处理
+                if value is not None:
                     # 特殊处理时间字段
-                    if mysql_field in ['upload_time', 'data_time'] and isinstance(value, (int, float)):
+                    if mysql_field in ['upload_time', 'data_time', 'measurement_time'] and isinstance(value, (int, float)):
                         # 将毫秒时间戳转换为datetime
                         dt = datetime.fromtimestamp(value / 1000.0)
                         mysql_record[mysql_field] = dt
                     else:
                         mysql_record[mysql_field] = value
+            
+            # 记录转换日志
+            if mysql_record:
+                logger.debug(f"转换记录: {mysql_record}")
+            else:
+                logger.warning(f"记录转换失败: {record}")
             
             mysql_records.append(mysql_record)
         

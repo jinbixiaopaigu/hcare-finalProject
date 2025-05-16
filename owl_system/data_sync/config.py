@@ -154,4 +154,24 @@ class SyncConfig:
             }
         )
         
+        # 血氧饱和度表
+        self.tables['blood_oxygen_saturation'] = TableMapping(
+            research_table_id='t_mnhqsfbc_bloodoxygensaturation_system',
+            mysql_table_name='blood_oxygen_saturation',
+            field_mappings={
+                "uniqueid": "id",
+                "healthid": "user_id",
+                "groupid": "record_group_id",
+                "uploadtime": "upload_time",
+                "recordtime": "data_time",
+                "externalid": "external_id",
+                "recordschema": "metadata_version",
+                # 处理嵌套字段
+                "oxygenSaturation.oxygenSaturation.value": "spo2_value",
+                "oxygenSaturation.oxygenSaturation.unit": "spo2_unit",
+                "oxygenSaturation.timeFrame.timestamp": "measurement_time"
+            },
+            primary_key="id"
+        )
+        
         # 可以继续添加其他表的映射... 

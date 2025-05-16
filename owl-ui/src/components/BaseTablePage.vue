@@ -28,10 +28,28 @@
 
         <!-- 操作按钮 -->
         <el-row :gutter="10" class="mb8">
-            <el-col :span="1.5">
+            <!-- 默认新增按钮 -->
+            <el-col :span="1.5" v-if="!config.toolbarButtons">
                 <el-button type="primary" plain icon="el-icon-plus" size="small" @click="handleAdd"
                     v-hasPermi="[`${config.permissionPrefix}:add`]">新增</el-button>
             </el-col>
+            
+            <!-- 自定义工具栏按钮 -->
+            <template v-if="config.toolbarButtons">
+                <el-col :span="1.5" v-for="(btn, index) in config.toolbarButtons" :key="index">
+                    <el-button 
+                        :type="btn.type || 'default'" 
+                        :plain="true"
+                        :icon="getIconClass(btn.icon)"
+                        :size="btn.size || 'small'"
+                        :loading="this[btn.loading]"
+                        @click="handleButtonClick(btn)"
+                        v-hasPermi="[`${config.permissionPrefix}:${btn.permission}`]">
+                        {{ btn.label }}
+                    </el-button>
+                </el-col>
+            </template>
+            
             <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
         </el-row>
 
@@ -134,6 +152,7 @@ export default {
     data() {
         return {
             loading: true,
+            syncLoading: false, // 添加同步加载状态
             ids: [],
             single: true,
             multiple: true,
@@ -159,6 +178,24 @@ export default {
             this.reset();
             this.open = true;
             this.title = `添加${this.config.title}`;
+        },
+
+        // 处理自定义按钮点击
+        handleButtonClick(btn) {
+            const methodName = btn.onClick;
+            if (methodName && this.config.methods && this.config.methods[methodName]) {
+                this.config.methods[methodName]();
+            } else if (methodName && typeof this[methodName] === 'function') {
+                this[methodName]();
+            } else {
+                console.error(`按钮定义了动作 ${methodName}，但没有找到对应的方法`);
+            }
+        },
+
+        // 获取按钮图标类名
+        getIconClass(icon) {
+            if (!icon) return '';
+            return icon.startsWith('el-icon-') ? icon : `el-icon-${icon.toLowerCase()}`;
         },
 
         getQueryParams() {

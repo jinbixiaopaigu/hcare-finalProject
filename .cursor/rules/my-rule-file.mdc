@@ -176,5 +176,12 @@ project_name/
 1. 使用Sphinx或mkdocs生成文档
 2. 所有公共API必须包含Swagger/OpenAPI文档
 
+---
+
+mysql中的表结构能去sql\hcare-final-jiegou.sql进行查询。华为research数据库中的表结构我就没办法了，需要你先查出来后再和mysql中的表结构进行匹配，但是表名是一一对应的
+而华为research的table_id能去sdk\table_id.md进行查询
+
+---
+此实现是通用的，您可以对其他表使用相同的命令格式：python -m owl_system.data_sync sync <表名>，它将显示相应表的数据同步统计信息。
 
 ```

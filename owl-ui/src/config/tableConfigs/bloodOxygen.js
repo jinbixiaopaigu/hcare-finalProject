@@ -41,6 +41,25 @@ export const bloodOxygenConfig = {
     }
   ],
   
+  // 工具栏按钮
+  toolbarButtons: [
+    {
+      icon: 'Plus',
+      label: '新增',
+      type: 'primary',
+      permission: 'add',
+      onClick: 'handleAdd'
+    },
+    {
+      icon: 'Refresh',
+      label: '同步',
+      type: 'success',
+      permission: 'sync',
+      onClick: 'syncData',
+      loading: 'syncLoading' // 关联加载状态
+    }
+  ],
+  
   // 表格列配置
   tableColumns: [
     {

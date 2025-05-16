@@ -1,11 +1,11 @@
 <template>
-    <BaseTablePage :config="config" />
+    <BaseTablePage ref="baseTable" :config="config" />
 </template>
 
 <script>
 import BaseTablePage from '@/components/BaseTablePage'
 import { bloodOxygenConfig } from '@/config/tableConfigs/bloodOxygen'
-import { listBo, getBo, delBo, addBo, updateBo } from "@/api/medical/bo";
+import { listBo, getBo, delBo, addBo, updateBo, syncBo } from "@/api/medical/bo";
 import { parseTime } from "@/utils/ruoyi";
 
 export default {
@@ -13,6 +13,17 @@ export default {
     components: { BaseTablePage },
     data() {
         return {
+            queryParams: {
+                page_num: 1,
+                page_size: 10,
+                user_id: undefined,
+                measurement_type: undefined,
+                begin_data_time: undefined,
+                end_data_time: undefined
+            },
+            boList: [],
+            total: 0,
+            loading: false,
             config: {
                 ...bloodOxygenConfig,
                 // 覆盖默认方法，保留原有逻辑
@@ -21,7 +32,8 @@ export default {
                     handleDateChange: this.handleDateChange,
                     handleDetail: this.handleDetail,
                     handleUpdate: this.handleUpdate,
-                    submitForm: this.submitForm
+                    submitForm: this.submitForm,
+                    syncData: this.syncData
                 }
             }
         }
@@ -30,13 +42,14 @@ export default {
         /** 查询血氧数据列表 */
         getList() {
             this.loading = true;
+            // 确保queryParams一定存在
             const params = {
-                page_num: this.queryParams.page_num,
-                page_size: this.queryParams.page_size,
-                user_id: this.queryParams.user_id,
-                measurement_type: this.queryParams.measurement_type,
-                begin_data_time: this.queryParams.begin_data_time,
-                end_data_time: this.queryParams.end_data_time
+                page_num: this.queryParams?.page_num || 1,
+                page_size: this.queryParams?.page_size || 10,
+                user_id: this.queryParams?.user_id,
+                measurement_type: this.queryParams?.measurement_type,
+                begin_data_time: this.queryParams?.begin_data_time,
+                end_data_time: this.queryParams?.end_data_time
             };
 
             console.log('发送请求，参数:', JSON.stringify(params, null, 2));
@@ -70,6 +83,14 @@ export default {
         handleDateChange(range) {
             console.log('日期变化事件触发，range:', range);
             this.dataTimeRange = range || [];
+
+            // 确保queryParams一定存在
+            if (!this.queryParams) {
+                this.queryParams = {
+                    page_num: 1,
+                    page_size: 10
+                };
+            }
 
             if (range && range.length === 2) {
                 this.queryParams.begin_data_time = range[0] + ' 00:00:00';
@@ -169,6 +190,29 @@ export default {
                     }
                 }
             });
+        },
+
+        /** 同步数据 */
+        syncData() {
+            this.$modal.confirm('确认要从华为Research同步血氧饱和度数据吗？').then(() => {
+                this.syncLoading = true;
+                syncBo().then(response => {
+                    console.log('同步响应:', response);
+                    const { inserted, updated } = response.data || { inserted: 0, updated: 0 };
+                    this.$modal.msgSuccess(`同步成功，新增 ${inserted} 条，更新 ${updated} 条数据`);
+                    this.$refs.baseTable.getList();
+                    this.syncLoading = false;
+                }).catch(error => {
+                    console.error('同步失败:', error);
+                    this.$modal.msgError(`同步失败: ${error.message || '未知错误'}`);
+                    this.syncLoading = false;
+                });
+            }).catch(() => { });
+        },
+
+        /** 重置表单 */
+        reset() {
+            this.form = {};
         }
     }
 }

@@ -42,3 +42,11 @@ export function delBo(id) {
     method: 'delete'
   })
 }
+
+// 同步血氧饱和度数据
+export function syncBo() {
+  return request({
+    url: '/medical/bo/sync',
+    method: 'post'
+  })
+}
