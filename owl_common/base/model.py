@@ -327,7 +327,7 @@ class TableResponse(BaseEntity):
     rows: Annotated[
             List[Any],  # 建议补充泛型类型
             BeforeValidator(
-                lambda x: list(x) if isinstance(x, Union[Iterator, map]) else x
+                lambda x: list(x) if isinstance(x, (Iterator, map)) else x
             )
             ]
     
