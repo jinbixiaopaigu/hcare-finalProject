@@ -37,6 +37,8 @@ export default {
                 apiPath: 'cbt',
                 permissionPrefix: 'medical:continuousBodyTemperature',
                 rules: continuousBodyTemperatureConfig.rules || {},
+                // 隐藏修改按钮
+                showEditButton: false,
                 // 覆盖默认方法，保留原有逻辑
                 methods: {
                     getList: this.getList,

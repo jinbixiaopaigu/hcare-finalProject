@@ -72,6 +72,7 @@
                     <el-button size="small" type="text" icon="el-icon-view" @click="handleDetail(row)"
                         v-hasPermi="[`${config.permissionPrefix}:query`]">详情</el-button>
                     <el-button size="small" type="text" icon="el-icon-edit" @click="handleUpdate(row)"
+                        v-if="config.showEditButton !== false"
                         v-hasPermi="[`${config.permissionPrefix}:edit`]">修改</el-button>
                     <el-button size="small" type="text" icon="el-icon-delete" @click="handleDelete(row)"
                         v-hasPermi="[`${config.permissionPrefix}:remove`]">删除</el-button>

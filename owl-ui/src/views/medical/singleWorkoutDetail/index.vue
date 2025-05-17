@@ -39,6 +39,8 @@ export default {
                 permissionPrefix: 'medical:swd',
                 // 添加空的规则对象
                 rules: {},
+                // 隐藏修改按钮
+                showEditButton: false,
                 // 添加工具栏按钮
                 toolbarButtons: [
                     { label: '新增', icon: 'plus', type: 'primary', permission: 'add', onClick: 'handleAdd' },

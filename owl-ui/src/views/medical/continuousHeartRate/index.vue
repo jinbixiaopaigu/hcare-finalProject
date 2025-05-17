@@ -16,6 +16,8 @@ export default {
         return {
             config: {
                 ...continuousHeartRateConfig,
+                // 隐藏修改按钮
+                showEditButton: false,
                 methods: {
                     syncData: this.handleSyncData
                 }
@@ -61,4 +63,4 @@ export default {
 
 <style scoped>
 /* 自定义样式可以放在这里 */
-</style> 
+</style>

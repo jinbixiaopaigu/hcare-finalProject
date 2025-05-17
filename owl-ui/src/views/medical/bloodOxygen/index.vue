@@ -34,6 +34,8 @@ export default {
                 apiPath: 'bo',
                 permissionPrefix: 'medical:bo',
                 rules: bloodOxygenConfig.rules || {},
+                // 隐藏修改按钮
+                showEditButton: false,
                 // 覆盖默认方法，保留原有逻辑
                 methods: {
                     getList: this.getList,
