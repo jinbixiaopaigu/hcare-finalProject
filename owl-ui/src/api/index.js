@@ -1,6 +1,7 @@
 import { listBo, getBo, addBo, updateBo, delBo } from './medical/bo'
 import { listCbo, getCbo, addCbo, updateCbo, delCbo } from './medical/cbo'
 import { listCbt, getCbt, addCbt, updateCbt, delCbt } from './medical/cbt'
+import { listSwd, getSwd, addSwd, updateSwd, delSwd } from './medical/swd'
 import medical from './medical'
 
 // 添加调试日志
@@ -29,6 +30,13 @@ export default {
       add: addCbt,
       update: updateCbt,
       delete: delCbt
+    },
+    swd: {
+      list: listSwd,
+      getDetail: getSwd,
+      add: addSwd,
+      update: updateSwd,
+      delete: delSwd
     }
   },
   medical

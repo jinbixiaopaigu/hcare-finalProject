@@ -38,8 +38,8 @@
             <template v-if="getToolbarButtons().length">
                 <el-col :span="1.5" v-for="(btn, index) in getToolbarButtons()" :key="index">
                     <el-button :type="btn.type || 'default'" :plain="true" :icon="getIconClass(btn.icon)"
-                        :size="btn.size || 'small'" :loading="this[btn.loading]" @click="handleButtonClick(btn)"
-                        v-hasPermi="[`${config.permissionPrefix}:${btn.permission}`]">
+                        :size="btn.size || 'small'" :loading="btn.loading ? this[btn.loading] || false : false"
+                        @click="handleButtonClick(btn)" v-if="btn.permission">
                         {{ btn.label }}
                     </el-button>
                 </el-col>
@@ -195,6 +195,13 @@ export default {
         },
 
         handleAdd() {
+            // 使用自定义handleAdd方法（如果存在）
+            if (this.config.methods && typeof this.config.methods.handleAdd === 'function') {
+                console.log('使用自定义handleAdd方法');
+                this.config.methods.handleAdd.call(this);
+                return;
+            }
+
             this.reset();
             this.open = true;
             this.title = `添加${this.config.title}`;
@@ -281,6 +288,13 @@ export default {
         },
 
         handleDetail(row) {
+            // 使用自定义handleDetail方法（如果存在）
+            if (this.config.methods && typeof this.config.methods.handleDetail === 'function') {
+                console.log('使用自定义handleDetail方法');
+                this.config.methods.handleDetail.call(this, row);
+                return;
+            }
+
             this.form = this.transformResponse(row);
             this.title = `${this.config.title}详情`;
             this.open = true;
@@ -289,6 +303,13 @@ export default {
         },
 
         handleUpdate(row) {
+            // 使用自定义handleUpdate方法（如果存在）
+            if (this.config.methods && typeof this.config.methods.handleUpdate === 'function') {
+                console.log('使用自定义handleUpdate方法');
+                this.config.methods.handleUpdate.call(this, row);
+                return;
+            }
+
             this.form = this.transformResponse(row);
             this.title = `修改${this.config.title}`;
             this.open = true;
@@ -324,6 +345,13 @@ export default {
                         end_data_time: params.end_data_time,
                         format: 'YYYY-MM-DD HH:mm:ss'
                     });
+                }
+
+                // 使用自定义getList方法（如果存在）
+                if (this.config.methods && typeof this.config.methods.getList === 'function') {
+                    console.log('使用自定义getList方法');
+                    this.config.methods.getList.call(this);
+                    return;
                 }
 
                 const apiPath = this.resolveApiPath();
@@ -500,6 +528,13 @@ export default {
 
         // 提交表单
         submitForm() {
+            // 使用自定义submitForm方法（如果存在）
+            if (this.config.methods && typeof this.config.methods.submitForm === 'function') {
+                console.log('使用自定义submitForm方法');
+                this.config.methods.submitForm.call(this);
+                return;
+            }
+
             this.$refs.formRef.validate(valid => {
                 if (valid) {
                     const apiPath = this.resolveApiPath();

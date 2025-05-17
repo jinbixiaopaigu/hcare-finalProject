@@ -42,11 +42,19 @@ from .controller.ContinuousRRIController import (
     sync_continuous_rri,
     generate_rri_chart
 )
+from .controller.SingleWorkoutProcessDetailController import (
+    list_workout_detail,
+    get_workout_detail,
+    add_workout_detail,
+    update_workout_detail,
+    delete_workout_detail
+)
 
 # 导入同步控制器
 from owl_admin.controller.medical.atrialFibrillation import sync_atrial_fibrillation
 from owl_admin.controller.medical.bloodOxygen import sync_blood_oxygen
 from owl_admin.controller.medical.continuousBloodOxygen import sync_continuous_blood_oxygen
+from owl_admin.controller.medical.singleWorkoutDetail import sync
 
 def register_medical_module(app):
     """注册医疗模块"""
@@ -108,6 +116,15 @@ def register_medical_module(app):
         crri_bp.route('/<string:id>', methods=['DELETE'], endpoint='crri_delete')(delete_continuous_rri)
         crri_bp.route('/sync', methods=['POST'], endpoint='crri_sync')(sync_continuous_rri)
         crri_bp.route('/chart', methods=['GET'], endpoint='crri_chart')(generate_rri_chart)
+        
+        # 6分钟行走测试数据路由
+        swd_bp = Blueprint('medical_swd', __name__, url_prefix='/medical/swd')
+        swd_bp.route('/list', methods=['GET'], endpoint='swd_list')(list_workout_detail)
+        swd_bp.route('/<string:id>', methods=['GET'], endpoint='swd_detail')(get_workout_detail)
+        swd_bp.route('', methods=['POST'], endpoint='swd_add')(add_workout_detail)
+        swd_bp.route('', methods=['PUT'], endpoint='swd_update')(update_workout_detail)
+        swd_bp.route('/<string:id>', methods=['DELETE'], endpoint='swd_delete')(delete_workout_detail)
+        swd_bp.route('/sync', methods=['POST', 'OPTIONS'], endpoint='swd_sync')(sync)
 
         # 注册蓝图
         try:
@@ -117,6 +134,7 @@ def register_medical_module(app):
             app.register_blueprint(cbt_bp)
             app.register_blueprint(chr_bp)
             app.register_blueprint(crri_bp)  # 注册连续RRI数据蓝图
+            app.register_blueprint(swd_bp)   # 注册6分钟行走测试数据蓝图
             print("医疗模块蓝图注册成功")
         except Exception as e:
             print(f"医疗模块蓝图注册失败: {str(e)}")
@@ -161,6 +179,12 @@ def register_medical_module(app):
         print(f"  /medical/crri (POST)")
         print(f"  /medical/crri (PUT)")
         print(f"  /medical/crri/<id> (DELETE)")
+        print(f"  /medical/swd/list")  # 添加6分钟行走测试路由日志
+        print(f"  /medical/swd/<id>")
+        print(f"  /medical/swd/sync")
+        print(f"  /medical/swd (POST)")
+        print(f"  /medical/swd (PUT)")
+        print(f"  /medical/swd/<id> (DELETE)")
         
     except Exception as e:
         print(f"医疗模块注册失败: {str(e)}")  # 错误日志

@@ -26,6 +26,14 @@ export default {
             loading: false,
             config: {
                 ...bloodOxygenConfig,
+                // 确保所有必要的属性都存在
+                searchFields: bloodOxygenConfig.searchFields || [],
+                tableColumns: bloodOxygenConfig.tableColumns || [],
+                formFields: bloodOxygenConfig.formFields || [],
+                apiModule: 'medical',
+                apiPath: 'bo',
+                permissionPrefix: 'medical:bo',
+                rules: bloodOxygenConfig.rules || {},
                 // 覆盖默认方法，保留原有逻辑
                 methods: {
                     getList: this.getList,
@@ -56,7 +64,8 @@ export default {
 
             listBo(params).then(response => {
                 console.log('收到响应:', response);
-                const rawData = response.data?.items || [];
+                // 同时支持items和rows字段
+                const rawData = response.data?.items || response.data?.rows || [];
                 console.log('原始数据:', JSON.parse(JSON.stringify(rawData)));
 
                 // 转换字段命名风格
@@ -73,9 +82,19 @@ export default {
                 this.boList = newList;
                 this.total = response.data?.total || 0;
                 this.loading = false;
+
+                // 更新BaseTablePage组件的数据
+                if (this.$refs.baseTable) {
+                    this.$refs.baseTable.tableData = this.boList;
+                    this.$refs.baseTable.total = this.total;
+                    this.$refs.baseTable.loading = false;
+                }
             }).catch(error => {
                 console.error('请求出错:', error);
                 this.loading = false;
+                if (this.$refs.baseTable) {
+                    this.$refs.baseTable.loading = false;
+                }
             });
         },
 

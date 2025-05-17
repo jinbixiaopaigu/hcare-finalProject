@@ -271,6 +271,34 @@ class SyncConfig:
             }
         )
         
+        # 6分钟行走测试数据同步配置
+        self.tables['single_workout_process_detail'] = TableMapping(
+            research_table_id='t_mnhqsfbc_singleworkoutprocessdetail_system',
+            mysql_table_name='single_workout_process_detail',
+            field_mappings={
+                'uniqueid': 'id',
+                'healthid': 'user_id',
+                'groupid': 'record_group_id',
+                'uploadtime': 'upload_time',
+                'recordtime': 'data_time',
+                'steps': 'step_count',
+                'distance.value': 'distance',
+                'distance.unit': 'distance_unit',
+                'heartRate.value': 'heart_rate',
+                'speed.value': 'speed',
+                'speed.unit': 'speed_unit',
+                'stepFrequency.value': 'step_frequency',
+                'calories.value': 'calories',
+                'workoutType': 'workout_type',
+                'workoutStatus': 'workout_status',
+                'timeFrame.startTime': 'measurement_start_time',
+                'timeFrame.endTime': 'measurement_end_time',
+                'userNotes': 'user_notes',
+                'externalid': 'external_id',
+                'recordschema': 'metadata_version'
+            }
+        )
+        
         # 可以继续添加其他表的映射... 
 
 # 连续心率数据同步配置

@@ -45,19 +45,6 @@ export const continuousRRIConfig = {
       label: '上传时间',
       width: 180,
       type: 'time'
-    },
-    {
-      label: '操作',
-      width: 160,
-      buttons: [
-        {
-          label: '查看图表',
-          type: 'text',
-          size: 'mini',
-          icon: 'el-icon-view',
-          onClick: 'viewRRIChart'
-        }
-      ]
     }
   ],
   

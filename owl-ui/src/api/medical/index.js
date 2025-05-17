@@ -4,6 +4,7 @@ import * as af from './atrialFibrillation'
 import * as cbt from './cbt'
 import * as chr from './chr'
 import * as crri from './crri'
+import * as swd from './swd'
 
 // 添加调试日志
 console.log('医疗模块加载:', {
@@ -12,7 +13,8 @@ console.log('医疗模块加载:', {
   af,
   cbt,
   chr,
-  crri
+  crri,
+  swd
 });
 
 export default {
@@ -21,6 +23,7 @@ export default {
   af,
   cbt,
   chr,
-  crri  // 使用命名导出
+  crri,
+  swd
 }
 
