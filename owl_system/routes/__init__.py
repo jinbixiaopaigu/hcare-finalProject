@@ -5,12 +5,14 @@ from . import (
     bloodOxygen,
     continuousBloodOxygen,
     continuousBloodPressure,
-    continuousHeartRate
+    continuousHeartRate,
+    medical
 )
 
 __all__ = [
     'bloodOxygen',
     'continuousBloodOxygen',
     'continuousBloodPressure',
-    'continuousHeartRate'
+    'continuousHeartRate',
+    'medical'
 ] 

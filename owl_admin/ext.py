@@ -24,5 +24,7 @@ fredis = FlaskRedis()
 redis_cache:Redis = LocalProxy(
     lambda: current_app.extensions["redis"]._redis_client
 ) 
+# 添加redis_client别名，使其与ContinuousRRIController.py中的导入兼容
+redis_client = redis_cache
 lm = LoginManager()
 db = SQLAlchemy()

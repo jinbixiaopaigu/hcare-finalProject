@@ -1,11 +1,20 @@
+from flask import Blueprint
+from owl_admin.ext import decorators
 from owl_system.modules.medical.controller.ContinuousRRIController import (
     list_continuous_rri,
     get_continuous_rri_detail,
     add_continuous_rri,
     update_continuous_rri,
     delete_continuous_rri,
-    sync_continuous_rri
+    sync_continuous_rri,
+    generate_rri_chart
 )
+
+login_required = decorators.login_required
+permission_required = decorators.permission_required
+
+# 创建医疗模块蓝图
+bp = Blueprint('medical', __name__, url_prefix='/medical')
 
 # 连续RRI数据管理
 @bp.route('/crri/list', methods=['GET'])
@@ -42,4 +51,10 @@ def delete_continuous_rri_data(id):
 @login_required
 @permission_required('medical:continuousRRI:sync')
 def sync_continuous_rri_data():
-    return sync_continuous_rri() 
+    return sync_continuous_rri()
+
+@bp.route('/crri/chart', methods=['GET'])
+@login_required
+@permission_required('medical:continuousRRI:query')
+def get_continuous_rri_chart():
+    return generate_rri_chart() 

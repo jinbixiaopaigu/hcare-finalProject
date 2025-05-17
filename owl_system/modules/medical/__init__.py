@@ -33,6 +33,15 @@ from .controller.ContinuousHeartRateController import (
     delete_continuous_heart_rate,
     sync_continuous_heart_rate
 )
+from .controller.ContinuousRRIController import (
+    list_continuous_rri,
+    get_continuous_rri_detail,
+    add_continuous_rri,
+    update_continuous_rri,
+    delete_continuous_rri,
+    sync_continuous_rri,
+    generate_rri_chart
+)
 
 # 导入同步控制器
 from owl_admin.controller.medical.atrialFibrillation import sync_atrial_fibrillation
@@ -90,6 +99,16 @@ def register_medical_module(app):
         # 添加同步路由
         chr_bp.route('/sync', methods=['POST', 'OPTIONS'], endpoint='chr_sync')(sync_continuous_heart_rate)
 
+        # 连续RRI数据路由
+        crri_bp = Blueprint('medical_crri', __name__, url_prefix='/medical/crri')
+        crri_bp.route('/list', methods=['GET'], endpoint='crri_list')(list_continuous_rri)
+        crri_bp.route('/<string:id>', methods=['GET'], endpoint='crri_detail')(get_continuous_rri_detail)
+        crri_bp.route('', methods=['POST'], endpoint='crri_add')(add_continuous_rri)
+        crri_bp.route('', methods=['PUT'], endpoint='crri_update')(update_continuous_rri)
+        crri_bp.route('/<string:id>', methods=['DELETE'], endpoint='crri_delete')(delete_continuous_rri)
+        crri_bp.route('/sync', methods=['POST'], endpoint='crri_sync')(sync_continuous_rri)
+        crri_bp.route('/chart', methods=['GET'], endpoint='crri_chart')(generate_rri_chart)
+
         # 注册蓝图
         try:
             app.register_blueprint(af_bp)
@@ -97,6 +116,7 @@ def register_medical_module(app):
             app.register_blueprint(cbo_bp)
             app.register_blueprint(cbt_bp)
             app.register_blueprint(chr_bp)
+            app.register_blueprint(crri_bp)  # 注册连续RRI数据蓝图
             print("医疗模块蓝图注册成功")
         except Exception as e:
             print(f"医疗模块蓝图注册失败: {str(e)}")
@@ -134,6 +154,13 @@ def register_medical_module(app):
         print(f"  /medical/chr (POST)")
         print(f"  /medical/chr (PUT)")
         print(f"  /medical/chr/<id> (DELETE)")
+        print(f"  /medical/crri/list")
+        print(f"  /medical/crri/<id>")
+        print(f"  /medical/crri/sync")
+        print(f"  /medical/crri/chart")
+        print(f"  /medical/crri (POST)")
+        print(f"  /medical/crri (PUT)")
+        print(f"  /medical/crri/<id> (DELETE)")
         
     except Exception as e:
         print(f"医疗模块注册失败: {str(e)}")  # 错误日志

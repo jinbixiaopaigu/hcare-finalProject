@@ -1,8 +1,11 @@
 import { listBo, getBo, addBo, updateBo, delBo } from './medical/bo'
 import { listCbo, getCbo, addCbo, updateCbo, delCbo } from './medical/cbo'
 import { listCbt, getCbt, addCbt, updateCbt, delCbt } from './medical/cbt'
-import { listContinuousRRI, getContinuousRRI, addContinuousRRI, updateContinuousRRI, delContinuousRRI, syncContinuousRRI } from './medical/crri'
 import medical from './medical'
+
+// 添加调试日志
+console.log('医疗模块定义:', medical);
+console.log('crri API路径:', medical.crri);
 
 export default {
   medical: {
@@ -26,14 +29,6 @@ export default {
       add: addCbt,
       update: updateCbt,
       delete: delCbt
-    },
-    crri: {
-      list: listContinuousRRI,
-      getDetail: getContinuousRRI,
-      add: addContinuousRRI,
-      update: updateContinuousRRI,
-      delete: delContinuousRRI,
-      sync: syncContinuousRRI
     }
   },
   medical

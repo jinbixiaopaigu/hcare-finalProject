@@ -29,14 +29,14 @@
         <!-- 操作按钮 -->
         <el-row :gutter="10" class="mb8">
             <!-- 默认新增按钮 -->
-            <el-col :span="1.5" v-if="!config.toolbarButtons">
+            <el-col :span="1.5" v-if="!getToolbarButtons().length">
                 <el-button type="primary" plain icon="el-icon-plus" size="small" @click="handleAdd"
                     v-hasPermi="[`${config.permissionPrefix}:add`]">新增</el-button>
             </el-col>
 
             <!-- 自定义工具栏按钮 -->
-            <template v-if="config.toolbarButtons">
-                <el-col :span="1.5" v-for="(btn, index) in config.toolbarButtons" :key="index">
+            <template v-if="getToolbarButtons().length">
+                <el-col :span="1.5" v-for="(btn, index) in getToolbarButtons()" :key="index">
                     <el-button :type="btn.type || 'default'" :plain="true" :icon="getIconClass(btn.icon)"
                         :size="btn.size || 'small'" :loading="this[btn.loading]" @click="handleButtonClick(btn)"
                         v-hasPermi="[`${config.permissionPrefix}:${btn.permission}`]">
@@ -115,6 +115,12 @@
                     </template>
                 </el-row>
             </el-form>
+
+            <!-- 自定义详情内容插槽 -->
+            <div v-if="title.includes('详情') && config.slots && config.slots.detailAfter">
+                <component :is="config.slots.detailAfter" />
+            </div>
+
             <template #footer>
                 <div class="dialog-footer">
                     <el-button @click="open = false">取 消</el-button>
@@ -172,6 +178,22 @@ export default {
         this.getList();
     },
     methods: {
+        // 获取工具栏按钮 - 同时支持buttons和toolbarButtons属性
+        getToolbarButtons() {
+            // 首先检查toolbarButtons是否存在
+            if (this.config.toolbarButtons && Array.isArray(this.config.toolbarButtons)) {
+                return this.config.toolbarButtons;
+            }
+
+            // 然后检查buttons是否存在
+            if (this.config.buttons && Array.isArray(this.config.buttons)) {
+                return this.config.buttons;
+            }
+
+            // 如果都不存在，返回空数组
+            return [];
+        },
+
         handleAdd() {
             this.reset();
             this.open = true;
@@ -208,7 +230,30 @@ export default {
             const params = {};
             this.config.searchFields.forEach(field => {
                 if (this.queryParams[field.prop] !== undefined && this.queryParams[field.prop] !== '') {
-                    params[field.prop] = this.queryParams[field.prop];
+                    // 特殊处理日期范围，转换为后端需要的开始和结束日期参数
+                    if (field.type === 'daterange' && Array.isArray(this.queryParams[field.prop])) {
+                        // 处理日期范围为开始和结束日期
+                        if (field.prop === 'dataTimeRange') {
+                            // RRI数据的日期范围特殊处理
+                            // 为开始日期添加时间部分 "00:00:00"
+                            params['begin_data_time'] = this.queryParams[field.prop][0] + ' 00:00:00';
+                            // 为结束日期添加时间部分 "23:59:59"，以包含整天
+                            params['end_data_time'] = this.queryParams[field.prop][1] + ' 23:59:59';
+
+                            // 同时添加data_time_range参数，以适配后端处理逻辑
+                            params['data_time_range'] = [
+                                this.queryParams[field.prop][0] + ' 00:00:00',
+                                this.queryParams[field.prop][1] + ' 23:59:59'
+                            ];
+                        } else {
+                            // 通用处理方式
+                            const fieldBase = field.prop.replace(/Range$/, '');
+                            params[`begin_${fieldBase}`] = this.queryParams[field.prop][0] + ' 00:00:00';
+                            params[`end_${fieldBase}`] = this.queryParams[field.prop][1] + ' 23:59:59';
+                        }
+                    } else {
+                        params[field.prop] = this.queryParams[field.prop];
+                    }
                 }
             });
             return params;
@@ -239,6 +284,8 @@ export default {
             this.form = this.transformResponse(row);
             this.title = `${this.config.title}详情`;
             this.open = true;
+            // 触发详情事件，通知父组件
+            this.$emit('detail', row);
         },
 
         handleUpdate(row) {
@@ -268,10 +315,26 @@ export default {
                 };
 
                 console.log('转换后的请求参数:', params);
-
                 console.log('API请求参数:', JSON.stringify(params, null, 2));
 
+                // 记录日期相关参数
+                if (params.begin_data_time || params.end_data_time) {
+                    console.log('日期查询参数:', {
+                        begin_data_time: params.begin_data_time,
+                        end_data_time: params.end_data_time,
+                        format: 'YYYY-MM-DD HH:mm:ss'
+                    });
+                }
+
                 const apiPath = this.resolveApiPath();
+                console.log('===== getList中的apiPath ======');
+                console.log('apiPath是否存在:', !!apiPath);
+                console.log('apiPath对象内容:', apiPath);
+                if (apiPath && apiPath.list) {
+                    console.log('apiPath.list是否是函数:', typeof apiPath.list === 'function');
+                    console.log('apiPath.list的值:', apiPath.list);
+                }
+
                 if (!apiPath) {
                     this.loading = false;
                     return;
@@ -337,13 +400,23 @@ export default {
             let current = this.$api;
             const path = [this.config.apiModule, this.config.apiPath];
 
+            console.log('==== 调试API路径 ====');
+            console.log('当前组件配置:', this.config);
+            console.log('API模块路径:', path);
+            console.log('完整的this.$api对象:', this.$api);
+
             for (const key of path) {
                 if (!current[key]) {
                     console.error(`API路径解析失败: ${path.join('.')}`, this.$api);
                     return null;
                 }
                 current = current[key];
+                console.log(`解析路径[${key}]后的current对象:`, current);
             }
+
+            console.log('最终解析的API对象:', current);
+            console.log('list属性类型:', typeof current.list);
+            console.log('list属性值:', current.list);
 
             return current;
         },
