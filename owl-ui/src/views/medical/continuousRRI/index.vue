@@ -89,7 +89,7 @@
                                 <div class="info-item">
                                     <span class="label">数据范围：</span>
                                     <span class="value">{{ currentServerChart.minRRI }}-{{ currentServerChart.maxRRI
-                                    }}ms</span>
+                                        }}ms</span>
                                 </div>
                             </el-col>
                         </el-row>

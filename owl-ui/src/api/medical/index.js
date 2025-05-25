@@ -5,6 +5,7 @@ import * as cbt from './cbt'
 import * as chr from './chr'
 import * as crri from './crri'
 import * as swd from './swd'
+import * as ecg from './ecg'
 
 // 添加调试日志
 console.log('医疗模块加载:', {
@@ -14,7 +15,8 @@ console.log('医疗模块加载:', {
   cbt,
   chr,
   crri,
-  swd
+  swd,
+  ecg
 });
 
 export default {
@@ -24,6 +26,7 @@ export default {
   cbt,
   chr,
   crri,
-  swd
+  swd,
+  ecg
 }
 

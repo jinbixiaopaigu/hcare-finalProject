@@ -49,6 +49,14 @@ from .controller.SingleWorkoutProcessDetailController import (
     update_workout_detail,
     delete_workout_detail
 )
+from .controller.ECGController import (
+    list_ecg,
+    get_ecg_detail,
+    add_ecg,
+    update_ecg,
+    delete_ecg,
+    sync_ecg
+)
 
 # 导入同步控制器
 from owl_admin.controller.medical.atrialFibrillation import sync_atrial_fibrillation
@@ -125,6 +133,15 @@ def register_medical_module(app):
         swd_bp.route('', methods=['PUT'], endpoint='swd_update')(update_workout_detail)
         swd_bp.route('/<string:id>', methods=['DELETE'], endpoint='swd_delete')(delete_workout_detail)
         swd_bp.route('/sync', methods=['POST', 'OPTIONS'], endpoint='swd_sync')(sync)
+        
+        # ECG数据路由
+        ecg_bp = Blueprint('medical_ecg', __name__, url_prefix='/medical/ecg')
+        ecg_bp.route('/list', methods=['GET'], endpoint='ecg_list')(list_ecg)
+        ecg_bp.route('/<string:id>', methods=['GET'], endpoint='ecg_detail')(get_ecg_detail)
+        ecg_bp.route('', methods=['POST'], endpoint='ecg_add')(add_ecg)
+        ecg_bp.route('', methods=['PUT'], endpoint='ecg_update')(update_ecg)
+        ecg_bp.route('/<string:id>', methods=['DELETE'], endpoint='ecg_delete')(delete_ecg)
+        ecg_bp.route('/sync', methods=['POST'], endpoint='ecg_sync')(sync_ecg)
 
         # 注册蓝图
         try:
@@ -135,6 +152,7 @@ def register_medical_module(app):
             app.register_blueprint(chr_bp)
             app.register_blueprint(crri_bp)  # 注册连续RRI数据蓝图
             app.register_blueprint(swd_bp)   # 注册6分钟行走测试数据蓝图
+            app.register_blueprint(ecg_bp)   # 注册ECG数据蓝图
             print("医疗模块蓝图注册成功")
         except Exception as e:
             print(f"医疗模块蓝图注册失败: {str(e)}")
@@ -185,6 +203,12 @@ def register_medical_module(app):
         print(f"  /medical/swd (POST)")
         print(f"  /medical/swd (PUT)")
         print(f"  /medical/swd/<id> (DELETE)")
+        print(f"  /medical/ecg/list")
+        print(f"  /medical/ecg/<id>")
+        print(f"  /medical/ecg/sync")
+        print(f"  /medical/ecg (POST)")
+        print(f"  /medical/ecg (PUT)")
+        print(f"  /medical/ecg/<id> (DELETE)")
         
     except Exception as e:
         print(f"医疗模块注册失败: {str(e)}")  # 错误日志

@@ -271,6 +271,24 @@ class SyncConfig:
             }
         )
         
+        # ECG数据同步配置
+        self.tables['ecg'] = TableMapping(
+            research_table_id='t_mnhqsfbc_ecg_system',
+            mysql_table_name='ecg',
+            field_mappings={
+                'uniqueid': 'id',
+                'healthid': 'user_id',
+                'groupid': 'record_group_id',
+                'uploadtime': 'upload_time',
+                'recordtime': 'data_time',
+                'ecg': 'ecg_path',
+                'externalid': 'external_id',
+                'recordschema': 'metadata_version'
+            },
+            primary_key='id',
+            enabled=True
+        )
+        
         # 6分钟行走测试数据同步配置
         self.tables['single_workout_process_detail'] = TableMapping(
             research_table_id='t_mnhqsfbc_singleworkoutprocessdetail_system',
