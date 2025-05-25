@@ -7,7 +7,8 @@ from owl_system.modules.medical.controller.ContinuousRRIController import (
     update_continuous_rri,
     delete_continuous_rri,
     sync_continuous_rri,
-    generate_rri_chart
+    generate_rri_chart,
+    clear_rri_chart_cache
 )
 
 login_required = decorators.login_required
@@ -57,4 +58,10 @@ def sync_continuous_rri_data():
 @login_required
 @permission_required('medical:continuousRRI:query')
 def get_continuous_rri_chart():
-    return generate_rri_chart() 
+    return generate_rri_chart()
+
+@bp.route('/crri/clear-cache', methods=['GET', 'POST'])
+@login_required
+@permission_required('medical:continuousRRI:sync')
+def clear_continuous_rri_cache():
+    return clear_rri_chart_cache() 

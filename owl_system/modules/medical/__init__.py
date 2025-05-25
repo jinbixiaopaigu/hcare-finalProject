@@ -40,7 +40,8 @@ from .controller.ContinuousRRIController import (
     update_continuous_rri,
     delete_continuous_rri,
     sync_continuous_rri,
-    generate_rri_chart
+    generate_rri_chart,
+    clear_rri_chart_cache
 )
 from .controller.SingleWorkoutProcessDetailController import (
     list_workout_detail,
@@ -124,6 +125,7 @@ def register_medical_module(app):
         crri_bp.route('/<string:id>', methods=['DELETE'], endpoint='crri_delete')(delete_continuous_rri)
         crri_bp.route('/sync', methods=['POST'], endpoint='crri_sync')(sync_continuous_rri)
         crri_bp.route('/chart', methods=['GET'], endpoint='crri_chart')(generate_rri_chart)
+        crri_bp.route('/clear-cache', methods=['GET', 'POST'], endpoint='crri_clear_cache')(clear_rri_chart_cache)
         
         # 6分钟行走测试数据路由
         swd_bp = Blueprint('medical_swd', __name__, url_prefix='/medical/swd')
@@ -194,6 +196,7 @@ def register_medical_module(app):
         print(f"  /medical/crri/<id>")
         print(f"  /medical/crri/sync")
         print(f"  /medical/crri/chart")
+        print(f"  /medical/crri/clear-cache")  # 添加新路由日志
         print(f"  /medical/crri (POST)")
         print(f"  /medical/crri (PUT)")
         print(f"  /medical/crri/<id> (DELETE)")

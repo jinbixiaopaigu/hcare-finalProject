@@ -7,7 +7,8 @@
             <el-tooltip content="启用缓存会大幅提高加载速度，但数据可能不是最新的" placement="top">
                 <i class="el-icon-question" style="margin-left: 5px;"></i>
             </el-tooltip>
-            <el-button v-if="useCache" type="text" icon="el-icon-refresh" @click="clearCache">清除缓存</el-button>
+            <el-button v-if="useCache" type="text" icon="el-icon-refresh" @click="clearLocalCache">清除本地缓存</el-button>
+            <el-button type="danger" icon="el-icon-delete" plain size="small" style="margin-left: 10px;" @click="clearServerCache">清除服务器缓存</el-button>
         </div>
 
         <BaseTablePage ref="baseTable" :config="config" @table-mounted="onTableMounted" @form-mounted="onFormMounted"
@@ -507,10 +508,17 @@ export default {
                         sum + (group.originalPoints || 0), 0);
                     const totalActualPoints = this.serverChartGroups.reduce((sum, group) =>
                         sum + (group.validPoints || 0), 0);
-                    console.warn(`==== [DEBUG-17] 处理前共${totalOriginalPoints}个数据点，采样后共${totalActualPoints}个数据点 ====`);
+                    const totalFilteredPoints = this.serverChartGroups.reduce((sum, group) =>
+                        sum + (group.filteredPoints || 0), 0);
+                    console.warn(`==== [DEBUG-17] 处理前共${totalOriginalPoints}个数据点，过滤后${totalFilteredPoints}点，采样后共${totalActualPoints}个数据点 ====`);
 
-                    if (totalOriginalPoints > totalActualPoints) {
-                        this.$message.info(`为提高性能，已对大量数据进行采样：${totalOriginalPoints} → ${totalActualPoints}个数据点`);
+                    // 添加数据过滤信息提示
+                    if (totalOriginalPoints > totalFilteredPoints) {
+                        this.$message.info(`已过滤异常RRI值(>1250ms)：${totalOriginalPoints} → ${totalFilteredPoints}个有效数据点`);
+                    }
+                    
+                    if (totalFilteredPoints > totalActualPoints) {
+                        this.$message.info(`为提高性能，已对大量数据进行采样：${totalFilteredPoints} → ${totalActualPoints}个显示数据点`);
                     }
 
                     this.currentGroupIndex = 0;
@@ -718,7 +726,15 @@ export default {
                             data: []
                         }]
                     });
+                    // 添加空数据提示
+                    this.$message.warning('当前图表没有有效数据点');
                     return;
+                }
+
+                // 检查数据点数量是否足够
+                if (data.length < 30) {
+                    console.warn(`==== [DEBUG-37.5] 数据点数量较少: ${data.length} ====`);
+                    this.$message.warning(`当前图表数据点数量较少(${data.length}个)，可能影响分析效果`);
                 }
 
                 // 检查并过滤数据中的无效值
@@ -1058,11 +1074,17 @@ export default {
                 // 根据选择的分组更新图表
                 this.$nextTick(() => {
                     this.renderServerChart(this.currentServerChart.data);
+                    
+                    // 添加数据点数量检查
+                    if (this.currentServerChart.data && 
+                        this.currentServerChart.data.length < this.currentServerChart.originalPoints * 0.1) {
+                        this.$message.warning(`注意：由于过滤RRI>1250的异常值，数据点已从${this.currentServerChart.originalPoints}减少到${this.currentServerChart.data.length}`);
+                    }
                 });
             }
         },
-        // 清除缓存并重新加载数据
-        clearCache() {
+        // 清除本地缓存并重新加载数据
+        clearLocalCache() {
             this.useCache = false;
             this.$message.info('已禁用缓存，将获取最新数据');
 
@@ -1074,6 +1096,26 @@ export default {
                     this.$message.success('已刷新数据并重新启用缓存');
                 });
             }
+        },
+        // 清除服务器端的缓存数据
+        clearServerCache() {
+            this.$modal.confirm('确定要清除服务器上的所有RRI图表缓存吗？这将导致下次加载时间增加。').then(() => {
+                this.groupChartLoading = true;
+                
+                // 调用后端API清除缓存
+                crriApi.clearCache().then(response => {
+                    this.$modal.msgSuccess(response.message || '缓存清除成功');
+                    // 如果图表已显示，重新加载数据
+                    if (this.groupChartVisible) {
+                        this.fetchServerGeneratedCharts();
+                    }
+                }).catch(error => {
+                    console.error('清除缓存失败:', error);
+                    this.$modal.msgError('清除缓存失败: ' + (error.message || '未知错误'));
+                }).finally(() => {
+                    this.groupChartLoading = false;
+                });
+            }).catch(() => {});
         },
         // 创建应急图表容器
         createEmergencyChartContainer() {

@@ -203,6 +203,9 @@ def generate_rri_chart():
         # 获取是否使用缓存参数
         use_cache = request_data.get('useCache', 'true').lower() == 'true'
         
+        # 设置最小所需数据点数量
+        MIN_REQUIRED_POINTS = 30
+        
         logger.info(f"图表过滤条件: 用户ID={user_id}, 时间范围={begin_data_time}至{end_data_time}, 采样率={sampling_rate}, 最大点数={max_points}, 使用缓存={use_cache}")
         
         # 生成缓存键
@@ -252,6 +255,7 @@ def generate_rri_chart():
             # 提取组内数据
             processed_data = []
             total_points = 0
+            filtered_points = 0
             
             for record in group['items']:
                 # 获取RRI数据
@@ -269,30 +273,44 @@ def generate_rri_chart():
                 # 数据量统计
                 total_points += len(rri_data)
                 
-                # 计算动态采样率 - 如果数据量很大，增加采样率
+                # 先预处理筛选有效的RRI值 (0 < rri <= 1250)
+                valid_data_points = []
+                for data_point in rri_data:
+                    if data_point and 'rri' in data_point and 'timeFrame' in data_point and 'timestamp' in data_point['timeFrame']:
+                        rri_value = data_point['rri'].get('value', 0)
+                        # 只保留RRI值在0-1250范围内的数据点
+                        if 0 < rri_value <= 1250:
+                            valid_data_points.append(data_point)
+                
+                # 记录筛选后的数据点数量
+                filtered_points += len(valid_data_points)
+                
+                # 计算动态采样率 - 确保有足够的数据点
                 dynamic_sampling_rate = sampling_rate
-                if len(rri_data) > max_points:
+                if len(valid_data_points) > max_points:
                     # 自动计算采样率，确保点数不超过最大值
-                    dynamic_sampling_rate = max(sampling_rate, int(len(rri_data) / max_points) + 1)
-                    logger.info(f"数据点数({len(rri_data)})超过最大值({max_points})，调整采样率为{dynamic_sampling_rate}")
+                    dynamic_sampling_rate = max(sampling_rate, int(len(valid_data_points) / max_points) + 1)
+                    logger.info(f"数据点数({len(valid_data_points)})超过最大值({max_points})，调整采样率为{dynamic_sampling_rate}")
+                elif len(valid_data_points) < MIN_REQUIRED_POINTS * dynamic_sampling_rate and dynamic_sampling_rate > 1:
+                    # 如果过滤后数据点太少，则减小采样率以保留更多点
+                    dynamic_sampling_rate = max(1, dynamic_sampling_rate // 2)
+                    logger.info(f"有效数据点数({len(valid_data_points)})较少，降低采样率为{dynamic_sampling_rate}以增加数据点")
                 
                 # 处理每条记录的RRI数据点（使用采样）
-                for j, data_point in enumerate(rri_data):
+                for j, data_point in enumerate(valid_data_points):
                     # 采样: 只处理采样率的倍数索引的数据点
                     if j % dynamic_sampling_rate != 0:
                         continue
                         
-                    if data_point and 'rri' in data_point and 'timeFrame' in data_point and 'timestamp' in data_point['timeFrame']:
-                        # 替换零值
-                        rri_value = data_point['rri'].get('value', 0)
-                        if rri_value == 0:
-                            rri_value = default_rri_value
-                            
-                        # 提取有效数据
-                        if rri_value > 0:
-                            timestamp = data_point['timeFrame']['timestamp']
-                            sqi = data_point.get('sqi', 0)
-                            processed_data.append([timestamp, rri_value, sqi])
+                    # 提取有效数据
+                    rri_value = data_point['rri'].get('value', 0)
+                    # 替换零值
+                    if rri_value == 0:
+                        rri_value = default_rri_value
+                        
+                    timestamp = data_point['timeFrame']['timestamp']
+                    sqi = data_point.get('sqi', 0)
+                    processed_data.append([timestamp, rri_value, sqi])
             
             # 按时间戳排序
             processed_data.sort(key=lambda x: x[0])
@@ -305,9 +323,11 @@ def generate_rri_chart():
                 sampled_data = [processed_data[j] for j in range(0, len(processed_data), final_sampling_rate)]
                 processed_data = sampled_data
             
-            logger.info(f"分组{i+1}: 原始点数约{total_points}，采样后{len(processed_data)}点")
+            # 记录过滤前后的数据点数量
+            logger.info(f"分组{i+1}: 原始点数约{total_points}，筛选后{filtered_points}点，采样后{len(processed_data)}点")
             
-            if processed_data:
+            # 检查是否有足够的数据点
+            if processed_data and len(processed_data) >= MIN_REQUIRED_POINTS:
                 # 计算统计信息
                 values = [point[1] for point in processed_data]
                 avg_rri = round(sum(values) / len(values))
@@ -322,10 +342,13 @@ def generate_rri_chart():
                     'data': processed_data,  # 直接返回处理后的数据点
                     'validPoints': len(processed_data),
                     'originalPoints': total_points,
+                    'filteredPoints': filtered_points,  # 添加过滤后的点数信息
                     'avgRRI': avg_rri,
                     'minRRI': min_rri,
                     'maxRRI': max_rri
                 })
+            else:
+                logger.warning(f"分组{i+1}数据点数量({len(processed_data)})不足，已跳过该分组")
         
         end_time = datetime.now()
         processing_time = (end_time - start_time).total_seconds()
@@ -431,4 +454,19 @@ def format_time(dt):
     """格式化时间为易读格式"""
     if not dt:
         return "未知时间"
-    return dt.strftime("%m-%d %H:%M:%S") 
+    return dt.strftime("%m-%d %H:%M:%S")
+
+@handle_db_operation
+def clear_rri_chart_cache():
+    """清除所有RRI图表缓存"""
+    try:
+        pattern = "rri:chart:*"
+        keys = redis_client.keys(pattern)
+        if keys:
+            redis_client.delete(*keys)
+            logger.info(f"成功清除{len(keys)}个RRI图表缓存")
+            return success(message=f"成功清除{len(keys)}个RRI图表缓存")
+        return success(message="没有找到需要清除的缓存")
+    except Exception as e:
+        logger.error(f"清除RRI图表缓存失败: {str(e)}")
+        return error(message="清除缓存失败", code=500) 

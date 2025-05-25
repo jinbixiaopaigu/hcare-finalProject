@@ -11,7 +11,7 @@
  Target Server Version : 80040 (8.0.40)
  File Encoding         : 65001
 
- Date: 11/05/2025 01:12:47
+ Date: 21/05/2025 13:06:07
 */
 
 SET NAMES utf8mb4;
@@ -42,7 +42,7 @@ CREATE TABLE `sys_menu`  (
   `update_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
   `remark` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT '' COMMENT '备注',
   PRIMARY KEY (`menu_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 2022 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '菜单权限表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 3013 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '菜单权限表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of sys_menu
@@ -134,10 +134,49 @@ INSERT INTO `sys_menu` VALUES (1060, '生成代码', 116, 6, '#', '', '', 1, 0, 
 INSERT INTO `sys_menu` VALUES (2000, '医护管理', 0, 4, 'medical', 'Layout', NULL, 1, 0, 'M', '0', '0', '', 'medical-box', 'admin', '2025-04-27 15:41:33', '', NULL, '医护管理目录');
 INSERT INTO `sys_menu` VALUES (2001, '病人状况', 2000, 1, 'patient/condition', 'medical/patient/condition', NULL, 1, 0, 'C', '0', '0', 'medical:patient:list', 'user', 'admin', '2025-04-27 15:41:33', 'admin', '2025-05-10 22:19:14', '病人状况菜单');
 INSERT INTO `sys_menu` VALUES (2010, '房颤检测结果', 2000, 5, 'medical/af', 'medical/atrialFibrillation/index', NULL, 1, 0, 'C', '0', '0', 'medical:af:list', 'monitor', 'admin', '2025-05-10 21:00:19', 'admin', '2025-05-10 22:19:07', '房颤检测结果菜单');
-INSERT INTO `sys_menu` VALUES (2011, '血氧饱和度', NULL, 6, 'bloodOxygen', 'medical/bloodOxygen/index', NULL, 1, 0, 'C', '0', '0', 'medical:bo:list', 'eye-open', 'admin', '2025-05-11 01:07:50', 'admin', '2025-05-11 01:07:50', '血氧饱和度菜单');
-INSERT INTO `sys_menu` VALUES (2012, '血氧饱和度查询', 2011, 1, '', '', NULL, 1, 0, 'F', '0', '0', 'medical:bo:query', '#', 'admin', '2025-05-11 01:07:50', 'admin', '2025-05-11 01:07:50', '');
-INSERT INTO `sys_menu` VALUES (2014, '血氧饱和度新增', 2011, 2, '', '', NULL, 1, 0, 'F', '0', '0', 'medical:bo:add', '#', 'admin', '2025-05-11 01:10:48', 'admin', '2025-05-11 01:10:48', '');
-INSERT INTO `sys_menu` VALUES (2015, '血氧饱和度修改', 2011, 3, '', '', NULL, 1, 0, 'F', '0', '0', 'medical:bo:edit', '#', 'admin', '2025-05-11 01:10:48', 'admin', '2025-05-11 01:10:48', '');
-INSERT INTO `sys_menu` VALUES (2016, '血氧饱和度删除', 2011, 4, '', '', NULL, 1, 0, 'F', '0', '0', 'medical:bo:remove', '#', 'admin', '2025-05-11 01:10:48', 'admin', '2025-05-11 01:10:48', '');
+INSERT INTO `sys_menu` VALUES (2011, '血氧饱和度检测结果', 2000, 6, 'medical/bo', 'medical/bloodOxygen/index', NULL, 1, 0, 'C', '0', '0', 'medical:bo:list', 'eye-open', 'admin', '2025-05-11 01:07:50', 'admin', '2025-05-11 01:12:47', '血氧饱和度菜单');
+INSERT INTO `sys_menu` VALUES (2012, '血氧饱和度查询', 2011, 1, '', '', NULL, 1, 0, 'F', '0', '0', 'medical:bo:query', '#', 'admin', '2025-05-11 01:07:50', 'admin', '2025-05-11 01:12:47', '');
+INSERT INTO `sys_menu` VALUES (2014, '血氧饱和度新增', 2011, 2, '', '', NULL, 1, 0, 'F', '0', '0', 'medical:bo:add', '#', 'admin', '2025-05-11 01:10:48', 'admin', '2025-05-11 01:12:47', '');
+INSERT INTO `sys_menu` VALUES (2015, '血氧饱和度修改', 2011, 3, '', '', NULL, 1, 0, 'F', '0', '0', 'medical:bo:edit', '#', 'admin', '2025-05-11 01:10:48', 'admin', '2025-05-11 01:12:47', '');
+INSERT INTO `sys_menu` VALUES (2016, '血氧饱和度删除', 2011, 4, '', '', NULL, 1, 0, 'F', '0', '0', 'medical:bo:remove', '#', 'admin', '2025-05-11 01:10:48', 'admin', '2025-05-11 01:12:47', '');
+INSERT INTO `sys_menu` VALUES (2017, '血氧饱和度导出', 2011, 5, '', '', '', 1, 0, 'F', '0', '0', 'medical:bo:export', '#', 'admin', '2025-05-11 01:12:47', 'admin', '2025-05-11 01:12:47', '');
+INSERT INTO `sys_menu` VALUES (2018, '血氧饱和度导入', 2011, 6, '', '', '', 1, 0, 'F', '0', '0', 'medical:bo:import', '#', 'admin', '2025-05-11 01:12:47', 'admin', '2025-05-11 01:12:47', '');
+INSERT INTO `sys_menu` VALUES (2022, '连续血氧数据', 2000, 3, 'continuousBloodOxygen', 'medical/continuousBloodOxygen/index', NULL, 1, 0, 'C', '0', '0', 'medical:cbo:list', 'monitor', 'admin', '2025-05-13 13:47:33', '', NULL, '连续血氧数据菜单');
+INSERT INTO `sys_menu` VALUES (2023, '连续血氧查询', 2022, 1, '', '', NULL, 1, 0, 'F', '0', '0', 'medical:cbo:query', '#', 'admin', '2025-05-13 13:47:33', '', NULL, '');
+INSERT INTO `sys_menu` VALUES (2024, '连续血氧新增', 2022, 2, '', '', NULL, 1, 0, 'F', '0', '0', 'medical:cbo:add', '#', 'admin', '2025-05-13 13:47:33', '', NULL, '');
+INSERT INTO `sys_menu` VALUES (2025, '连续血氧修改', 2022, 3, '', '', NULL, 1, 0, 'F', '0', '0', 'medical:cbo:edit', '#', 'admin', '2025-05-13 13:47:33', '', NULL, '');
+INSERT INTO `sys_menu` VALUES (2026, '连续血氧删除', 2022, 4, '', '', NULL, 1, 0, 'F', '0', '0', 'medical:cbo:remove', '#', 'admin', '2025-05-13 13:47:33', '', NULL, '');
+INSERT INTO `sys_menu` VALUES (2027, '连续血氧导出', 2022, 5, '', '', NULL, 1, 0, 'F', '0', '0', 'medical:cbo:export', '#', 'admin', '2025-05-13 13:47:33', '', NULL, '');
+INSERT INTO `sys_menu` VALUES (2028, '持续体温数据', 2000, 6, 'medical/cbt', 'medical/continuousBodyTemperature/index', NULL, 1, 0, 'C', '0', '0', 'medical:continuousBodyTemperature:list', 'monitor', 'admin', '2025-05-13 17:40:00', '', NULL, '持续体温数据菜单');
+INSERT INTO `sys_menu` VALUES (2029, '持续体温查询', 2028, 1, '', '', NULL, 1, 0, 'F', '0', '0', 'medical:continuousBodyTemperature:query', '#', 'admin', '2025-05-13 17:40:00', '', NULL, '');
+INSERT INTO `sys_menu` VALUES (2030, '持续体温新增', 2028, 2, '', '', NULL, 1, 0, 'F', '0', '0', 'medical:continuousBodyTemperature:add', '#', 'admin', '2025-05-13 17:40:00', '', NULL, '');
+INSERT INTO `sys_menu` VALUES (2031, '持续体温修改', 2028, 3, '', '', NULL, 1, 0, 'F', '0', '0', 'medical:continuousBodyTemperature:edit', '#', 'admin', '2025-05-13 17:40:00', '', NULL, '');
+INSERT INTO `sys_menu` VALUES (2032, '持续体温删除', 2028, 4, '', '', NULL, 1, 0, 'F', '0', '0', 'medical:continuousBodyTemperature:remove', '#', 'admin', '2025-05-13 17:40:00', '', NULL, '');
+INSERT INTO `sys_menu` VALUES (2033, '持续体温导出', 2028, 5, '', '', NULL, 1, 0, 'F', '0', '0', 'medical:continuousBodyTemperature:export', '#', 'admin', '2025-05-13 17:40:00', '', NULL, '');
+INSERT INTO `sys_menu` VALUES (2034, '连续心率数据', 2000, 1, 'continuousHeartRate', 'medical/continuousHeartRate/index', NULL, 1, 0, 'C', '0', '0', 'medical:continuousHeartRate:list', 'heart', 'admin', '2025-05-16 22:34:44', '', NULL, '连续心率数据菜单');
+INSERT INTO `sys_menu` VALUES (2035, '连续心率数据查询', 2034, 1, '#', '', NULL, 1, 0, 'F', '0', '0', 'medical:continuousHeartRate:query', '#', 'admin', '2025-05-16 22:34:44', '', NULL, '');
+INSERT INTO `sys_menu` VALUES (2036, '连续心率数据新增', 2034, 2, '#', '', NULL, 1, 0, 'F', '0', '0', 'medical:continuousHeartRate:add', '#', 'admin', '2025-05-16 22:34:44', '', NULL, '');
+INSERT INTO `sys_menu` VALUES (2037, '连续心率数据修改', 2034, 3, '#', '', NULL, 1, 0, 'F', '0', '0', 'medical:continuousHeartRate:edit', '#', 'admin', '2025-05-16 22:34:44', '', NULL, '');
+INSERT INTO `sys_menu` VALUES (2038, '连续心率数据删除', 2034, 4, '#', '', NULL, 1, 0, 'F', '0', '0', 'medical:continuousHeartRate:remove', '#', 'admin', '2025-05-16 22:34:44', '', NULL, '');
+INSERT INTO `sys_menu` VALUES (2039, '连续心率数据同步', 2034, 5, '#', '', NULL, 1, 0, 'F', '0', '0', 'medical:continuousHeartRate:sync', '#', 'admin', '2025-05-16 22:34:44', '', NULL, '');
+INSERT INTO `sys_menu` VALUES (2040, '连续RRI数据', 2000, 5, 'continuousRRI', 'medical/continuousRRI/index', NULL, 1, 0, 'C', '0', '0', 'medical:continuousRRI:list', 'chart', 'admin', '2025-05-16 23:50:56', '', NULL, '连续RRI数据菜单');
+INSERT INTO `sys_menu` VALUES (2041, '连续RRI数据查询', 2040, 1, '#', '', NULL, 1, 0, 'F', '0', '0', 'medical:continuousRRI:query', '#', 'admin', '2025-05-16 23:52:09', '', NULL, '');
+INSERT INTO `sys_menu` VALUES (2042, '连续RRI数据新增', 2040, 2, '#', '', NULL, 1, 0, 'F', '0', '0', 'medical:continuousRRI:add', '#', 'admin', '2025-05-16 23:52:09', '', NULL, '');
+INSERT INTO `sys_menu` VALUES (2043, '连续RRI数据修改', 2040, 3, '#', '', NULL, 1, 0, 'F', '0', '0', 'medical:continuousRRI:edit', '#', 'admin', '2025-05-16 23:52:09', '', NULL, '');
+INSERT INTO `sys_menu` VALUES (2044, '连续RRI数据删除', 2040, 4, '#', '', NULL, 1, 0, 'F', '0', '0', 'medical:continuousRRI:remove', '#', 'admin', '2025-05-16 23:52:09', '', NULL, '');
+INSERT INTO `sys_menu` VALUES (2045, '连续RRI数据同步', 2040, 5, '#', '', NULL, 1, 0, 'F', '0', '0', 'medical:continuousRRI:sync', '#', 'admin', '2025-05-16 23:52:09', '', NULL, '');
+INSERT INTO `sys_menu` VALUES (3000, '6分钟行走测试', 2000, 6, 'singleWorkoutDetail', 'medical/singleWorkoutDetail/index', NULL, 1, 0, 'C', '0', '0', 'medical:singleWorkoutDetail:list', 'guide', 'admin', '2025-05-17 20:45:26', '', NULL, '6分钟行走测试数据菜单');
+INSERT INTO `sys_menu` VALUES (3001, '6分钟行走测试查询', 3000, 1, '#', '', NULL, 1, 0, 'F', '0', '0', 'medical:singleWorkoutDetail:query', '#', 'admin', '2025-05-17 20:45:26', '', NULL, '');
+INSERT INTO `sys_menu` VALUES (3002, '6分钟行走测试新增', 3000, 2, '#', '', NULL, 1, 0, 'F', '0', '0', 'medical:singleWorkoutDetail:add', '#', 'admin', '2025-05-17 20:45:26', '', NULL, '');
+INSERT INTO `sys_menu` VALUES (3003, '6分钟行走测试修改', 3000, 3, '#', '', NULL, 1, 0, 'F', '0', '0', 'medical:singleWorkoutDetail:edit', '#', 'admin', '2025-05-17 20:45:26', '', NULL, '');
+INSERT INTO `sys_menu` VALUES (3004, '6分钟行走测试删除', 3000, 4, '#', '', NULL, 1, 0, 'F', '0', '0', 'medical:singleWorkoutDetail:remove', '#', 'admin', '2025-05-17 20:45:26', '', NULL, '');
+INSERT INTO `sys_menu` VALUES (3005, '6分钟行走测试同步', 3000, 5, '#', '', NULL, 1, 0, 'F', '0', '0', 'medical:singleWorkoutDetail:sync', '#', 'admin', '2025-05-17 20:45:26', '', NULL, '');
+INSERT INTO `sys_menu` VALUES (3006, 'ECG数据', 2000, 7, 'ecg', 'medical/ecg/index', NULL, 1, 0, 'C', '0', '0', 'medical:ecg:list', 'heartbeat', 'admin', '2025-05-18 01:15:59', '', NULL, 'ECG数据菜单');
+INSERT INTO `sys_menu` VALUES (3007, 'ECG数据查询', 3006, 1, '', '', NULL, 1, 0, 'F', '0', '0', 'medical:ecg:query', '#', 'admin', '2025-05-18 01:15:59', '', NULL, '');
+INSERT INTO `sys_menu` VALUES (3008, 'ECG数据新增', 3006, 2, '', '', NULL, 1, 0, 'F', '0', '0', 'medical:ecg:add', '#', 'admin', '2025-05-18 01:15:59', '', NULL, '');
+INSERT INTO `sys_menu` VALUES (3009, 'ECG数据修改', 3006, 3, '', '', NULL, 1, 0, 'F', '0', '0', 'medical:ecg:edit', '#', 'admin', '2025-05-18 01:15:59', '', NULL, '');
+INSERT INTO `sys_menu` VALUES (3010, 'ECG数据删除', 3006, 4, '', '', NULL, 1, 0, 'F', '0', '0', 'medical:ecg:remove', '#', 'admin', '2025-05-18 01:15:59', '', NULL, '');
+INSERT INTO `sys_menu` VALUES (3011, 'ECG数据导出', 3006, 5, '', '', NULL, 1, 0, 'F', '0', '0', 'medical:ecg:export', '#', 'admin', '2025-05-18 01:15:59', '', NULL, '');
+INSERT INTO `sys_menu` VALUES (3012, 'ECG数据同步', 3006, 6, '', '', NULL, 1, 0, 'F', '0', '0', 'medical:ecg:sync', '#', 'admin', '2025-05-18 01:15:59', '', NULL, '');
 
 SET FOREIGN_KEY_CHECKS = 1;

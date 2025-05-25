@@ -62,6 +62,15 @@ function getRRIChart(query) {
   })
 }
 
+// 清除RRI图表缓存
+function clearRRIChartCache() {
+  return request({
+    url: '/medical/crri/clear-cache',
+    method: 'get',
+    timeout: 30000  // 30秒超时
+  })
+}
+
 // 统一导出API函数
 export {
   list,
@@ -70,5 +79,6 @@ export {
   updateContinuousRRI as update,
   delContinuousRRI as delete,
   syncContinuousRRI as sync,
-  getRRIChart as getChart
+  getRRIChart as getChart,
+  clearRRIChartCache as clearCache
 } 
